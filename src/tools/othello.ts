@@ -65,6 +65,12 @@ const toolDefinition = {
         },
         required: ["B", "W"],
       },
+      firstPlayer: {
+        type: "string",
+        enum: ["user", "computer"],
+        description:
+          "Optional: Which player should play as Black (goes first) for 'new_game' action. If not specified, will be chosen randomly.",
+      },
     },
     required: ["action"],
     additionalProperties: false,
@@ -79,12 +85,17 @@ const othello = async (
     let command: Command;
 
     if (args.action === "new_game") {
-      const randomAssignment = Math.random() < 0.5;
+      let blackPlayer: string;
+      if (args.firstPlayer) {
+        blackPlayer = args.firstPlayer;
+      } else {
+        blackPlayer = Math.random() < 0.5 ? "computer" : "user";
+      }
+      const whitePlayer = blackPlayer === "user" ? "computer" : "user";
+
       command = {
         action: "new_game",
-        playerNames: randomAssignment
-          ? { B: "computer", W: "user" }
-          : { B: "user", W: "computer" },
+        playerNames: { B: blackPlayer, W: whitePlayer },
       };
     } else if (args.action === "move") {
       if (
