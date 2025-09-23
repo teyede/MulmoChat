@@ -106,7 +106,7 @@ const exaSearch = async (
         message: `Found ${data.results.length} relevant results for "${query}"`,
         jsonData: data.results,
         instructions:
-          "Acknowledge that the search was successful and provide a summary of the key findings from the search results. Focus on the most relevant information.",
+          "Acknowledge that the search was successful and provide a very short summary, focusing only on the most relevant information.",
       };
     } else {
       console.log("*** Exa search failed");
