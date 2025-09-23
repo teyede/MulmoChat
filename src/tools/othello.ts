@@ -49,6 +49,22 @@ const toolDefinition = {
         description:
           "Current player's side (required for 'move' and 'pass' actions)",
       },
+      playerNames: {
+        type: "object",
+        description:
+          "Player assignments (required for 'move' and 'pass' actions)",
+        properties: {
+          B: {
+            type: "string",
+            enum: ["user", "computer"],
+          },
+          W: {
+            type: "string",
+            enum: ["user", "computer"],
+          },
+        },
+        required: ["B", "W"],
+      },
     },
     required: ["action"],
     additionalProperties: false,
@@ -75,10 +91,11 @@ const othello = async (
         typeof args.row !== "number" ||
         typeof args.col !== "number" ||
         !args.board ||
-        !args.currentSide
+        !args.currentSide ||
+        !args.playerNames
       ) {
         throw new Error(
-          "Move action requires row, col, board, and currentSide parameters",
+          "Move action requires row, col, board, currentSide, and playerNames parameters",
         );
       }
       command = {
@@ -87,17 +104,19 @@ const othello = async (
         col: args.col,
         board: args.board,
         currentSide: args.currentSide as Side,
+        playerNames: args.playerNames,
       };
     } else if (args.action === "pass") {
-      if (!args.board || !args.currentSide) {
+      if (!args.board || !args.currentSide || !args.playerNames) {
         throw new Error(
-          "Pass action requires board and currentSide parameters",
+          "Pass action requires board, currentSide, and playerNames parameters",
         );
       }
       command = {
         action: "pass",
         board: args.board,
         currentSide: args.currentSide as Side,
+        playerNames: args.playerNames,
       };
     } else {
       throw new Error(`Unknown action: ${args.action}`);
@@ -122,12 +141,18 @@ const othello = async (
       }
     }
 
+    const isComputerTurn = state.playerNames[state.currentSide] === "computer";
+    const instructions = state.isTerminal
+      ? "The game is over. Announce the game result."
+      : isComputerTurn
+        ? "The game state has been updated. It is your turn (you = AI assistant, computer). Make your move."
+        : "The game state has been updated. Tell the user to make a move. The user will tell you the move by specifying colum (A to H) and row (1 to 8)";
+
     return {
       toolName,
       message,
       jsonData: state,
-      instructions:
-        "The game state has been updated. Show the board and provide information about the current state. If it's the user's turn, suggest legal moves they can make. Otherwise, make a move.",
+      instructions,
     };
   } catch (error) {
     console.error("*** Othello game error", error);

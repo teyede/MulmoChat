@@ -13,8 +13,14 @@ export type MoveCommand =
       col: number;
       board: OthelloBoard;
       currentSide: Side;
+      playerNames: { B: string; W: string };
     }
-  | { action: "pass"; board: OthelloBoard; currentSide: Side };
+  | {
+      action: "pass";
+      board: OthelloBoard;
+      currentSide: Side;
+      playerNames: { B: string; W: string };
+    };
 
 export type Command = NewGameCommand | MoveCommand;
 
@@ -221,7 +227,7 @@ export function playOthello(cmd: Command): OthelloState {
   }
 
   if (cmd.action === "pass") {
-    const { board, currentSide } = cmd;
+    const { board, currentSide, playerNames } = cmd;
     const nextSide = getOpponent(currentSide);
     const legalMoves = getLegalMoves(board, nextSide);
     const counts = countPieces(board);
@@ -233,6 +239,7 @@ export function playOthello(cmd: Command): OthelloState {
     return {
       board,
       currentSide: nextSide,
+      playerNames,
       legalMoves,
       counts,
       isTerminal,
@@ -242,7 +249,7 @@ export function playOthello(cmd: Command): OthelloState {
   }
 
   // Move command
-  const { row, col, board, currentSide } = cmd;
+  const { row, col, board, currentSide, playerNames } = cmd;
 
   // Validate the move
   if (!isLegalMove(board, row, col, currentSide)) {
@@ -265,6 +272,7 @@ export function playOthello(cmd: Command): OthelloState {
   return {
     board: newBoard,
     currentSide: nextSide,
+    playerNames,
     legalMoves,
     counts,
     isTerminal,

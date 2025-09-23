@@ -325,7 +325,9 @@ function renderOthelloBoard(gameState: any): void {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw turn indicator at the top
-  const turnText = `Current Turn: ${gameState.currentSide === "B" ? "Black" : "White"}`;
+  const currentPlayer = gameState.playerNames[gameState.currentSide];
+  const colorName = gameState.currentSide === "B" ? "Black" : "White";
+  const turnText = `Current Turn: ${currentPlayer} (${colorName})`;
   ctx.fillStyle = "#ffffff";
   ctx.font = "bold 18px Arial";
   ctx.textAlign = "center";
