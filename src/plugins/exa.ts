@@ -21,6 +21,28 @@ const toolDefinition = {
         type: "boolean",
         description: "Whether to include page text content in results (default: true)",
       },
+      fetchHighlights: {
+        type: "boolean",
+        description: "Whether to include query-relevant highlights from the content",
+      },
+      includeDomains: {
+        type: "array",
+        description: "Only search within these domains",
+        items: { type: "string" },
+      },
+      excludeDomains: {
+        type: "array",
+        description: "Exclude results from these domains",
+        items: { type: "string" },
+      },
+      startPublishedDate: {
+        type: "string",
+        description: "Only include results published after this date (ISO format: 2025-01-01)",
+      },
+      endPublishedDate: {
+        type: "string",
+        description: "Only include results published before this date (ISO format: 2025-01-01)",
+      },
     },
     required: ["query"],
   },
@@ -33,8 +55,21 @@ const exaSearch = async (
   const query = args.query as string;
   const numResults = (args.numResults as number) || 5;
   const includeText = args.includeText !== false;
+  const fetchHighlights = args.fetchHighlights || false;
+  const includeDomains = args.includeDomains;
+  const excludeDomains = args.excludeDomains;
+  const startPublishedDate = args.startPublishedDate;
+  const endPublishedDate = args.endPublishedDate;
 
-  console.log("******** Exa Search", query, { numResults, includeText });
+  console.log("******** Exa Search", query, {
+    numResults,
+    includeText,
+    fetchHighlights,
+    includeDomains,
+    excludeDomains,
+    startPublishedDate,
+    endPublishedDate,
+  });
 
   try {
     const response = await fetch("/api/exa-search", {
@@ -45,7 +80,12 @@ const exaSearch = async (
       body: JSON.stringify({
         query,
         numResults: Math.min(numResults, 10),
-        includeText
+        includeText,
+        fetchHighlights,
+        includeDomains,
+        excludeDomains,
+        startPublishedDate,
+        endPublishedDate,
       }),
     });
 
@@ -60,8 +100,7 @@ const exaSearch = async (
       return {
         message: `Found ${data.results.length} relevant results for "${query}"`,
         jsonData: data.results,
-        instructions:
-          "Acknowledge that the search was successful and provide a summary of the key findings from the search results. Focus on the most relevant information.",
+        instructions: "Acknowledge that the search was successful and provide a summary of the key findings from the search results. Focus on the most relevant information.",
       };
     } else {
       console.log("*** Exa search failed");

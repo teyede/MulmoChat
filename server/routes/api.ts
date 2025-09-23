@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { puppeteerCrawlerAgent } from "mulmocast";
 import { StartApiResponse } from "../types";
+import { exaSearch } from "../exaSearch";
 dotenv.config();
 
 const router: Router = express.Router();
@@ -178,7 +179,16 @@ router.post("/browse", async (req: Request, res: Response): Promise<void> => {
 
 // Exa search endpoint
 router.post("/exa-search", async (req: Request, res: Response): Promise<void> => {
-  const { query, numResults = 5, includeText = true } = req.body;
+  const {
+    query,
+    numResults = 5,
+    includeText = true,
+    includeDomains,
+    excludeDomains,
+    startPublishedDate,
+    endPublishedDate,
+    fetchHighlights = false
+  } = req.body;
 
   if (!query) {
     res.status(400).json({ error: "Query is required" });
@@ -193,29 +203,21 @@ router.post("/exa-search", async (req: Request, res: Response): Promise<void> =>
   }
 
   try {
-    const searchParams = {
-      query,
+    const results = await exaSearch(query, {
       numResults: Math.min(numResults, 10),
-      includeText
-    };
-
-    const response = await fetch("https://api.exa.ai/search", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${exaApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(searchParams),
+      fetchText: includeText,
+      fetchHighlights,
+      includeDomains,
+      excludeDomains,
+      startPublishedDate,
+      endPublishedDate,
     });
 
-    if (!response.ok) {
-      throw new Error(`Exa API error: ${response.status} ${response.statusText}`);
-    }
+    console.log("*** Exa search results:", results.length, results[0]);
 
-    const data = await response.json();
     res.json({
       success: true,
-      results: data.results || [],
+      results,
     });
   } catch (error: unknown) {
     console.error("Exa search failed:", error);

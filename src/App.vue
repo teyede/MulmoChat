@@ -432,6 +432,7 @@ async function processToolCall(msg: any): Promise<void> {
     if (result.jsonData) {
       outputPayload.data = result.jsonData;
     }
+    console.log("*** Function call output", outputPayload);
     webrtc.dc?.send(
       JSON.stringify({
         type: "conversation.item.create",
@@ -443,6 +444,7 @@ async function processToolCall(msg: any): Promise<void> {
       }),
     );
     if (result.instructions) {
+      console.log("*** Sending instructions after function call", result.instructions);
       webrtc.dc?.send(
         JSON.stringify({
           type: "response.create",
