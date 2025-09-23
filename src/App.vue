@@ -194,6 +194,7 @@
               height="520"
               class="border border-gray-300 rounded"
               @click="handleOthelloCanvasClick"
+              @mousemove="handleOthelloCanvasMouseMove"
             />
           </div>
           <div v-else class="w-full h-full flex items-center justify-center">
@@ -425,6 +426,39 @@ function handleOthelloCanvasClick(event: MouseEvent): void {
       userInput.value = `I want to play at ${columnLetter}${rowNumber}, which is column=${col}, row=${row} `;
       sendTextMessage();
     }
+  }
+}
+
+function handleOthelloCanvasMouseMove(event: MouseEvent): void {
+  const canvas = othelloCanvas.value;
+  if (!canvas || !selectedResult.value?.jsonData) return;
+
+  const gameState = selectedResult.value.jsonData;
+  const isComputerTurn = gameState.playerNames && gameState.playerNames[gameState.currentSide] === "computer";
+
+  // Don't change cursor if it's computer's turn or game is over
+  if (isComputerTurn || gameState.isTerminal) {
+    canvas.style.cursor = "default";
+    return;
+  }
+
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  const boardOffsetY = 40;
+  const col = Math.floor(x / 60);
+  const row = Math.floor((y - boardOffsetY) / 60);
+
+  if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+    // Check if this is a legal move
+    const isLegalMove = gameState.legalMoves?.some(
+      (move: any) => move.row === row && move.col === col,
+    );
+
+    canvas.style.cursor = isLegalMove ? "pointer" : "default";
+  } else {
+    canvas.style.cursor = "default";
   }
 }
 
