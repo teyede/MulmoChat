@@ -388,7 +388,9 @@ function renderOthelloBoard(gameState: any): void {
   }
 
   // Draw position labels on legal moves (light grey, no background highlighting)
-  if (gameState.legalMoves && gameState.legalMoves.length > 0) {
+  // Only show playable cells when it's the human player's turn
+  const isComputerTurn = gameState.playerNames && gameState.playerNames[gameState.currentSide] === "computer";
+  if (gameState.legalMoves && gameState.legalMoves.length > 0 && !isComputerTurn) {
     ctx.fillStyle = "#cccccc";
     ctx.font = "bold 14px Arial";
     ctx.textAlign = "center";
