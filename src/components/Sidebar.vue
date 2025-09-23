@@ -88,6 +88,61 @@
               }}
             </div>
           </div>
+          <div
+            v-else-if="result.toolName === 'playOthello'"
+            class="p-3 bg-green-50 rounded"
+          >
+            <div class="text-green-600 font-medium text-center mb-2">
+              ⚫ Othello Game
+            </div>
+            <div v-if="result.jsonData" class="space-y-1">
+              <!-- Othello board display -->
+              <div
+                class="grid grid-cols-8 gap-px bg-gray-400 p-1 rounded max-w-40 mx-auto"
+              >
+                <template
+                  v-for="(row, rowIndex) in result.jsonData.board"
+                  :key="rowIndex"
+                >
+                  <div
+                    v-for="(cell, colIndex) in row"
+                    :key="`${rowIndex}-${colIndex}`"
+                    class="w-4 h-4 bg-green-600 flex items-center justify-center relative"
+                    :class="{
+                      'ring-1 ring-yellow-400': isLegalMove(
+                        result.jsonData.legalMoves,
+                        rowIndex,
+                        colIndex,
+                      ),
+                    }"
+                  >
+                    <div
+                      v-if="cell === 'B'"
+                      class="w-3 h-3 bg-black rounded-full"
+                    ></div>
+                    <div
+                      v-else-if="cell === 'W'"
+                      class="w-3 h-3 bg-white rounded-full border border-gray-300"
+                    ></div>
+                  </div>
+                </template>
+              </div>
+              <!-- Game info -->
+              <div class="text-xs text-center space-y-1">
+                <div class="flex justify-center space-x-3">
+                  <span>⚫ {{ result.jsonData.counts.B }}</span>
+                  <span>⚪ {{ result.jsonData.counts.W }}</span>
+                </div>
+                <div v-if="!result.jsonData.isTerminal" class="text-gray-600">
+                  {{ result.jsonData.currentSide === "B" ? "⚫" : "⚪" }} to
+                  play
+                </div>
+                <div v-else class="font-medium">
+                  {{ getGameResult(result.jsonData) }}
+                </div>
+              </div>
+            </div>
+          </div>
           <div v-else class="text-center p-4 bg-gray-50 rounded">
             <div class="text-gray-600 font-medium">📋 Text Result</div>
             <div class="text-xs text-gray-500 mt-1 truncate">
@@ -168,6 +223,22 @@ function scrollToBottomOfImageContainer(): void {
 function extractQueryFromMessage(message: string): string {
   const match = message.match(/relevant results for "([^"]+)"/);
   return match ? match[1] : message;
+}
+
+function isLegalMove(
+  legalMoves: Array<{ row: number; col: number }>,
+  row: number,
+  col: number,
+): boolean {
+  return legalMoves.some((move) => move.row === row && move.col === col);
+}
+
+function getGameResult(gameState: any): string {
+  if (!gameState.isTerminal) return "";
+  if (gameState.winner === "draw") return "Draw!";
+  if (gameState.winner === "B") return "⚫ Black Wins!";
+  if (gameState.winner === "W") return "⚪ White Wins!";
+  return "Game Over";
 }
 
 defineExpose({
