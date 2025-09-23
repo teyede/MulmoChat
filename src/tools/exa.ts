@@ -107,7 +107,7 @@ const exaSearch = async (
       return {
         toolName,
         message: `Found ${data.results.length} relevant results for "${query}"`,
-        jsonData: data.results,
+        jsonData: { query, results: data.results },
         instructions:
           "Acknowledge that the search was successful and provide a very short summary, focusing only on the most relevant information.",
       };

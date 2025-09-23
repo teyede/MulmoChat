@@ -92,10 +92,17 @@
             <div class="max-w-4xl mx-auto">
               <h2 class="text-2xl font-bold text-gray-800 mb-6">
                 Search Results
+                <span
+                  v-if="selectedResult.jsonData.query"
+                  class="text-lg font-normal text-gray-600"
+                >
+                  for "{{ selectedResult.jsonData.query }}"
+                </span>
               </h2>
               <div class="space-y-6">
                 <div
-                  v-for="(result, index) in selectedResult.jsonData"
+                  v-for="(result, index) in selectedResult.jsonData.results ||
+                  selectedResult.jsonData"
                   :key="index"
                   class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
