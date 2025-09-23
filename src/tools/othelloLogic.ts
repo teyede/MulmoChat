@@ -2,7 +2,10 @@ export type Cell = "." | "B" | "W";
 export type Side = "B" | "W";
 export type OthelloBoard = Cell[][]; // 8x8
 
-export type NewGameCommand = { action: "new_game" };
+export type NewGameCommand = {
+  action: "new_game";
+  playerNames: { B: string; W: string };
+};
 export type MoveCommand =
   | {
       action: "move";
@@ -18,6 +21,7 @@ export type Command = NewGameCommand | MoveCommand;
 export type OthelloState = {
   board: OthelloBoard;
   currentSide: Side; // whose turn NEXT
+  playerNames: { B: string; W: string };
   legalMoves: { row: number; col: number }[];
   counts: { B: number; W: number; empty: number };
   isTerminal: boolean;
@@ -199,6 +203,7 @@ function determineWinner(counts: {
 
 export function playOthello(cmd: Command): OthelloState {
   if (cmd.action === "new_game") {
+    const { playerNames } = cmd;
     const board = createInitialBoard();
     const legalMoves = getLegalMoves(board, "B");
     const counts = countPieces(board);
@@ -206,6 +211,7 @@ export function playOthello(cmd: Command): OthelloState {
     return {
       board,
       currentSide: "B",
+      playerNames,
       legalMoves,
       counts,
       isTerminal: false,

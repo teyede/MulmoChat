@@ -128,7 +128,13 @@ const othello = async (
     let command: Command;
 
     if (args.action === "new_game") {
-      command = { action: "new_game" };
+      const randomAssignment = Math.random() < 0.5;
+      command = {
+        action: "new_game",
+        playerNames: randomAssignment
+          ? { B: "computer", W: "user" }
+          : { B: "user", W: "computer" },
+      };
     } else if (args.action === "move") {
       if (
         typeof args.row !== "number" ||
@@ -188,7 +194,7 @@ const othello = async (
       htmlData,
       jsonData: state,
       instructions:
-        "The game state has been updated. Show the board and provide information about the current state. If it's the user's turn, suggest legal moves they can make.",
+        "The game state has been updated. Show the board and provide information about the current state. If it's the user's turn, suggest legal moves they can make. Otherwise, make a move.",
     };
   } catch (error) {
     console.error("*** Othello game error", error);
