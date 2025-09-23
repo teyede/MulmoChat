@@ -444,7 +444,10 @@ async function processToolCall(msg: any): Promise<void> {
       }),
     );
     if (result.instructions) {
-      console.log("*** Sending instructions after function call", result.instructions);
+      console.log(
+        "*** Sending instructions after function call",
+        result.instructions,
+      );
       webrtc.dc?.send(
         JSON.stringify({
           type: "response.create",
