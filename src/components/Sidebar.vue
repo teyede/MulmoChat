@@ -98,7 +98,8 @@
             <div v-if="result.jsonData" class="space-y-1">
               <!-- Othello board display -->
               <div
-                class="grid grid-cols-8 gap-px bg-gray-400 p-1 rounded max-w-40 mx-auto"
+                class="grid grid-cols-8 gap-px p-1 rounded max-w-40 mx-auto"
+                style="background-color: #1a3009"
               >
                 <template
                   v-for="(row, rowIndex) in result.jsonData.board"
@@ -107,22 +108,18 @@
                   <div
                     v-for="(cell, colIndex) in row"
                     :key="`${rowIndex}-${colIndex}`"
-                    class="w-4 h-4 bg-green-600 flex items-center justify-center relative"
-                    :class="{
-                      'ring-1 ring-yellow-400': isLegalMove(
-                        result.jsonData.legalMoves,
-                        rowIndex,
-                        colIndex,
-                      ),
-                    }"
+                    class="w-4 h-4 flex items-center justify-center relative"
+                    style="background-color: #2d5016"
                   >
                     <div
                       v-if="cell === 'B'"
-                      class="w-3 h-3 bg-black rounded-full"
+                      class="w-3 h-3 bg-black rounded-full border"
+                      style="border-color: #333333"
                     ></div>
                     <div
                       v-else-if="cell === 'W'"
-                      class="w-3 h-3 bg-white rounded-full border border-gray-300"
+                      class="w-3 h-3 bg-white rounded-full border"
+                      style="border-color: #333333"
                     ></div>
                   </div>
                 </template>
@@ -223,14 +220,6 @@ function scrollToBottomOfImageContainer(): void {
 function extractQueryFromMessage(message: string): string {
   const match = message.match(/relevant results for "([^"]+)"/);
   return match ? match[1] : message;
-}
-
-function isLegalMove(
-  legalMoves: Array<{ row: number; col: number }>,
-  row: number,
-  col: number,
-): boolean {
-  return legalMoves.some((move) => move.row === row && move.col === col);
 }
 
 function getGameResult(gameState: any): string {
