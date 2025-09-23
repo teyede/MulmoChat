@@ -272,6 +272,7 @@ import {
   PluginResult,
   pluginGeneratingMessage,
   pluginWaitingMessage,
+  pluginDelayAfterExecution,
 } from "./plugins/type";
 import type { StartApiResponse } from "../server/types";
 import GoogleMap from "./components/GoogleMap.vue";
@@ -448,7 +449,10 @@ async function processToolCall(msg: any): Promise<void> {
       }),
     );
     if (result.instructions) {
-      await sleep(3000);
+      const delay = pluginDelayAfterExecution(msg.name);
+      if (delay) {
+        await sleep(delay);
+      }
       console.log(
         "*** Sending instructions after function call:",
         result.instructions,

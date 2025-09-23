@@ -133,4 +133,5 @@ export const plugin: Plugin = {
   waitingMessage:
     "Tell the user that you are searching for relevant information.",
   isEnabled: (startResponse) => !!startResponse?.hasExaApiKey,
+  delayAfterExecution: 3000,
 };

@@ -41,6 +41,7 @@ export interface Plugin {
   generatingMessage: string;
   waitingMessage?: string;
   isEnabled: (startResponse?: StartApiResponse) => boolean;
+  delayAfterExecution?: number;
 }
 
 const pluginList = [
@@ -93,4 +94,12 @@ export const pluginWaitingMessage = (name: string) => {
     throw new Error(`Plugin ${name} not found`);
   }
   return plugin.waitingMessage;
+};
+
+export const pluginDelayAfterExecution = (name: string) => {
+  const plugin = plugins[name];
+  if (!plugin) {
+    throw new Error(`Plugin ${name} not found`);
+  }
+  return plugin.delayAfterExecution;
 };
