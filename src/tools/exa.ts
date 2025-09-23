@@ -1,4 +1,4 @@
-import { Plugin, PluginContext, PluginResult } from "./type";
+import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
 const toolDefinition = {
   type: "function" as const,
@@ -54,9 +54,9 @@ const toolDefinition = {
 };
 
 const exaSearch = async (
-  context: PluginContext,
+  context: ToolContext,
   args: Record<string, any>,
-): Promise<PluginResult> => {
+): Promise<ToolResult> => {
   const query = args.query as string;
   const numResults = (args.numResults as number) || 5;
   const includeText = args.includeText !== false;
@@ -126,7 +126,7 @@ const exaSearch = async (
   }
 };
 
-export const plugin: Plugin = {
+export const plugin: ToolPlugin = {
   toolDefinition,
   execute: exaSearch,
   generatingMessage: "Searching the web...",

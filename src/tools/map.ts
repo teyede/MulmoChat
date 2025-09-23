@@ -1,6 +1,6 @@
-import { Plugin, PluginContext, PluginResult } from "./type";
+import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
-export const plugin: Plugin = {
+export const plugin: ToolPlugin = {
   toolDefinition: {
     type: "function",
     name: "presentMap",
@@ -19,9 +19,9 @@ export const plugin: Plugin = {
     },
   },
   execute: async (
-    context: PluginContext,
+    context: ToolContext,
     args: Record<string, any>,
-  ): Promise<PluginResult> => {
+  ): Promise<ToolResult> => {
     const { location } = args;
 
     if (!location || typeof location !== "string") {

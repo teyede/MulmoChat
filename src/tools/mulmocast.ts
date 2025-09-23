@@ -1,4 +1,4 @@
-import { Plugin, PluginContext, PluginResult } from "./type";
+import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import { blankImageBase64 } from "./blank";
 
 const toolDefinition = {
@@ -42,9 +42,9 @@ const toolDefinition = {
 };
 
 const mulmocast = async (
-  context: PluginContext,
+  context: ToolContext,
   args: Record<string, any>,
-): Promise<PluginResult> => {
+): Promise<ToolResult> => {
   console.log("******** Mulmocast plugin\n", JSON.stringify(args, null, 2));
 
   const { title, beats, style: styleParam } = args;
@@ -107,7 +107,7 @@ const mulmocast = async (
   };
 };
 
-export const plugin: Plugin = {
+export const plugin: ToolPlugin = {
   toolDefinition,
   execute: mulmocast,
   generatingMessage: "Processing with Mulmocast...",

@@ -6,11 +6,11 @@ import * as MapPlugin from "./map";
 import * as ExaPlugin from "./exa";
 import type { StartApiResponse } from "../../server/types";
 
-export interface PluginContext {
+export interface ToolContext {
   images: string[];
 }
 
-export interface PluginResult {
+export interface ToolResult {
   message: string;
   title?: string;
   imageData?: string;
@@ -21,7 +21,7 @@ export interface PluginResult {
   location?: string | { lat: number; lng: number };
 }
 
-export interface Plugin {
+export interface ToolPlugin {
   toolDefinition: {
     type: "function";
     name: string;
@@ -35,9 +35,9 @@ export interface Plugin {
     };
   };
   execute: (
-    context: PluginContext,
+    context: ToolContext,
     args: Record<string, any>,
-  ) => Promise<PluginResult>;
+  ) => Promise<ToolResult>;
   generatingMessage: string;
   waitingMessage?: string;
   isEnabled: (startResponse?: StartApiResponse) => boolean;
@@ -64,11 +64,11 @@ const plugins = pluginList.reduce(
     acc[plugin.plugin.toolDefinition.name] = plugin.plugin;
     return acc;
   },
-  {} as Record<string, Plugin>,
+  {} as Record<string, ToolPlugin>,
 );
 
 export const pluginExecute = (
-  context: PluginContext,
+  context: ToolContext,
   name: string,
   args: Record<string, any>,
 ) => {

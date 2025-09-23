@@ -1,4 +1,4 @@
-import { Plugin, PluginContext, PluginResult } from "./type";
+import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
 const toolDefinition = {
   type: "function" as const,
@@ -19,9 +19,9 @@ const toolDefinition = {
 };
 
 const browse = async (
-  context: PluginContext,
+  context: ToolContext,
   args: Record<string, any>,
-): Promise<PluginResult> => {
+): Promise<ToolResult> => {
   const url = args.url as string;
   console.log("******** Browse URL", url);
 
@@ -66,7 +66,7 @@ const browse = async (
   }
 };
 
-export const plugin: Plugin = {
+export const plugin: ToolPlugin = {
   toolDefinition,
   execute: browse,
   generatingMessage: "Browsing webpage...",

@@ -187,6 +187,7 @@
             :src="selectedResult.url"
             class="w-full h-full rounded"
             frameborder="0"
+            sandbox="allow-scripts allow-same-origin"
           />
           <div
             v-else-if="selectedResult?.htmlData"
@@ -268,8 +269,8 @@ import { ref, watch, nextTick } from "vue";
 import {
   pluginTools,
   pluginExecute,
-  PluginContext,
-  PluginResult,
+  ToolContext,
+  ToolResult,
   pluginGeneratingMessage,
   pluginWaitingMessage,
   pluginDelayAfterExecution,
@@ -288,12 +289,12 @@ const systemPrompt = ref(
 );
 const messages = ref<string[]>([]);
 const currentText = ref("");
-const pluginResults = ref<PluginResult[]>([]);
+const pluginResults = ref<ToolResult[]>([]);
 const isGeneratingImage = ref(false);
 const generatingMessage = ref("");
 const pendingToolArgs: Record<string, string> = {};
 const showConfigPopup = ref(false);
-const selectedResult = ref<PluginResult | null>(null);
+const selectedResult = ref<ToolResult | null>(null);
 const userInput = ref("");
 const twitterEmbedData = ref<{ [key: string]: string }>({});
 const googleMapKey = ref<string | null>(null);
