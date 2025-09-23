@@ -92,9 +92,6 @@
             v-else-if="result.toolName === 'playOthello'"
             class="p-3 bg-green-50 rounded"
           >
-            <div class="text-green-600 font-medium text-center mb-2">
-              ⚫ Othello Game
-            </div>
             <div v-if="result.jsonData" class="space-y-1">
               <!-- Othello board display -->
               <div class="flex justify-center">
@@ -128,13 +125,14 @@
               </div>
               <!-- Game info -->
               <div class="text-xs text-center space-y-1">
-                <div class="flex justify-center space-x-3">
-                  <span>⚫ {{ result.jsonData.counts.B }}</span>
-                  <span>⚪ {{ result.jsonData.counts.W }}</span>
-                </div>
                 <div v-if="!result.jsonData.isTerminal" class="text-gray-600">
-                  {{ result.jsonData.currentSide === "B" ? "⚫" : "⚪" }} to
-                  play
+                  {{ result.jsonData.currentSide === "B" ? "⚫" : "⚪" }}
+                  {{
+                    capitalizeFirst(
+                      result.jsonData.playerNames[result.jsonData.currentSide],
+                    )
+                  }}
+                  to play
                 </div>
                 <div v-else class="font-medium">
                   {{ getGameResult(result.jsonData) }}
@@ -230,6 +228,10 @@ function getGameResult(gameState: any): string {
   if (gameState.winner === "B") return "⚫ Black Wins!";
   if (gameState.winner === "W") return "⚪ White Wins!";
   return "Game Over";
+}
+
+function capitalizeFirst(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 defineExpose({

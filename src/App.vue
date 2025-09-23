@@ -328,7 +328,7 @@ function renderOthelloBoard(gameState: any): void {
   // Draw turn indicator at the top
   const currentPlayer = gameState.playerNames[gameState.currentSide];
   const colorName = gameState.currentSide === "B" ? "Black" : "White";
-  const turnText = `Current Turn: ${currentPlayer} (${colorName})`;
+  const turnText = `Current Turn: ${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)} (${colorName})`;
   ctx.fillStyle = "#ffffff";
   ctx.font = "bold 18px Arial";
   ctx.textAlign = "center";
@@ -434,7 +434,9 @@ function handleOthelloCanvasMouseMove(event: MouseEvent): void {
   if (!canvas || !selectedResult.value?.jsonData) return;
 
   const gameState = selectedResult.value.jsonData;
-  const isComputerTurn = gameState.playerNames && gameState.playerNames[gameState.currentSide] === "computer";
+  const isComputerTurn =
+    gameState.playerNames &&
+    gameState.playerNames[gameState.currentSide] === "computer";
 
   // Don't change cursor if it's computer's turn or game is over
   if (isComputerTurn || gameState.isTerminal) {
