@@ -273,7 +273,7 @@ import {
   pluginGeneratingMessage,
   pluginWaitingMessage,
   pluginDelayAfterExecution,
-} from "./plugins/type";
+} from "./tools/type";
 import type { StartApiResponse } from "../server/types";
 import GoogleMap from "./components/GoogleMap.vue";
 

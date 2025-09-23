@@ -47,4 +47,4 @@ The app implements a tool calling system where the OpenAI model can call the `ge
 
 ## File Restrictions
 
-- **Do not read src/plugins/blank.ts**: This file is too long and should be avoided when analyzing the codebase
+- **Do not read src/tools/blank.ts**: This file is too long and should be avoided when analyzing the codebase
