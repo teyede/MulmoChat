@@ -11,10 +11,10 @@ export async function exaSearch(
     includeDomains?: string[];
     excludeDomains?: string[];
     startPublishedDate?: string; // ISO: "2025-01-01"
-    endPublishedDate?: string;   // ISO
-    fetchText?: boolean;         // return cleaned article text
-    fetchHighlights?: boolean;   // return query-relevant highlights
-  }
+    endPublishedDate?: string; // ISO
+    fetchText?: boolean; // return cleaned article text
+    fetchHighlights?: boolean; // return query-relevant highlights
+  },
 ) {
   const {
     numResults = 10,
@@ -50,7 +50,7 @@ export async function exaSearch(
         });
 
   // Normalize minimal shape for your app:
-  return res.results.map(r => ({
+  return res.results.map((r) => ({
     id: r.id,
     url: r.url,
     title: r.title,

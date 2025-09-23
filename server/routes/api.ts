@@ -178,56 +178,62 @@ router.post("/browse", async (req: Request, res: Response): Promise<void> => {
 });
 
 // Exa search endpoint
-router.post("/exa-search", async (req: Request, res: Response): Promise<void> => {
-  const {
-    query,
-    numResults = 5,
-    includeText = true,
-    includeDomains,
-    excludeDomains,
-    startPublishedDate,
-    endPublishedDate,
-    fetchHighlights = false
-  } = req.body;
-
-  if (!query) {
-    res.status(400).json({ error: "Query is required" });
-    return;
-  }
-
-  const exaApiKey = process.env.EXA_API_KEY;
-
-  if (!exaApiKey) {
-    res.status(500).json({ error: "EXA_API_KEY environment variable not set" });
-    return;
-  }
-
-  try {
-    const results = await exaSearch(query, {
-      numResults: Math.min(numResults, 10),
-      fetchText: includeText,
-      fetchHighlights,
+router.post(
+  "/exa-search",
+  async (req: Request, res: Response): Promise<void> => {
+    const {
+      query,
+      numResults = 5,
+      includeText = true,
       includeDomains,
       excludeDomains,
       startPublishedDate,
       endPublishedDate,
-    });
+      fetchHighlights = false,
+    } = req.body;
 
-    console.log("*** Exa search results:", results.length, results[0]);
+    if (!query) {
+      res.status(400).json({ error: "Query is required" });
+      return;
+    }
 
-    res.json({
-      success: true,
-      results,
-    });
-  } catch (error: unknown) {
-    console.error("Exa search failed:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({
-      error: "Failed to search with Exa",
-      details: errorMessage,
-    });
-  }
-});
+    const exaApiKey = process.env.EXA_API_KEY;
+
+    if (!exaApiKey) {
+      res
+        .status(500)
+        .json({ error: "EXA_API_KEY environment variable not set" });
+      return;
+    }
+
+    try {
+      const results = await exaSearch(query, {
+        numResults: Math.min(numResults, 10),
+        fetchText: includeText,
+        fetchHighlights,
+        includeDomains,
+        excludeDomains,
+        startPublishedDate,
+        endPublishedDate,
+      });
+
+      console.log("*** Exa search results:", results.length, results[0]);
+
+      res.json({
+        success: true,
+        results,
+      });
+    } catch (error: unknown) {
+      console.error("Exa search failed:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({
+        error: "Failed to search with Exa",
+        details: errorMessage,
+      });
+    }
+  },
+);
 
 // Twitter oEmbed proxy endpoint
 router.get(

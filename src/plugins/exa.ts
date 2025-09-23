@@ -3,7 +3,8 @@ import { Plugin, PluginContext, PluginResult } from "./type";
 const toolDefinition = {
   type: "function" as const,
   name: "exaSearch",
-  description: "Search the web using Exa API for high-quality, relevant results",
+  description:
+    "Search the web using Exa API for high-quality, relevant results",
   parameters: {
     type: "object" as const,
     properties: {
@@ -19,11 +20,13 @@ const toolDefinition = {
       },
       includeText: {
         type: "boolean",
-        description: "Whether to include page text content in results (default: true)",
+        description:
+          "Whether to include page text content in results (default: true)",
       },
       fetchHighlights: {
         type: "boolean",
-        description: "Whether to include query-relevant highlights from the content",
+        description:
+          "Whether to include query-relevant highlights from the content",
       },
       includeDomains: {
         type: "array",
@@ -37,11 +40,13 @@ const toolDefinition = {
       },
       startPublishedDate: {
         type: "string",
-        description: "Only include results published after this date (ISO format: 2025-01-01)",
+        description:
+          "Only include results published after this date (ISO format: 2025-01-01)",
       },
       endPublishedDate: {
         type: "string",
-        description: "Only include results published before this date (ISO format: 2025-01-01)",
+        description:
+          "Only include results published before this date (ISO format: 2025-01-01)",
       },
     },
     required: ["query"],
@@ -100,20 +105,23 @@ const exaSearch = async (
       return {
         message: `Found ${data.results.length} relevant results for "${query}"`,
         jsonData: data.results,
-        instructions: "Acknowledge that the search was successful and provide a summary of the key findings from the search results. Focus on the most relevant information.",
+        instructions:
+          "Acknowledge that the search was successful and provide a summary of the key findings from the search results. Focus on the most relevant information.",
       };
     } else {
       console.log("*** Exa search failed");
       return {
         message: data.error || "Exa search failed",
-        instructions: "Acknowledge that the search failed and suggest trying a different query.",
+        instructions:
+          "Acknowledge that the search failed and suggest trying a different query.",
       };
     }
   } catch (error) {
     console.error("*** Exa search failed", error);
     return {
       message: `Exa search failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-      instructions: "Acknowledge that the search failed due to a technical error.",
+      instructions:
+        "Acknowledge that the search failed due to a technical error.",
     };
   }
 };
@@ -122,6 +130,7 @@ export const plugin: Plugin = {
   toolDefinition,
   execute: exaSearch,
   generatingMessage: "Searching the web...",
-  waitingMessage: "Tell the user that you are searching for relevant information.",
+  waitingMessage:
+    "Tell the user that you are searching for relevant information.",
   isEnabled: (startResponse) => !!startResponse?.hasExaApiKey,
 };
