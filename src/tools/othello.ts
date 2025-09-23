@@ -146,7 +146,7 @@ const othello = async (
       ? "The game is over. Announce the game result."
       : isComputerTurn
         ? "The game state has been updated. It is your turn (you = AI assistant, computer). Make your move."
-        : "The game state has been updated. Tell the user to make a move. The user will tell you the move by specifying colum (A to H) and row (1 to 8)";
+        : "The game state has been updated. Tell the user to make a move. Do not describe the state of the game. The user is able to see it. The user will tell you the move by specifying colum (A to H) and row (1 to 8)";
 
     return {
       toolName,
