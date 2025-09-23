@@ -80,7 +80,6 @@
             :src="selectedResult.url"
             class="w-full h-full rounded"
             frameborder="0"
-            sandbox="allow-scripts allow-same-origin"
           />
           <div
             v-else-if="
