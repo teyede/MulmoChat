@@ -183,7 +183,7 @@ router.post(
   async (req: Request, res: Response): Promise<void> => {
     const {
       query,
-      numResults = 5,
+      numResults = 3,
       includeText = true,
       includeDomains,
       excludeDomains,

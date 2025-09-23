@@ -316,6 +316,10 @@ const webrtc = {
   remoteStream: null as MediaStream | null,
 };
 
+const sleep = async (milliseconds: number) => {
+  return await new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
 function scrollToBottomOfImageContainer(): void {
   nextTick(() => {
     if (imageContainer.value) {
@@ -444,8 +448,9 @@ async function processToolCall(msg: any): Promise<void> {
       }),
     );
     if (result.instructions) {
+      await sleep(3000);
       console.log(
-        "*** Sending instructions after function call",
+        "*** Sending instructions after function call:",
         result.instructions,
       );
       webrtc.dc?.send(
