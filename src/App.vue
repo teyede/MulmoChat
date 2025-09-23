@@ -387,19 +387,9 @@ function renderOthelloBoard(gameState: any): void {
     }
   }
 
-  // Highlight legal moves
+  // Draw position labels on legal moves (light grey, no background highlighting)
   if (gameState.legalMoves && gameState.legalMoves.length > 0) {
-    ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
-    for (const move of gameState.legalMoves) {
-      const x = move.col * cellSize;
-      const y = boardOffsetY + move.row * cellSize;
-      ctx.fillRect(x, y, cellSize, cellSize);
-    }
-  }
-
-  // Draw position labels on legal moves
-  if (gameState.legalMoves && gameState.legalMoves.length > 0) {
-    ctx.fillStyle = "#000000";
+    ctx.fillStyle = "#cccccc";
     ctx.font = "bold 14px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
