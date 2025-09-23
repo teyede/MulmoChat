@@ -46,6 +46,15 @@
             alt="Generated image"
           />
           <div
+            v-else-if="result.toolName === 'exaSearch'"
+            class="text-center p-4 bg-purple-50 rounded"
+          >
+            <div class="text-purple-600 font-medium">🔍 Search Result</div>
+            <div class="text-xs text-gray-600 mt-1 truncate">
+              {{ result.title || result.url }}
+            </div>
+          </div>
+          <div
             v-else-if="result.url"
             class="text-center p-4 bg-blue-50 rounded"
           >
@@ -100,7 +109,9 @@
     <div class="space-y-2 flex-shrink-0">
       <input
         :value="userInput"
-        @input="$emit('update:userInput', ($event.target as HTMLInputElement).value)"
+        @input="
+          $emit('update:userInput', ($event.target as HTMLInputElement).value)
+        "
         @keyup.enter.prevent="$emit('sendTextMessage')"
         :disabled="!chatActive"
         type="text"
@@ -137,7 +148,7 @@ defineEmits<{
   stopChat: [];
   selectResult: [result: ToolResult];
   sendTextMessage: [];
-  'update:userInput': [value: string];
+  "update:userInput": [value: string];
 }>();
 
 const audioEl = ref<HTMLAudioElement | null>(null);
