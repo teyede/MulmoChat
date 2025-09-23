@@ -1,0 +1,88 @@
+import { Plugin, PluginContext, PluginResult } from "./type";
+
+const toolDefinition = {
+  type: "function" as const,
+  name: "exaSearch",
+  description: "Search the web using Exa API for high-quality, relevant results",
+  parameters: {
+    type: "object" as const,
+    properties: {
+      query: {
+        type: "string",
+        description: "The search query to find relevant web content",
+      },
+      numResults: {
+        type: "number",
+        description: "Number of results to return (default: 5, max: 10)",
+        minimum: 1,
+        maximum: 10,
+      },
+      includeText: {
+        type: "boolean",
+        description: "Whether to include page text content in results (default: true)",
+      },
+    },
+    required: ["query"],
+  },
+};
+
+const exaSearch = async (
+  context: PluginContext,
+  args: Record<string, any>,
+): Promise<PluginResult> => {
+  const query = args.query as string;
+  const numResults = (args.numResults as number) || 5;
+  const includeText = args.includeText !== false;
+
+  console.log("******** Exa Search", query, { numResults, includeText });
+
+  try {
+    const response = await fetch("/api/exa-search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        numResults: Math.min(numResults, 10),
+        includeText
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.results) {
+      console.log("*** Exa search succeeded", data.results.length, "results");
+      return {
+        message: `Found ${data.results.length} relevant results for "${query}"`,
+        jsonData: data.results,
+        instructions:
+          "Acknowledge that the search was successful and provide a summary of the key findings from the search results. Focus on the most relevant information.",
+      };
+    } else {
+      console.log("*** Exa search failed");
+      return {
+        message: data.error || "Exa search failed",
+        instructions: "Acknowledge that the search failed and suggest trying a different query.",
+      };
+    }
+  } catch (error) {
+    console.error("*** Exa search failed", error);
+    return {
+      message: `Exa search failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      instructions: "Acknowledge that the search failed due to a technical error.",
+    };
+  }
+};
+
+export const plugin: Plugin = {
+  toolDefinition,
+  execute: exaSearch,
+  generatingMessage: "Searching the web...",
+  waitingMessage: "Tell the user that you are searching for relevant information.",
+  isEnabled: () => true,
+};

@@ -3,6 +3,7 @@ import * as EditImagePlugin from "./editImage";
 import * as BrowsePlugin from "./browse";
 import * as MulmocastPlugin from "./mulmocast";
 import * as MapPlugin from "./map";
+import * as ExaPlugin from "./exa";
 import type { StartApiResponse } from "../../server/types";
 
 export interface PluginContext {
@@ -48,6 +49,7 @@ const pluginList = [
   BrowsePlugin,
   MulmocastPlugin,
   MapPlugin,
+  ExaPlugin,
 ];
 
 export const pluginTools = (startResponse?: StartApiResponse) => {
