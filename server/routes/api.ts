@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { puppeteerCrawlerAgent } from "mulmocast";
 import { StartApiResponse } from "../types";
-import { exaSearch } from "../exaSearch";
+import { exaSearch, hasExaApiKey } from "../exaSearch";
 dotenv.config();
 
 const router: Router = express.Router();
@@ -12,7 +12,6 @@ const router: Router = express.Router();
 router.get("/start", async (req: Request, res: Response): Promise<void> => {
   const openaiKey = process.env.OPENAI_API_KEY;
   const googleMapKey = process.env.GOOGLE_MAP_API_KEY;
-  const exaApiKey = process.env.EXA_API_KEY;
 
   if (!openaiKey) {
     res
@@ -54,7 +53,7 @@ router.get("/start", async (req: Request, res: Response): Promise<void> => {
       message: "Session started",
       ephemeralKey: data.value,
       googleMapKey: googleMapKey,
-      hasExaApiKey: !!exaApiKey,
+      hasExaApiKey,
     };
     res.json(responseData);
   } catch (error: unknown) {
@@ -194,15 +193,6 @@ router.post(
 
     if (!query) {
       res.status(400).json({ error: "Query is required" });
-      return;
-    }
-
-    const exaApiKey = process.env.EXA_API_KEY;
-
-    if (!exaApiKey) {
-      res
-        .status(500)
-        .json({ error: "EXA_API_KEY environment variable not set" });
       return;
     }
 

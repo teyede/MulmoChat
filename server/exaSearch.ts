@@ -4,6 +4,8 @@ import Exa from "exa-js";
 const apiKey = process.env.EXA_API_KEY;
 const exa = apiKey ? new Exa(apiKey) : null;
 
+export const hasExaApiKey = !!apiKey;
+
 // 2) A small helper that does search + (optionally) pulls contents
 export async function exaSearch(
   query: string,
