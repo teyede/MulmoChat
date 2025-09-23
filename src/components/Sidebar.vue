@@ -97,32 +97,34 @@
             </div>
             <div v-if="result.jsonData" class="space-y-1">
               <!-- Othello board display -->
-              <div
-                class="grid grid-cols-8 gap-px p-1 rounded max-w-40 mx-auto"
-                style="background-color: #1a3009"
-              >
-                <template
-                  v-for="(row, rowIndex) in result.jsonData.board"
-                  :key="rowIndex"
+              <div class="flex justify-center">
+                <div
+                  class="inline-block rounded"
+                  style="background-color: #1a3009; padding: 1px;"
                 >
-                  <div
-                    v-for="(cell, colIndex) in row"
-                    :key="`${rowIndex}-${colIndex}`"
-                    class="w-4 h-4 flex items-center justify-center relative"
-                    style="background-color: #2d5016"
+                <div class="grid grid-cols-8" style="gap: 1px;">
+                  <template
+                    v-for="(row, rowIndex) in result.jsonData.board"
+                    :key="rowIndex"
                   >
                     <div
-                      v-if="cell === 'B'"
-                      class="w-3 h-3 bg-black rounded-full border"
-                      style="border-color: #333333"
-                    ></div>
-                    <div
-                      v-else-if="cell === 'W'"
-                      class="w-3 h-3 bg-white rounded-full border"
-                      style="border-color: #333333"
-                    ></div>
-                  </div>
-                </template>
+                      v-for="(cell, colIndex) in row"
+                      :key="`${rowIndex}-${colIndex}`"
+                      class="w-4 h-4 flex items-center justify-center"
+                      style="background-color: #2d5016"
+                    >
+                      <div
+                        v-if="cell === 'B'"
+                        class="w-3 h-3 bg-black rounded-full"
+                      ></div>
+                      <div
+                        v-else-if="cell === 'W'"
+                        class="w-3 h-3 bg-white rounded-full"
+                      ></div>
+                    </div>
+                  </template>
+                </div>
+                </div>
               </div>
               <!-- Game info -->
               <div class="text-xs text-center space-y-1">
