@@ -22,128 +22,21 @@
 
     <!-- Main content area with sidebar -->
     <div class="flex space-x-4" style="height: calc(100vh - 80px)">
-      <!-- Sidebar -->
-      <div
-        class="w-[30%] bg-gray-50 border rounded p-4 flex flex-col space-y-4"
-      >
-        <!-- Voice chat controls -->
-        <div class="space-y-2 flex-shrink-0">
-          <button
-            v-if="!chatActive"
-            @click="startChat"
-            :disabled="connecting"
-            class="w-full px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
-          >
-            {{ connecting ? "Connecting..." : "Start Voice Chat" }}
-          </button>
-          <button
-            v-else
-            @click="stopChat"
-            class="w-full px-4 py-2 bg-red-600 text-white rounded"
-          >
-            Stop Voice Chat
-          </button>
-          <audio ref="audioEl" autoplay></audio>
-        </div>
-
-        <!-- Generated images container -->
-        <div class="flex-1 flex flex-col min-h-0">
-          <div
-            ref="imageContainer"
-            class="border rounded p-2 overflow-y-auto space-y-2 flex-1"
-          >
-            <div
-              v-if="!pluginResults.length && !isGeneratingImage"
-              class="text-gray-500 text-sm"
-            >
-              Feel free to ask me any questions...
-            </div>
-            <div
-              v-for="(result, index) in pluginResults"
-              :key="index"
-              class="cursor-pointer hover:opacity-75 transition-opacity border rounded p-2"
-              :class="{ 'ring-2 ring-blue-500': selectedResult === result }"
-              @click="
-                selectedResult = result;
-                scrollCurrentResultToTop();
-              "
-            >
-              <img
-                v-if="result.imageData"
-                :src="`data:image/png;base64,${result.imageData}`"
-                class="max-w-full h-auto rounded"
-                alt="Generated image"
-              />
-              <div
-                v-else-if="result.url"
-                class="text-center p-4 bg-blue-50 rounded"
-              >
-                <div class="text-blue-600 font-medium">🌐 Web Page</div>
-                <div class="text-xs text-gray-600 mt-1 truncate">
-                  {{ result.title || result.url }}
-                </div>
-              </div>
-              <div
-                v-else-if="result.htmlData"
-                class="text-center p-4 bg-green-50 rounded"
-              >
-                <div class="text-green-600 font-medium">📄 Presentation</div>
-                <div class="text-xs text-gray-600 mt-1 truncate">
-                  {{ result.title || "Interactive content" }}
-                </div>
-              </div>
-              <div
-                v-else-if="result.location"
-                class="text-center p-4 bg-blue-50 rounded"
-              >
-                <div class="text-blue-600 font-medium">🗺️ Map Location</div>
-                <div class="text-xs text-gray-600 mt-1 truncate">
-                  {{
-                    typeof result.location === "string"
-                      ? result.location
-                      : `${result.location.lat}, ${result.location.lng}`
-                  }}
-                </div>
-              </div>
-              <div v-else class="text-center p-4 bg-gray-50 rounded">
-                <div class="text-gray-600 font-medium">📋 Text Result</div>
-                <div class="text-xs text-gray-500 mt-1 truncate">
-                  {{ result.message }}
-                </div>
-              </div>
-            </div>
-            <div
-              v-if="isGeneratingImage"
-              class="flex items-center justify-center py-4"
-            >
-              <div
-                class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
-              ></div>
-              <span class="ml-2 text-sm text-gray-600">{{
-                generatingMessage
-              }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="space-y-2 flex-shrink-0">
-          <input
-            v-model="userInput"
-            @keyup.enter.prevent="sendTextMessage"
-            :disabled="!chatActive"
-            type="text"
-            placeholder="Type a message"
-            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          />
-          <button
-            @click="sendTextMessage"
-            :disabled="!chatActive || !userInput.trim()"
-            class="w-full px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
-          >
-            Send Message
-          </button>
-        </div>
-      </div>
+      <Sidebar
+        ref="sidebarRef"
+        :chat-active="chatActive"
+        :connecting="connecting"
+        :plugin-results="pluginResults"
+        :is-generating-image="isGeneratingImage"
+        :generating-message="generatingMessage"
+        :selected-result="selectedResult"
+        :user-input="userInput"
+        @start-chat="startChat"
+        @stop-chat="stopChat"
+        @select-result="handleSelectResult"
+        @send-text-message="sendTextMessage"
+        @update:user-input="userInput = $event"
+      />
 
       <!-- Main content -->
       <div class="flex-1 flex flex-col">
@@ -277,12 +170,12 @@ import {
 } from "./tools/type";
 import type { StartApiResponse } from "../server/types";
 import GoogleMap from "./components/GoogleMap.vue";
+import Sidebar from "./components/Sidebar.vue";
 
 const SYSTEM_PROMPT_KEY = "system_prompt_v2";
 const DEFAULT_SYSTEM_PROMPT =
   "You are a teacher who explains various things in a way that even middle school students can easily understand. When words alone are not enough, you MUST use the generateImage API to draw pictures and use them to help explain. When you are talking about places, objects, people, movies, books and other things, you MUST use the generateImage API to draw pictures to make the conversation more engaging.";
-const audioEl = ref<HTMLAudioElement | null>(null);
-const imageContainer = ref<HTMLDivElement | null>(null);
+const sidebarRef = ref<InstanceType<typeof Sidebar> | null>(null);
 const connecting = ref(false);
 const systemPrompt = ref(
   localStorage.getItem(SYSTEM_PROMPT_KEY) || DEFAULT_SYSTEM_PROMPT,
@@ -323,11 +216,7 @@ const sleep = async (milliseconds: number) => {
 };
 
 function scrollToBottomOfImageContainer(): void {
-  nextTick(() => {
-    if (imageContainer.value) {
-      imageContainer.value.scrollTop = imageContainer.value.scrollHeight;
-    }
-  });
+  sidebarRef.value?.scrollToBottomOfImageContainer();
 }
 
 function scrollCurrentResultToTop(): void {
@@ -578,8 +467,8 @@ async function startChat(): Promise<void> {
     webrtc.pc.ontrack = (event) => {
       webrtc.remoteStream.addTrack(event.track);
     };
-    if (audioEl.value) {
-      audioEl.value.srcObject = webrtc.remoteStream;
+    if (sidebarRef.value?.audioEl) {
+      sidebarRef.value.audioEl.srcObject = webrtc.remoteStream;
     }
 
     // Send microphone audio
@@ -653,6 +542,11 @@ function sendTextMessage(): void {
   userInput.value = "";
 }
 
+function handleSelectResult(result: ToolResult): void {
+  selectedResult.value = result;
+  scrollCurrentResultToTop();
+}
+
 function stopChat(): void {
   if (webrtc.pc) {
     webrtc.pc.close();
@@ -670,8 +564,8 @@ function stopChat(): void {
     webrtc.remoteStream.getTracks().forEach((track) => track.stop());
     webrtc.remoteStream = null;
   }
-  if (audioEl.value) {
-    audioEl.value.srcObject = null;
+  if (sidebarRef.value?.audioEl) {
+    sidebarRef.value.audioEl.srcObject = null;
   }
   chatActive.value = false;
 }
