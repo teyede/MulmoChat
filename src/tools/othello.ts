@@ -55,71 +55,6 @@ const toolDefinition = {
   },
 };
 
-function formatBoard(board: Cell[][]): string {
-  let html =
-    '<div style="font-family: monospace; font-size: 14px; line-height: 1.2;">';
-  html += '<div style="margin-bottom: 10px;">  0 1 2 3 4 5 6 7</div>';
-
-  for (let row = 0; row < 8; row++) {
-    html += `<div>${row} `;
-    for (let col = 0; col < 8; col++) {
-      const cell = board[row][col];
-      const symbol = cell === "B" ? "●" : cell === "W" ? "○" : "·";
-      html += `${symbol} `;
-    }
-    html += "</div>";
-  }
-  html += "</div>";
-  return html;
-}
-
-function formatGameState(state: OthelloState): string {
-  let html = '<div style="margin: 20px 0;">';
-
-  // Board
-  html += formatBoard(state.board);
-
-  // Game info
-  html += '<div style="margin-top: 15px; font-family: sans-serif;">';
-  html += `<div><strong>Turn:</strong> ${state.currentSide === "B" ? "Black (●)" : "White (○)"}</div>`;
-  html += `<div><strong>Score:</strong> Black: ${state.counts.B}, White: ${state.counts.W}</div>`;
-
-  // Last action
-  if (state.lastAction.type === "move") {
-    html += `<div><strong>Last move:</strong> (${state.lastAction.row}, ${state.lastAction.col}) - flipped ${state.lastAction.flipped} pieces</div>`;
-  } else if (state.lastAction.type === "pass") {
-    html += `<div><strong>Last action:</strong> Pass</div>`;
-  } else {
-    html += `<div><strong>Game started!</strong> Black goes first.</div>`;
-  }
-
-  // Legal moves
-  if (state.legalMoves.length > 0) {
-    const movesStr = state.legalMoves
-      .map((m) => `(${m.row},${m.col})`)
-      .join(", ");
-    html += `<div><strong>Legal moves:</strong> ${movesStr}</div>`;
-  } else if (!state.isTerminal) {
-    html += `<div><strong>No legal moves - must pass!</strong></div>`;
-  }
-
-  // Game end
-  if (state.isTerminal) {
-    html +=
-      '<div style="margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 5px;">';
-    html += "<strong>Game Over!</strong><br>";
-    if (state.winner === "draw") {
-      html += "The game is a draw!";
-    } else if (state.winner) {
-      html += `${state.winner === "B" ? "Black" : "White"} wins!`;
-    }
-    html += "</div>";
-  }
-
-  html += "</div></div>";
-  return html;
-}
-
 const othello = async (
   context: ToolContext,
   args: Record<string, any>,
@@ -169,7 +104,6 @@ const othello = async (
     }
 
     const state = playOthello(command);
-    const htmlData = formatGameState(state);
 
     let message = "";
     if (state.lastAction.type === "new_game") {
@@ -191,7 +125,6 @@ const othello = async (
     return {
       toolName,
       message,
-      htmlData,
       jsonData: state,
       instructions:
         "The game state has been updated. Show the board and provide information about the current state. If it's the user's turn, suggest legal moves they can make. Otherwise, make a move.",

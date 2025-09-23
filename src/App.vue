@@ -184,6 +184,18 @@
               :zoom="15"
             />
           </div>
+          <div
+            v-else-if="selectedResult?.toolName === 'playOthello'"
+            class="w-full h-full flex items-center justify-center p-4"
+          >
+            <canvas
+              ref="othelloCanvas"
+              width="480"
+              height="520"
+              class="border border-gray-300 rounded"
+              @click="handleOthelloCanvasClick"
+            />
+          </div>
           <div v-else class="w-full h-full flex items-center justify-center">
             <div class="text-gray-400 text-lg">Canvas</div>
           </div>
@@ -269,6 +281,7 @@ const userInput = ref("");
 const twitterEmbedData = ref<{ [key: string]: string }>({});
 const googleMapKey = ref<string | null>(null);
 const startResponse = ref<StartApiResponse | null>(null);
+const othelloCanvas = ref<HTMLCanvasElement | null>(null);
 
 watch(systemPrompt, (val) => {
   localStorage.setItem(SYSTEM_PROMPT_KEY, val);
@@ -277,6 +290,11 @@ watch(systemPrompt, (val) => {
 watch(selectedResult, (newResult) => {
   if (newResult?.url && isTwitterUrl(newResult.url)) {
     handleTwitterEmbed(newResult.url);
+  }
+  if (newResult?.toolName === "playOthello" && newResult.jsonData) {
+    nextTick(() => {
+      renderOthelloBoard(newResult.jsonData);
+    });
   }
 });
 const chatActive = ref(false);
@@ -291,6 +309,135 @@ const webrtc = {
 const sleep = async (milliseconds: number) => {
   return await new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
+
+function renderOthelloBoard(gameState: any): void {
+  const canvas = othelloCanvas.value;
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const cellSize = 60;
+  const boardSize = 8;
+
+  // Clear canvas
+  ctx.fillStyle = "#2d5016";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw turn indicator at the top
+  const turnText = `Current Turn: ${gameState.currentSide === "B" ? "Black" : "White"}`;
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 18px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(turnText, canvas.width / 2, 20);
+
+  // Draw current player's piece indicator
+  const pieceX = canvas.width / 2 + 80;
+  const pieceY = 20;
+  const pieceRadius = 12;
+
+  ctx.beginPath();
+  ctx.arc(pieceX, pieceY, pieceRadius, 0, 2 * Math.PI);
+  ctx.fillStyle = gameState.currentSide === "B" ? "#000000" : "#ffffff";
+  ctx.fill();
+  ctx.strokeStyle = "#333333";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Adjust board position to account for turn indicator
+  const boardOffsetY = 40;
+
+  // Draw grid lines
+  ctx.strokeStyle = "#1a3009";
+  ctx.lineWidth = 2;
+  for (let i = 0; i <= boardSize; i++) {
+    // Vertical lines
+    ctx.beginPath();
+    ctx.moveTo(i * cellSize, boardOffsetY);
+    ctx.lineTo(i * cellSize, boardOffsetY + boardSize * cellSize);
+    ctx.stroke();
+
+    // Horizontal lines
+    ctx.beginPath();
+    ctx.moveTo(0, boardOffsetY + i * cellSize);
+    ctx.lineTo(boardSize * cellSize, boardOffsetY + i * cellSize);
+    ctx.stroke();
+  }
+
+  // Draw pieces
+  for (let row = 0; row < boardSize; row++) {
+    for (let col = 0; col < boardSize; col++) {
+      const cell = gameState.board[row][col];
+      if (cell !== ".") {
+        const centerX = col * cellSize + cellSize / 2;
+        const centerY = boardOffsetY + row * cellSize + cellSize / 2;
+        const radius = cellSize / 2 - 5;
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = cell === "B" ? "#000000" : "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = "#333333";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Highlight legal moves
+  if (gameState.legalMoves && gameState.legalMoves.length > 0) {
+    ctx.fillStyle = "rgba(255, 255, 0, 0.3)";
+    for (const move of gameState.legalMoves) {
+      const x = move.col * cellSize;
+      const y = boardOffsetY + move.row * cellSize;
+      ctx.fillRect(x, y, cellSize, cellSize);
+    }
+  }
+
+  // Draw position labels on legal moves
+  if (gameState.legalMoves && gameState.legalMoves.length > 0) {
+    ctx.fillStyle = "#000000";
+    ctx.font = "bold 14px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (const move of gameState.legalMoves) {
+      const centerX = move.col * cellSize + cellSize / 2;
+      const centerY = boardOffsetY + move.row * cellSize + cellSize / 2;
+      const label = String.fromCharCode(65 + move.col) + (move.row + 1);
+      ctx.fillText(label, centerX, centerY);
+    }
+  }
+}
+
+function handleOthelloCanvasClick(event: MouseEvent): void {
+  const canvas = othelloCanvas.value;
+  if (!canvas || !selectedResult.value?.jsonData) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  const boardOffsetY = 40;
+  const col = Math.floor(x / 60);
+  const row = Math.floor((y - boardOffsetY) / 60);
+
+  if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+    const gameState = selectedResult.value.jsonData;
+
+    // Check if this is a legal move
+    const isLegalMove = gameState.legalMoves?.some(
+      (move: any) => move.row === row && move.col === col,
+    );
+
+    if (isLegalMove && !gameState.isTerminal) {
+      // Send move through text input
+      userInput.value = `Make move at row ${row}, column ${col}`;
+      sendTextMessage();
+    }
+  }
+}
 
 function scrollToBottomOfImageContainer(): void {
   sidebarRef.value?.scrollToBottomOfImageContainer();
