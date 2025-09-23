@@ -334,7 +334,6 @@ function renderOthelloBoard(gameState: any): void {
   ctx.textBaseline = "middle";
   ctx.fillText(turnText, canvas.width / 2, 20);
 
-
   // Adjust board position to account for turn indicator
   const boardOffsetY = 40;
 
@@ -377,8 +376,14 @@ function renderOthelloBoard(gameState: any): void {
 
   // Draw position labels on legal moves (light grey, no background highlighting)
   // Only show playable cells when it's the human player's turn
-  const isComputerTurn = gameState.playerNames && gameState.playerNames[gameState.currentSide] === "computer";
-  if (gameState.legalMoves && gameState.legalMoves.length > 0 && !isComputerTurn) {
+  const isComputerTurn =
+    gameState.playerNames &&
+    gameState.playerNames[gameState.currentSide] === "computer";
+  if (
+    gameState.legalMoves &&
+    gameState.legalMoves.length > 0 &&
+    !isComputerTurn
+  ) {
     ctx.fillStyle = "#cccccc";
     ctx.font = "bold 14px Arial";
     ctx.textAlign = "center";
@@ -414,8 +419,10 @@ function handleOthelloCanvasClick(event: MouseEvent): void {
     );
 
     if (isLegalMove && !gameState.isTerminal) {
-      // Send move through text input
-      userInput.value = `Make move at row ${row}, column ${col}`;
+      // Convert coordinates to chess notation (A-H, 1-8)
+      const columnLetter = String.fromCharCode(65 + col); // A-H
+      const rowNumber = row + 1; // 1-8
+      userInput.value = `I want to play at ${columnLetter}${rowNumber}, which is column=${col}, row=${row} `;
       sendTextMessage();
     }
   }
@@ -722,6 +729,7 @@ function sendTextMessage(): void {
     return;
   }
 
+  console.log("*** Sending text message:", text);
   dc.send(
     JSON.stringify({
       type: "conversation.item.create",
