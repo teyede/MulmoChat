@@ -334,18 +334,6 @@ function renderOthelloBoard(gameState: any): void {
   ctx.textBaseline = "middle";
   ctx.fillText(turnText, canvas.width / 2, 20);
 
-  // Draw current player's piece indicator
-  const pieceX = canvas.width / 2 + 80;
-  const pieceY = 20;
-  const pieceRadius = 12;
-
-  ctx.beginPath();
-  ctx.arc(pieceX, pieceY, pieceRadius, 0, 2 * Math.PI);
-  ctx.fillStyle = gameState.currentSide === "B" ? "#000000" : "#ffffff";
-  ctx.fill();
-  ctx.strokeStyle = "#333333";
-  ctx.lineWidth = 2;
-  ctx.stroke();
 
   // Adjust board position to account for turn indicator
   const boardOffsetY = 40;
