@@ -1,7 +1,8 @@
 import Exa from "exa-js";
 
 // 1) Instantiate the client (put EXA_API_KEY in your .env)
-const exa = new Exa(process.env.EXA_API_KEY!);
+const apiKey = process.env.EXA_API_KEY;
+const exa = apiKey ? new Exa(apiKey) : null;
 
 // 2) A small helper that does search + (optionally) pulls contents
 export async function exaSearch(
@@ -16,6 +17,10 @@ export async function exaSearch(
     fetchHighlights?: boolean; // return query-relevant highlights
   },
 ) {
+  if (!exa) {
+    console.warn("EXA_API_KEY not configured, returning empty results");
+    return [];
+  }
   const {
     numResults = 10,
     includeDomains,
