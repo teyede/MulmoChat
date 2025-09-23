@@ -73,4 +73,5 @@ export const plugin: Plugin = {
   waitingMessage:
     "Tell the user to that you are accessing the specified web page.",
   isEnabled: () => true,
+  delayAfterExecution: 3000,
 };
