@@ -20,14 +20,14 @@ const toolDefinition = {
       col: {
         type: "number",
         description:
-          "Column position for the move (0-7, required for 'move' action)",
+          "Column position for the move (0-7, required for 'move' action). The user will tell you the column by specifying A to H",
         minimum: 0,
         maximum: 7,
       },
       row: {
         type: "number",
         description:
-          "Row position for the move (0-7, required for 'move' action)",
+          "Row position for the move (0-7, required for 'move' action). The user will tell you the row by specifying 1 to 8",
         minimum: 0,
         maximum: 7,
       },
