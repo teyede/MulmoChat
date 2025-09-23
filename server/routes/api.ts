@@ -11,6 +11,7 @@ const router: Router = express.Router();
 router.get("/start", async (req: Request, res: Response): Promise<void> => {
   const openaiKey = process.env.OPENAI_API_KEY;
   const googleMapKey = process.env.GOOGLE_MAP_API_KEY;
+  const exaApiKey = process.env.EXA_API_KEY;
 
   if (!openaiKey) {
     res
@@ -52,6 +53,7 @@ router.get("/start", async (req: Request, res: Response): Promise<void> => {
       message: "Session started",
       ephemeralKey: data.value,
       googleMapKey: googleMapKey,
+      hasExaApiKey: !!exaApiKey,
     };
     res.json(responseData);
   } catch (error: unknown) {
@@ -169,6 +171,57 @@ router.post("/browse", async (req: Request, res: Response): Promise<void> => {
       error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({
       error: "Failed to browse URL",
+      details: errorMessage,
+    });
+  }
+});
+
+// Exa search endpoint
+router.post("/exa-search", async (req: Request, res: Response): Promise<void> => {
+  const { query, numResults = 5, includeText = true } = req.body;
+
+  if (!query) {
+    res.status(400).json({ error: "Query is required" });
+    return;
+  }
+
+  const exaApiKey = process.env.EXA_API_KEY;
+
+  if (!exaApiKey) {
+    res.status(500).json({ error: "EXA_API_KEY environment variable not set" });
+    return;
+  }
+
+  try {
+    const searchParams = {
+      query,
+      numResults: Math.min(numResults, 10),
+      includeText
+    };
+
+    const response = await fetch("https://api.exa.ai/search", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${exaApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(searchParams),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Exa API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    res.json({
+      success: true,
+      results: data.results || [],
+    });
+  } catch (error: unknown) {
+    console.error("Exa search failed:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({
+      error: "Failed to search with Exa",
       details: errorMessage,
     });
   }

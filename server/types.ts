@@ -3,4 +3,5 @@ export interface StartApiResponse {
   message: string;
   ephemeralKey: string;
   googleMapKey: string;
+  hasExaApiKey: boolean;
 }

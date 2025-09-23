@@ -84,5 +84,5 @@ export const plugin: Plugin = {
   execute: exaSearch,
   generatingMessage: "Searching the web...",
   waitingMessage: "Tell the user that you are searching for relevant information.",
-  isEnabled: () => true,
+  isEnabled: (startResponse) => !!startResponse?.hasExaApiKey,
 };
