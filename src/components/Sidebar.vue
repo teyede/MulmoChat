@@ -99,8 +99,8 @@
               <!-- Othello board display -->
               <div class="flex justify-center">
                 <div
-                  class="inline-block rounded"
-                  style="background-color: #1a3009; padding: 1px;"
+                  class="inline-block"
+                  style="background-color: #2d5016; padding: 1px;"
                 >
                 <div class="grid grid-cols-8" style="gap: 1px;">
                   <template
@@ -111,7 +111,7 @@
                       v-for="(cell, colIndex) in row"
                       :key="`${rowIndex}-${colIndex}`"
                       class="w-4 h-4 flex items-center justify-center"
-                      style="background-color: #2d5016"
+                      style="background-color: #3d6b20"
                     >
                       <div
                         v-if="cell === 'B'"

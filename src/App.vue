@@ -321,7 +321,7 @@ function renderOthelloBoard(gameState: any): void {
   const boardSize = 8;
 
   // Clear canvas
-  ctx.fillStyle = "#2d5016";
+  ctx.fillStyle = "#3d6b20";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw turn indicator at the top
@@ -351,7 +351,7 @@ function renderOthelloBoard(gameState: any): void {
   const boardOffsetY = 40;
 
   // Draw grid lines
-  ctx.strokeStyle = "#1a3009";
+  ctx.strokeStyle = "#2d5016";
   ctx.lineWidth = 2;
   for (let i = 0; i <= boardSize; i++) {
     // Vertical lines
