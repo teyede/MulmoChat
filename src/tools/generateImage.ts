@@ -1,8 +1,10 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
+const toolName = "generateImage";
+
 const toolDefinition = {
   type: "function" as const,
-  name: "generateImage",
+  name: toolName,
   description: "Generate an image from a text prompt.",
   parameters: {
     type: "object" as const,
@@ -20,6 +22,7 @@ export async function generateImageCommon(
   context: ToolContext,
   prompt: string,
   editImage: boolean,
+  toolName: string,
 ): Promise<ToolResult> {
   try {
     const response = await fetch("/api/generate-image", {
@@ -39,6 +42,7 @@ export async function generateImageCommon(
     if (data.success && data.imageData) {
       console.log("*** Image generation succeeded", data.imageData.length);
       return {
+        toolName,
         imageData: data.imageData,
         message: "image generation succeeded",
         instructions:
@@ -47,6 +51,7 @@ export async function generateImageCommon(
     } else {
       console.log("*** Image generation failed");
       return {
+        toolName,
         message: data.message || "image generation failed",
         instructions: "Acknowledge that the image generation failed.",
       };
@@ -54,6 +59,7 @@ export async function generateImageCommon(
   } catch (error) {
     console.error("*** Image generation failed", error);
     return {
+      toolName,
       message: "image generation failed",
       instructions: "Acknowledge that the image generation failed.",
     };
@@ -66,7 +72,7 @@ const generateImage = async (
 ): Promise<ToolResult> => {
   const prompt = args.prompt as string;
   console.log("******** Generate image", prompt);
-  return generateImageCommon(context, prompt, false);
+  return generateImageCommon(context, prompt, false, toolName);
 };
 
 export const plugin: ToolPlugin = {

@@ -1,8 +1,10 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
+const toolName = "exaSearch";
+
 const toolDefinition = {
   type: "function" as const,
-  name: "exaSearch",
+  name: toolName,
   description:
     "Search the web using Exa API for high-quality, relevant results",
   parameters: {
@@ -103,6 +105,7 @@ const exaSearch = async (
     if (data.success && data.results) {
       console.log("*** Exa search succeeded", data.results.length, "results");
       return {
+        toolName,
         message: `Found ${data.results.length} relevant results for "${query}"`,
         jsonData: data.results,
         instructions:
@@ -111,6 +114,7 @@ const exaSearch = async (
     } else {
       console.log("*** Exa search failed");
       return {
+        toolName,
         message: data.error || "Exa search failed",
         instructions:
           "Acknowledge that the search failed and suggest trying a different query.",
@@ -119,6 +123,7 @@ const exaSearch = async (
   } catch (error) {
     console.error("*** Exa search failed", error);
     return {
+      toolName,
       message: `Exa search failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       instructions:
         "Acknowledge that the search failed due to a technical error.",

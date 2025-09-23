@@ -1,9 +1,11 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import { generateImageCommon } from "./generateImage";
 
+const toolName = "editImage";
+
 const toolDefinition = {
   type: "function" as const,
-  name: "editImage",
+  name: toolName,
   description: "Edit the previously generated image based on a text prompt.",
   parameters: {
     type: "object" as const,
@@ -24,7 +26,7 @@ const editImage = async (
 ): Promise<ToolResult> => {
   const prompt = args.prompt as string;
   console.log("******** Edit image", prompt);
-  return generateImageCommon(context, prompt, true);
+  return generateImageCommon(context, prompt, true, toolName);
 };
 
 export const plugin: ToolPlugin = {

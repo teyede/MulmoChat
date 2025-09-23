@@ -11,6 +11,7 @@ export interface ToolContext {
 }
 
 export interface ToolResult {
+  toolName: string;
   message: string;
   title?: string;
   imageData?: string;

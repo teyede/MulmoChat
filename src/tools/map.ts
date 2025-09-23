@@ -1,9 +1,11 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
+const toolName = "presentMap";
+
 export const plugin: ToolPlugin = {
   toolDefinition: {
     type: "function",
-    name: "presentMap",
+    name: toolName,
     description:
       "Show a location on a map by providing a location name or address",
     parameters: {
@@ -29,6 +31,7 @@ export const plugin: ToolPlugin = {
     }
 
     return {
+      toolName,
       message: `Showing ${location} on the map`,
       location: location,
     };

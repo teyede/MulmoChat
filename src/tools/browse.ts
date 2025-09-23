@@ -1,8 +1,10 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
+const toolName = "browse";
+
 const toolDefinition = {
   type: "function" as const,
-  name: "browse",
+  name: toolName,
   description:
     "Browse and extract content from a web page using the provided URL.",
   parameters: {
@@ -43,6 +45,7 @@ const browse = async (
     if (data.success && data.data) {
       console.log("*** Browse succeeded", data.data);
       return {
+        toolName,
         message: "Successfully browsed the webpage",
         title: data.data.data.title || "Untitled",
         url,
@@ -53,6 +56,7 @@ const browse = async (
     } else {
       console.log("*** Browse failed");
       return {
+        toolName,
         message: data.error || "Failed to browse webpage",
         instructions: "Acknowledge that the webpage browsing failed.",
       };
@@ -60,6 +64,7 @@ const browse = async (
   } catch (error) {
     console.error("*** Browse failed", error);
     return {
+      toolName,
       message: `Failed to browse webpage: ${error instanceof Error ? error.message : "Unknown error"}`,
       instructions: "Acknowledge that the webpage browsing failed.",
     };

@@ -1,9 +1,11 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import { blankImageBase64 } from "./blank";
 
+const toolName = "pushMulmoScript";
+
 const toolDefinition = {
   type: "function" as const,
-  name: "pushMulmoScript",
+  name: toolName,
   description:
     "Let MulmoCast to process a given MulmoScript to generate a presentation of a given topic or story.",
   parameters: {
@@ -100,6 +102,7 @@ const mulmocast = async (
   });
 
   return {
+    toolName,
     message: `Mulmocast has processed the MulmoScript for "${title}" with ${beats.length} beats.`,
     title: title,
     htmlData: htmlContent,
