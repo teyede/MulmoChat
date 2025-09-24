@@ -3,7 +3,7 @@
     <div role="toolbar" class="flex justify-between items-center">
       <h1 class="text-2xl font-bold">
         MulmoChat
-        <span class="text-sm text-gray-500 font-normal">Multi-modal Chat</span>
+        <span class="text-sm text-gray-500 font-normal">NLUI of AI-native Operating System</span>
       </h1>
       <button
         @click="showConfigPopup = true"

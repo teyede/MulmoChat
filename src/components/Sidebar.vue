@@ -15,7 +15,7 @@
         @click="$emit('stopChat')"
         class="w-full px-4 py-2 bg-red-600 text-white rounded"
       >
-        Stop Voice Chat
+        Stop
       </button>
       <audio ref="audioEl" autoplay></audio>
     </div>
