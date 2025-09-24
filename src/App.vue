@@ -69,19 +69,7 @@
           <MulmocastView :selected-result="selectedResult" />
 
           <!-- Image generation and editing -->
-          <div
-            v-if="
-              selectedResult?.toolName === 'generateImage' ||
-              selectedResult?.toolName === 'editImage'
-            "
-            class="w-full h-full flex items-center justify-center p-4"
-          >
-            <img
-              :src="`data:image/png;base64,${selectedResult.imageData}`"
-              class="max-w-full max-h-full object-contain rounded"
-              alt="Current generated image"
-            />
-          </div>
+          <ImageView :selected-result="selectedResult" />
 
           <!-- Map presentation -->
           <MapView
@@ -161,6 +149,7 @@ import ExaView from "./tools/components/exa.vue";
 import BrowseView from "./tools/components/browse.vue";
 import MulmocastView from "./tools/components/mulmocast.vue";
 import MapView from "./tools/components/map.vue";
+import ImageView from "./tools/components/image.vue";
 
 const SYSTEM_PROMPT_KEY = "system_prompt_v2";
 const DEFAULT_SYSTEM_PROMPT =
