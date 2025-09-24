@@ -177,6 +177,7 @@
             <!-- Generic URL iframe -->
             <div
               v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
+              class="w-full h-full"
             >
               <iframe
                 :src="selectedResult.url"
