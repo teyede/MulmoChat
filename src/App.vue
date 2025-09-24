@@ -53,7 +53,7 @@
           <ImageView :selected-result="selectedResult" />
           <MapView
             :selected-result="selectedResult"
-            :google-map-key="googleMapKey"
+            :google-map-key="startResponse?.googleMapKey || null"
           />
           <div
             v-if="!selectedResult"
@@ -145,7 +145,6 @@ const pendingToolArgs: Record<string, string> = {};
 const showConfigPopup = ref(false);
 const selectedResult = ref<ToolResult | null>(null);
 const userInput = ref("");
-const googleMapKey = ref<string | null>(null);
 const startResponse = ref<StartApiResponse | null>(null);
 
 watch(systemPrompt, (val) => {
@@ -312,9 +311,6 @@ async function startChat(): Promise<void> {
   connecting.value = true;
 
   // Call the start API endpoint to get ephemeral key
-  const config = {
-    apiKey: undefined as string | undefined,
-  };
   try {
     const response = await fetch("/api/start", {
       method: "GET",
@@ -328,10 +324,8 @@ async function startChat(): Promise<void> {
     }
 
     startResponse.value = await response.json();
-    config.apiKey = startResponse.value.ephemeralKey;
-    googleMapKey.value = startResponse.value.googleMapKey;
 
-    if (!config.apiKey) {
+    if (!startResponse.value?.ephemeralKey) {
       throw new Error("No ephemeral key received from server");
     }
   } catch (err) {
@@ -394,7 +388,7 @@ async function startChat(): Promise<void> {
     const response = await fetch("https://api.openai.com/v1/realtime/calls", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${startResponse.value.ephemeralKey}`,
         "Content-Type": "application/sdp",
       },
       body: offer.sdp,
