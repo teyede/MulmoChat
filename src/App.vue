@@ -41,36 +41,23 @@
       <!-- Main content -->
       <div class="flex-1 flex flex-col">
         <div class="flex-1 border rounded bg-gray-50 overflow-hidden">
-          <!-- Search results -->
           <ExaView :selected-result="selectedResult" />
-
-          <!-- Othello game -->
           <OthelloView
             :selected-result="selectedResult"
             :user-input="userInput"
             :send-text-message="sendTextMessage"
             @update:user-input="userInput = $event"
           />
-
-          <!-- Browse tool content -->
           <BrowseView
             :selected-result="selectedResult"
             :twitter-embed-data="twitterEmbedData"
           />
-
-          <!-- MulmoCast presentation -->
           <MulmocastView :selected-result="selectedResult" />
-
-          <!-- Image generation and editing -->
           <ImageView :selected-result="selectedResult" />
-
-          <!-- Map presentation -->
           <MapView
             :selected-result="selectedResult"
             :google-map-key="googleMapKey"
           />
-
-          <!-- Default empty state -->
           <div
             v-if="!selectedResult"
             class="w-full h-full flex items-center justify-center"
@@ -129,14 +116,12 @@ import { ref, watch, nextTick } from "vue";
 import {
   pluginTools,
   pluginExecute,
-  ToolContext,
   ToolResult,
   pluginGeneratingMessage,
   pluginWaitingMessage,
   pluginDelayAfterExecution,
 } from "./tools/type";
 import type { StartApiResponse } from "../server/types";
-import GoogleMap from "./components/GoogleMap.vue";
 import Sidebar from "./components/Sidebar.vue";
 import ExaView from "./tools/components/exa.vue";
 import BrowseView from "./tools/components/browse.vue";
