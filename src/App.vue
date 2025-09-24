@@ -212,17 +212,6 @@
             />
           </div>
 
-          <!-- Legacy URL iframe (for backward compatibility) -->
-          <div
-            v-if="selectedResult?.url && !selectedResult?.toolName"
-            class="w-full h-full"
-          >
-            <iframe
-              :src="selectedResult.url"
-              class="w-full h-full rounded"
-              frameborder="0"
-            />
-          </div>
 
           <!-- Default empty state -->
           <div
