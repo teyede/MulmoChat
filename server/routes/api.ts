@@ -52,7 +52,7 @@ router.get("/start", async (req: Request, res: Response): Promise<void> => {
       success: true,
       message: "Session started",
       ephemeralKey: data.value,
-      googleMapKey: googleMapKey,
+      googleMapKey,
       hasExaApiKey,
     };
     res.json(responseData);
