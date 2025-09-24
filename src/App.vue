@@ -117,6 +117,7 @@ import {
   pluginTools,
   pluginExecute,
   ToolResult,
+  ToolContext,
   pluginGeneratingMessage,
   pluginWaitingMessage,
   pluginDelayAfterExecution,
@@ -252,7 +253,7 @@ async function processToolCall(msg: any): Promise<void> {
     isGeneratingImage.value = true;
     generatingMessage.value = pluginGeneratingMessage(msg.name);
     scrollToBottomOfSideBar();
-    const context: PluginContext = {
+    const context: ToolContext = {
       images: [],
     };
     if (selectedResult.value?.imageData) {
