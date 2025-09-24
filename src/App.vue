@@ -134,44 +134,56 @@
           </div>
 
           <!-- Browse tool content -->
-          <div
-            v-if="selectedResult?.toolName === 'browse' && selectedResult?.url && isTwitterUrl(selectedResult.url)"
-            class="w-full h-full overflow-auto p-4 bg-white"
-          >
+          <div v-if="selectedResult?.toolName === 'browse'" class="w-full h-full">
+            <!-- Twitter embed -->
             <div
-              v-if="twitterEmbedData[selectedResult.url]"
-              v-html="twitterEmbedData[selectedResult.url]"
-            />
-            <div
-              v-else-if="twitterEmbedData[selectedResult.url] === null"
-              class="h-full flex items-center justify-center"
+              v-if="selectedResult?.url && isTwitterUrl(selectedResult.url)"
+              class="overflow-auto p-4 bg-white h-full"
             >
-              <div class="text-center">
-                <div class="text-gray-600 mb-4">
-                  Unable to load Twitter embed
+              <div
+                v-if="twitterEmbedData[selectedResult.url]"
+                v-html="twitterEmbedData[selectedResult.url]"
+              />
+              <div
+                v-else-if="twitterEmbedData[selectedResult.url] === null"
+                class="h-full flex items-center justify-center"
+              >
+                <div class="text-center">
+                  <div class="text-gray-600 mb-4">
+                    Unable to load Twitter embed
+                  </div>
+                  <a
+                    :href="selectedResult.url"
+                    target="_blank"
+                    class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  >
+                    Open on Twitter/X
+                  </a>
                 </div>
-                <a
-                  :href="selectedResult.url"
-                  target="_blank"
-                  class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  Open on Twitter/X
-                </a>
+              </div>
+              <div v-else class="h-full flex items-center justify-center">
+                <div class="text-center">
+                  <div
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"
+                  ></div>
+                  <div class="text-gray-600">Loading Twitter embed...</div>
+                </div>
               </div>
             </div>
-            <div v-else class="h-full flex items-center justify-center">
-              <div class="text-center">
-                <div
-                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"
-                ></div>
-                <div class="text-gray-600">Loading Twitter embed...</div>
-              </div>
+
+            <!-- Generic URL iframe -->
+            <div v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)">
+              <iframe
+                :src="selectedResult.url"
+                class="w-full h-full rounded"
+                frameborder="0"
+              />
             </div>
           </div>
 
-          <!-- Browse tool HTML content -->
+          <!-- MulmoCast presentation -->
           <div
-            v-if="selectedResult?.toolName === 'browse' && selectedResult?.htmlData"
+            v-if="selectedResult?.toolName === 'pushMulmoScript'"
             class="w-full h-full overflow-auto p-4 bg-white"
             v-html="selectedResult.htmlData"
           />
@@ -197,18 +209,6 @@
               :location="selectedResult.location"
               :api-key="googleMapKey"
               :zoom="15"
-            />
-          </div>
-
-          <!-- Browse tool generic URL iframe -->
-          <div
-            v-if="selectedResult?.toolName === 'browse' && selectedResult?.url && !selectedResult?.htmlData && !isTwitterUrl(selectedResult.url)"
-            class="w-full h-full"
-          >
-            <iframe
-              :src="selectedResult.url"
-              class="w-full h-full rounded"
-              frameborder="0"
             />
           </div>
 
