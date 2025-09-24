@@ -84,16 +84,10 @@
           </div>
 
           <!-- Map presentation -->
-          <div
-            v-if="selectedResult?.toolName === 'presentMap'"
-            class="w-full h-full p-4"
-          >
-            <GoogleMap
-              :location="selectedResult.location"
-              :api-key="googleMapKey"
-              :zoom="15"
-            />
-          </div>
+          <MapView
+            :selected-result="selectedResult"
+            :google-map-key="googleMapKey"
+          />
 
           <!-- Default empty state -->
           <div
@@ -166,6 +160,7 @@ import Sidebar from "./components/Sidebar.vue";
 import ExaView from "./tools/components/exa.vue";
 import BrowseView from "./tools/components/browse.vue";
 import MulmocastView from "./tools/components/mulmocast.vue";
+import MapView from "./tools/components/map.vue";
 
 const SYSTEM_PROMPT_KEY = "system_prompt_v2";
 const DEFAULT_SYSTEM_PROMPT =
