@@ -48,10 +48,7 @@
             :send-text-message="sendTextMessage"
             @update:user-input="userInput = $event"
           />
-          <BrowseView
-            :selected-result="selectedResult"
-            :twitter-embed-data="twitterEmbedData"
-          />
+          <BrowseView :selected-result="selectedResult" />
           <MulmocastView :selected-result="selectedResult" />
           <ImageView :selected-result="selectedResult" />
           <MapView
@@ -148,7 +145,6 @@ const pendingToolArgs: Record<string, string> = {};
 const showConfigPopup = ref(false);
 const selectedResult = ref<ToolResult | null>(null);
 const userInput = ref("");
-const twitterEmbedData = ref<{ [key: string]: string }>({});
 const googleMapKey = ref<string | null>(null);
 const startResponse = ref<StartApiResponse | null>(null);
 
@@ -156,11 +152,6 @@ watch(systemPrompt, (val) => {
   localStorage.setItem(SYSTEM_PROMPT_KEY, val);
 });
 
-watch(selectedResult, (newResult) => {
-  if (newResult?.url && isTwitterUrl(newResult.url)) {
-    handleTwitterEmbed(newResult.url);
-  }
-});
 const chatActive = ref(false);
 
 const webrtc = {
@@ -200,48 +191,6 @@ function scrollCurrentResultToTop(): void {
       }
     }
   });
-}
-
-function isTwitterUrl(url: string): boolean {
-  try {
-    const urlObj = new URL(url);
-    return (
-      urlObj.hostname === "twitter.com" ||
-      urlObj.hostname === "www.twitter.com" ||
-      urlObj.hostname === "x.com" ||
-      urlObj.hostname === "www.x.com"
-    );
-  } catch {
-    return false;
-  }
-}
-
-async function fetchTwitterEmbed(url: string): Promise<string | null> {
-  try {
-    const response = await fetch(
-      `/api/twitter-embed?url=${encodeURIComponent(url)}`,
-    );
-
-    if (!response.ok) {
-      throw new Error(`Twitter embed API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.success ? data.html : null;
-  } catch (error) {
-    console.error("Failed to fetch Twitter embed:", error);
-    return null;
-  }
-}
-
-async function handleTwitterEmbed(url: string): Promise<void> {
-  if (!isTwitterUrl(url) || url in twitterEmbedData.value) {
-    return;
-  }
-
-  const embedHtml = await fetchTwitterEmbed(url);
-  console.log("*** Twitter embed", url, embedHtml);
-  twitterEmbedData.value[url] = embedHtml;
 }
 
 async function processToolCall(msg: any): Promise<void> {

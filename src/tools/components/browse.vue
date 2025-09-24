@@ -6,11 +6,11 @@
       class="overflow-auto p-4 bg-white h-full"
     >
       <div
-        v-if="twitterEmbedData[selectedResult.url]"
-        v-html="twitterEmbedData[selectedResult.url]"
+        v-if="selectedResult.twitterEmbedHtml"
+        v-html="selectedResult.twitterEmbedHtml"
       />
       <div
-        v-else-if="twitterEmbedData[selectedResult.url] === null"
+        v-else-if="selectedResult.twitterEmbedHtml === null"
         class="h-full flex items-center justify-center"
       >
         <div class="text-center">
@@ -53,7 +53,6 @@ import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
-  twitterEmbedData: { [key: string]: string };
 }>();
 
 function isTwitterUrl(url: string): boolean {
