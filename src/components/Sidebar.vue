@@ -45,10 +45,6 @@
           <MulmocastPreview :result="result" />
           <MapPreview :result="result" />
           <OthelloPreview :result="result" />
-          <DefaultPreview
-            v-if="!result.imageData && result.toolName !== 'exaSearch' && !result.url && !result.htmlData && !result.location && result.toolName !== 'playOthello'"
-            :result="result"
-          />
         </div>
         <div
           v-if="isGeneratingImage"
@@ -96,7 +92,6 @@ import BrowsePreview from "../tools/previews/browse.vue";
 import MulmocastPreview from "../tools/previews/mulmocast.vue";
 import MapPreview from "../tools/previews/map.vue";
 import OthelloPreview from "../tools/previews/othello.vue";
-import DefaultPreview from "../tools/previews/default.vue";
 
 defineProps<{
   chatActive: boolean;
@@ -119,7 +114,7 @@ defineEmits<{
 const audioEl = ref<HTMLAudioElement | null>(null);
 const imageContainer = ref<HTMLDivElement | null>(null);
 
-function scrollToBottomOfImageContainer(): void {
+function scrollToBottom(): void {
   nextTick(() => {
     if (imageContainer.value) {
       imageContainer.value.scrollTop = imageContainer.value.scrollHeight;
@@ -127,9 +122,8 @@ function scrollToBottomOfImageContainer(): void {
   });
 }
 
-
 defineExpose({
   audioEl,
-  scrollToBottomOfImageContainer,
+  scrollToBottom,
 });
 </script>

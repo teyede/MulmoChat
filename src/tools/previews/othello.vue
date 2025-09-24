@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="result.toolName === 'playOthello'"
-    class="p-3 bg-green-50 rounded"
-  >
+  <div v-if="result.toolName === 'playOthello'" class="p-3 bg-green-50 rounded">
     <div v-if="result.jsonData" class="space-y-1">
       <!-- Othello board display -->
       <div class="flex justify-center">

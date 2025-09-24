@@ -5,10 +5,7 @@
   >
     <div class="text-purple-600 font-medium">🔍 Search Result</div>
     <div class="text-xs text-gray-600 mt-1 truncate">
-      {{
-        result.jsonData?.query ||
-        extractQueryFromMessage(result.message)
-      }}
+      {{ result.jsonData?.query || extractQueryFromMessage(result.message) }}
     </div>
   </div>
 </template>

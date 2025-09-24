@@ -173,8 +173,8 @@ const sleep = async (milliseconds: number) => {
   return await new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
-function scrollToBottomOfImageContainer(): void {
-  sidebarRef.value?.scrollToBottomOfImageContainer();
+function scrollToBottomOfSideBar(): void {
+  sidebarRef.value?.scrollToBottom();
 }
 
 function scrollCurrentResultToTop(): void {
@@ -251,7 +251,7 @@ async function processToolCall(msg: any): Promise<void> {
     delete pendingToolArgs[id];
     isGeneratingImage.value = true;
     generatingMessage.value = pluginGeneratingMessage(msg.name);
-    scrollToBottomOfImageContainer();
+    scrollToBottomOfSideBar();
     const context: PluginContext = {
       images: [],
     };
@@ -276,7 +276,7 @@ async function processToolCall(msg: any): Promise<void> {
     isGeneratingImage.value = false;
     pluginResults.value.push(result);
     selectedResult.value = result;
-    scrollToBottomOfImageContainer();
+    scrollToBottomOfSideBar();
     scrollCurrentResultToTop();
 
     const outputPayload: Record<string, unknown> = {
