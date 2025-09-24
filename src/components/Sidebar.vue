@@ -39,113 +39,12 @@
           :class="{ 'ring-2 ring-blue-500': selectedResult === result }"
           @click="$emit('selectResult', result)"
         >
-          <img
-            v-if="result.imageData"
-            :src="`data:image/png;base64,${result.imageData}`"
-            class="max-w-full h-auto rounded"
-            alt="Generated image"
-          />
-          <div
-            v-else-if="result.toolName === 'exaSearch'"
-            class="text-center p-4 bg-purple-50 rounded"
-          >
-            <div class="text-purple-600 font-medium">🔍 Search Result</div>
-            <div class="text-xs text-gray-600 mt-1 truncate">
-              {{
-                result.jsonData?.query ||
-                extractQueryFromMessage(result.message)
-              }}
-            </div>
-          </div>
-          <div
-            v-else-if="result.url"
-            class="text-center p-4 bg-blue-50 rounded"
-          >
-            <div class="text-blue-600 font-medium">🌐 Web Page</div>
-            <div class="text-xs text-gray-600 mt-1 truncate">
-              {{ result.title || result.url }}
-            </div>
-          </div>
-          <div
-            v-else-if="result.htmlData"
-            class="text-center p-4 bg-green-50 rounded"
-          >
-            <div class="text-green-600 font-medium">📄 Presentation</div>
-            <div class="text-xs text-gray-600 mt-1 truncate">
-              {{ result.title || "Interactive content" }}
-            </div>
-          </div>
-          <div
-            v-else-if="result.location"
-            class="text-center p-4 bg-blue-50 rounded"
-          >
-            <div class="text-blue-600 font-medium">🗺️ Map Location</div>
-            <div class="text-xs text-gray-600 mt-1 truncate">
-              {{
-                typeof result.location === "string"
-                  ? result.location
-                  : `${result.location.lat}, ${result.location.lng}`
-              }}
-            </div>
-          </div>
-          <div
-            v-else-if="result.toolName === 'playOthello'"
-            class="p-3 bg-green-50 rounded"
-          >
-            <div v-if="result.jsonData" class="space-y-1">
-              <!-- Othello board display -->
-              <div class="flex justify-center">
-                <div
-                  class="inline-block"
-                  style="background-color: #2d5016; padding: 1px"
-                >
-                  <div class="grid grid-cols-8" style="gap: 1px">
-                    <template
-                      v-for="(row, rowIndex) in result.jsonData.board"
-                      :key="rowIndex"
-                    >
-                      <div
-                        v-for="(cell, colIndex) in row"
-                        :key="`${rowIndex}-${colIndex}`"
-                        class="w-4 h-4 flex items-center justify-center"
-                        style="background-color: #3d6b20"
-                      >
-                        <div
-                          v-if="cell === 'B'"
-                          class="w-3 h-3 bg-black rounded-full"
-                        ></div>
-                        <div
-                          v-else-if="cell === 'W'"
-                          class="w-3 h-3 bg-white rounded-full"
-                        ></div>
-                      </div>
-                    </template>
-                  </div>
-                </div>
-              </div>
-              <!-- Game info -->
-              <div class="text-xs text-center space-y-1">
-                <div v-if="!result.jsonData.isTerminal" class="text-gray-600">
-                  {{ result.jsonData.currentSide === "B" ? "⚫" : "⚪" }}
-                  {{
-                    capitalizeFirst(
-                      result.jsonData.playerNames[result.jsonData.currentSide],
-                    )
-                  }}
-                  to play
-                </div>
-                <div v-else class="font-medium">
-                  {{ getGameResult(result.jsonData) }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else class="text-center p-4 bg-gray-50 rounded">
-            <div class="text-gray-600 font-medium">📋 Text Result</div>
-            <div class="text-xs text-gray-500 mt-1 truncate">
-              {{ result.message }}
-            </div>
-          </div>
+          <ImagePreview :result="result" />
+          <ExaPreview :result="result" />
+          <BrowsePreview :result="result" />
+          <MulmocastPreview :result="result" />
+          <MapPreview :result="result" />
+          <OthelloPreview :result="result" />
         </div>
         <div
           v-if="isGeneratingImage"
@@ -187,6 +86,12 @@
 <script setup lang="ts">
 import { ref, nextTick, defineProps, defineEmits } from "vue";
 import type { ToolResult } from "../tools/type";
+import ImagePreview from "../tools/previews/image.vue";
+import ExaPreview from "../tools/previews/exa.vue";
+import BrowsePreview from "../tools/previews/browse.vue";
+import MulmocastPreview from "../tools/previews/mulmocast.vue";
+import MapPreview from "../tools/previews/map.vue";
+import OthelloPreview from "../tools/previews/othello.vue";
 
 defineProps<{
   chatActive: boolean;
@@ -209,7 +114,7 @@ defineEmits<{
 const audioEl = ref<HTMLAudioElement | null>(null);
 const imageContainer = ref<HTMLDivElement | null>(null);
 
-function scrollToBottomOfImageContainer(): void {
+function scrollToBottom(): void {
   nextTick(() => {
     if (imageContainer.value) {
       imageContainer.value.scrollTop = imageContainer.value.scrollHeight;
@@ -217,25 +122,8 @@ function scrollToBottomOfImageContainer(): void {
   });
 }
 
-function extractQueryFromMessage(message: string): string {
-  const match = message.match(/relevant results for "([^"]+)"/);
-  return match ? match[1] : message;
-}
-
-function getGameResult(gameState: any): string {
-  if (!gameState.isTerminal) return "";
-  if (gameState.winner === "draw") return "Draw!";
-  if (gameState.winner === "B") return "⚫ Black Wins!";
-  if (gameState.winner === "W") return "⚪ White Wins!";
-  return "Game Over";
-}
-
-function capitalizeFirst(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 defineExpose({
   audioEl,
-  scrollToBottomOfImageContainer,
+  scrollToBottom,
 });
 </script>
