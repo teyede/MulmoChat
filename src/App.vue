@@ -134,7 +134,10 @@
           </div>
 
           <!-- Browse tool content -->
-          <div v-if="selectedResult?.toolName === 'browse'" class="w-full h-full">
+          <div
+            v-if="selectedResult?.toolName === 'browse'"
+            class="w-full h-full"
+          >
             <!-- Twitter embed -->
             <div
               v-if="selectedResult?.url && isTwitterUrl(selectedResult.url)"
@@ -172,7 +175,9 @@
             </div>
 
             <!-- Generic URL iframe -->
-            <div v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)">
+            <div
+              v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
+            >
               <iframe
                 :src="selectedResult.url"
                 class="w-full h-full rounded"
@@ -188,9 +193,12 @@
             v-html="selectedResult.htmlData"
           />
 
-          <!-- Image generation -->
+          <!-- Image generation and editing -->
           <div
-            v-if="selectedResult?.toolName === 'generateImage'"
+            v-if="
+              selectedResult?.toolName === 'generateImage' ||
+              selectedResult?.toolName === 'editImage'
+            "
             class="w-full h-full flex items-center justify-center p-4"
           >
             <img
@@ -211,7 +219,6 @@
               :zoom="15"
             />
           </div>
-
 
           <!-- Default empty state -->
           <div
