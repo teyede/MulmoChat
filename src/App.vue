@@ -41,187 +41,23 @@
       <!-- Main content -->
       <div class="flex-1 flex flex-col">
         <div class="flex-1 border rounded bg-gray-50 overflow-hidden">
-          <!-- Search results -->
-          <div
-            v-if="selectedResult?.toolName === 'exaSearch'"
-            class="w-full h-full overflow-auto p-6 bg-white"
-          >
-            <div class="max-w-4xl mx-auto">
-              <h2 class="text-2xl font-bold text-gray-800 mb-6">
-                Search Results
-                <span
-                  v-if="selectedResult.jsonData.query"
-                  class="text-lg font-normal text-gray-600"
-                >
-                  for "{{ selectedResult.jsonData.query }}"
-                </span>
-              </h2>
-              <div class="space-y-6">
-                <div
-                  v-for="(result, index) in selectedResult.jsonData.results ||
-                  selectedResult.jsonData"
-                  :key="index"
-                  class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <h3
-                        class="text-lg font-semibold text-blue-600 hover:text-blue-800"
-                      >
-                        <a
-                          :href="result.url"
-                          target="_blank"
-                          class="hover:underline"
-                        >
-                          {{ result.title }}
-                        </a>
-                      </h3>
-                      <p class="text-sm text-gray-500 mt-1">{{ result.url }}</p>
-                      <p
-                        v-if="result.text"
-                        class="text-gray-700 mt-2 line-clamp-3"
-                      >
-                        {{ result.text }}
-                      </p>
-                      <div
-                        v-if="result.highlights && result.highlights.length"
-                        class="mt-3"
-                      >
-                        <p class="text-sm font-medium text-gray-600 mb-1">
-                          Key highlights:
-                        </p>
-                        <div class="space-y-1">
-                          <p
-                            v-for="(
-                              highlight, hIndex
-                            ) in result.highlights.slice(0, 3)"
-                            :key="hIndex"
-                            class="text-sm text-gray-600 italic"
-                          >
-                            "{{ highlight }}"
-                          </p>
-                        </div>
-                      </div>
-                      <p
-                        v-if="result.publishedDate"
-                        class="text-xs text-gray-400 mt-2"
-                      >
-                        Published:
-                        {{
-                          new Date(result.publishedDate).toLocaleDateString()
-                        }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Othello game -->
-          <div
-            v-if="selectedResult?.toolName === 'playOthello'"
-            class="w-full h-full flex items-center justify-center p-4"
-          >
-            <canvas
-              ref="othelloCanvas"
-              width="480"
-              height="520"
-              class="border border-gray-300 rounded"
-              @click="handleOthelloCanvasClick"
-              @mousemove="handleOthelloCanvasMouseMove"
-            />
-          </div>
-
-          <!-- Browse tool content -->
-          <div
-            v-if="selectedResult?.toolName === 'browse'"
-            class="w-full h-full"
-          >
-            <!-- Twitter embed -->
-            <div
-              v-if="selectedResult?.url && isTwitterUrl(selectedResult.url)"
-              class="overflow-auto p-4 bg-white h-full"
-            >
-              <div
-                v-if="twitterEmbedData[selectedResult.url]"
-                v-html="twitterEmbedData[selectedResult.url]"
-              />
-              <div
-                v-else-if="twitterEmbedData[selectedResult.url] === null"
-                class="h-full flex items-center justify-center"
-              >
-                <div class="text-center">
-                  <div class="text-gray-600 mb-4">
-                    Unable to load Twitter embed
-                  </div>
-                  <a
-                    :href="selectedResult.url"
-                    target="_blank"
-                    class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                  >
-                    Open on Twitter/X
-                  </a>
-                </div>
-              </div>
-              <div v-else class="h-full flex items-center justify-center">
-                <div class="text-center">
-                  <div
-                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"
-                  ></div>
-                  <div class="text-gray-600">Loading Twitter embed...</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Generic URL iframe -->
-            <div
-              v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
-              class="w-full h-full"
-            >
-              <iframe
-                :src="selectedResult.url"
-                class="w-full h-full rounded"
-                frameborder="0"
-              />
-            </div>
-          </div>
-
-          <!-- MulmoCast presentation -->
-          <div
-            v-if="selectedResult?.toolName === 'pushMulmoScript'"
-            class="w-full h-full overflow-auto p-4 bg-white"
-            v-html="selectedResult.htmlData"
+          <ExaView :selected-result="selectedResult" />
+          <OthelloView
+            :selected-result="selectedResult"
+            :user-input="userInput"
+            :send-text-message="sendTextMessage"
+            @update:user-input="userInput = $event"
           />
-
-          <!-- Image generation and editing -->
-          <div
-            v-if="
-              selectedResult?.toolName === 'generateImage' ||
-              selectedResult?.toolName === 'editImage'
-            "
-            class="w-full h-full flex items-center justify-center p-4"
-          >
-            <img
-              :src="`data:image/png;base64,${selectedResult.imageData}`"
-              class="max-w-full max-h-full object-contain rounded"
-              alt="Current generated image"
-            />
-          </div>
-
-          <!-- Map presentation -->
-          <div
-            v-if="selectedResult?.toolName === 'presentMap'"
-            class="w-full h-full p-4"
-          >
-            <GoogleMap
-              :location="selectedResult.location"
-              :api-key="googleMapKey"
-              :zoom="15"
-            />
-          </div>
-
-          <!-- Default empty state -->
+          <BrowseView
+            :selected-result="selectedResult"
+            :twitter-embed-data="twitterEmbedData"
+          />
+          <MulmocastView :selected-result="selectedResult" />
+          <ImageView :selected-result="selectedResult" />
+          <MapView
+            :selected-result="selectedResult"
+            :google-map-key="googleMapKey"
+          />
           <div
             v-if="!selectedResult"
             class="w-full h-full flex items-center justify-center"
@@ -280,15 +116,19 @@ import { ref, watch, nextTick } from "vue";
 import {
   pluginTools,
   pluginExecute,
-  ToolContext,
   ToolResult,
   pluginGeneratingMessage,
   pluginWaitingMessage,
   pluginDelayAfterExecution,
 } from "./tools/type";
 import type { StartApiResponse } from "../server/types";
-import GoogleMap from "./components/GoogleMap.vue";
 import Sidebar from "./components/Sidebar.vue";
+import ExaView from "./tools/components/exa.vue";
+import BrowseView from "./tools/components/browse.vue";
+import MulmocastView from "./tools/components/mulmocast.vue";
+import MapView from "./tools/components/map.vue";
+import ImageView from "./tools/components/image.vue";
+import OthelloView from "./tools/components/othello.vue";
 
 const SYSTEM_PROMPT_KEY = "system_prompt_v2";
 const DEFAULT_SYSTEM_PROMPT =
@@ -310,7 +150,6 @@ const userInput = ref("");
 const twitterEmbedData = ref<{ [key: string]: string }>({});
 const googleMapKey = ref<string | null>(null);
 const startResponse = ref<StartApiResponse | null>(null);
-const othelloCanvas = ref<HTMLCanvasElement | null>(null);
 
 watch(systemPrompt, (val) => {
   localStorage.setItem(SYSTEM_PROMPT_KEY, val);
@@ -319,11 +158,6 @@ watch(systemPrompt, (val) => {
 watch(selectedResult, (newResult) => {
   if (newResult?.url && isTwitterUrl(newResult.url)) {
     handleTwitterEmbed(newResult.url);
-  }
-  if (newResult?.toolName === "playOthello" && newResult.jsonData) {
-    nextTick(() => {
-      renderOthelloBoard(newResult.jsonData);
-    });
   }
 });
 const chatActive = ref(false);
@@ -338,159 +172,6 @@ const webrtc = {
 const sleep = async (milliseconds: number) => {
   return await new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
-
-function renderOthelloBoard(gameState: any): void {
-  const canvas = othelloCanvas.value;
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-
-  const cellSize = 60;
-  const boardSize = 8;
-
-  // Clear canvas
-  ctx.fillStyle = "#3d6b20";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw turn indicator at the top
-  const currentPlayer = gameState.playerNames[gameState.currentSide];
-  const colorName = gameState.currentSide === "B" ? "Black" : "White";
-  const turnText = `Current Turn: ${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)} (${colorName})`;
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 18px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(turnText, canvas.width / 2, 20);
-
-  // Adjust board position to account for turn indicator
-  const boardOffsetY = 40;
-
-  // Draw grid lines
-  ctx.strokeStyle = "#2d5016";
-  ctx.lineWidth = 2;
-  for (let i = 0; i <= boardSize; i++) {
-    // Vertical lines
-    ctx.beginPath();
-    ctx.moveTo(i * cellSize, boardOffsetY);
-    ctx.lineTo(i * cellSize, boardOffsetY + boardSize * cellSize);
-    ctx.stroke();
-
-    // Horizontal lines
-    ctx.beginPath();
-    ctx.moveTo(0, boardOffsetY + i * cellSize);
-    ctx.lineTo(boardSize * cellSize, boardOffsetY + i * cellSize);
-    ctx.stroke();
-  }
-
-  // Draw pieces
-  for (let row = 0; row < boardSize; row++) {
-    for (let col = 0; col < boardSize; col++) {
-      const cell = gameState.board[row][col];
-      if (cell !== ".") {
-        const centerX = col * cellSize + cellSize / 2;
-        const centerY = boardOffsetY + row * cellSize + cellSize / 2;
-        const radius = cellSize / 2 - 5;
-
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = cell === "B" ? "#000000" : "#ffffff";
-        ctx.fill();
-        ctx.strokeStyle = "#333333";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-    }
-  }
-
-  // Draw position labels on legal moves (light grey, no background highlighting)
-  // Only show playable cells when it's the human player's turn
-  const isComputerTurn =
-    gameState.playerNames &&
-    gameState.playerNames[gameState.currentSide] === "computer";
-  if (
-    gameState.legalMoves &&
-    gameState.legalMoves.length > 0 &&
-    !isComputerTurn
-  ) {
-    ctx.fillStyle = "#cccccc";
-    ctx.font = "bold 14px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    for (const move of gameState.legalMoves) {
-      const centerX = move.col * cellSize + cellSize / 2;
-      const centerY = boardOffsetY + move.row * cellSize + cellSize / 2;
-      const label = String.fromCharCode(65 + move.col) + (move.row + 1);
-      ctx.fillText(label, centerX, centerY);
-    }
-  }
-}
-
-function handleOthelloCanvasClick(event: MouseEvent): void {
-  const canvas = othelloCanvas.value;
-  if (!canvas || !selectedResult.value?.jsonData) return;
-
-  const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-
-  const boardOffsetY = 40;
-  const col = Math.floor(x / 60);
-  const row = Math.floor((y - boardOffsetY) / 60);
-
-  if (row >= 0 && row < 8 && col >= 0 && col < 8) {
-    const gameState = selectedResult.value.jsonData;
-
-    // Check if this is a legal move
-    const isLegalMove = gameState.legalMoves?.some(
-      (move: any) => move.row === row && move.col === col,
-    );
-
-    if (isLegalMove && !gameState.isTerminal) {
-      // Convert coordinates to chess notation (A-H, 1-8)
-      const columnLetter = String.fromCharCode(65 + col); // A-H
-      const rowNumber = row + 1; // 1-8
-      userInput.value = `I want to play at ${columnLetter}${rowNumber}, which is column=${col}, row=${row} `;
-      sendTextMessage();
-    }
-  }
-}
-
-function handleOthelloCanvasMouseMove(event: MouseEvent): void {
-  const canvas = othelloCanvas.value;
-  if (!canvas || !selectedResult.value?.jsonData) return;
-
-  const gameState = selectedResult.value.jsonData;
-  const isComputerTurn =
-    gameState.playerNames &&
-    gameState.playerNames[gameState.currentSide] === "computer";
-
-  // Don't change cursor if it's computer's turn or game is over
-  if (isComputerTurn || gameState.isTerminal) {
-    canvas.style.cursor = "default";
-    return;
-  }
-
-  const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-
-  const boardOffsetY = 40;
-  const col = Math.floor(x / 60);
-  const row = Math.floor((y - boardOffsetY) / 60);
-
-  if (row >= 0 && row < 8 && col >= 0 && col < 8) {
-    // Check if this is a legal move
-    const isLegalMove = gameState.legalMoves?.some(
-      (move: any) => move.row === row && move.col === col,
-    );
-
-    canvas.style.cursor = isLegalMove ? "pointer" : "default";
-  } else {
-    canvas.style.cursor = "default";
-  }
-}
 
 function scrollToBottomOfImageContainer(): void {
   sidebarRef.value?.scrollToBottomOfImageContainer();
