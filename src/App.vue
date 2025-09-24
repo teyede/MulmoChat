@@ -41,51 +41,9 @@
       <!-- Main content -->
       <div class="flex-1 flex flex-col">
         <div class="flex-1 border rounded bg-gray-50 overflow-hidden">
+          <!-- Search results -->
           <div
-            v-if="selectedResult?.url && isTwitterUrl(selectedResult.url)"
-            class="w-full h-full overflow-auto p-4 bg-white"
-          >
-            <div
-              v-if="twitterEmbedData[selectedResult.url]"
-              v-html="twitterEmbedData[selectedResult.url]"
-            />
-            <div
-              v-else-if="twitterEmbedData[selectedResult.url] === null"
-              class="h-full flex items-center justify-center"
-            >
-              <div class="text-center">
-                <div class="text-gray-600 mb-4">
-                  Unable to load Twitter embed
-                </div>
-                <a
-                  :href="selectedResult.url"
-                  target="_blank"
-                  class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  Open on Twitter/X
-                </a>
-              </div>
-            </div>
-            <div v-else class="h-full flex items-center justify-center">
-              <div class="text-center">
-                <div
-                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"
-                ></div>
-                <div class="text-gray-600">Loading Twitter embed...</div>
-              </div>
-            </div>
-          </div>
-          <iframe
-            v-else-if="selectedResult?.url"
-            :src="selectedResult.url"
-            class="w-full h-full rounded"
-            frameborder="0"
-          />
-          <div
-            v-else-if="
-              selectedResult?.toolName === 'exaSearch' &&
-              selectedResult?.jsonData
-            "
+            v-if="selectedResult?.toolName === 'exaSearch'"
             class="w-full h-full overflow-auto p-6 bg-white"
           >
             <div class="max-w-4xl mx-auto">
@@ -159,33 +117,10 @@
               </div>
             </div>
           </div>
+
+          <!-- Othello game -->
           <div
-            v-else-if="selectedResult?.htmlData"
-            class="w-full h-full overflow-auto p-4 bg-white"
-            v-html="selectedResult.htmlData"
-          />
-          <div
-            v-else-if="selectedResult?.imageData"
-            class="w-full h-full flex items-center justify-center p-4"
-          >
-            <img
-              :src="`data:image/png;base64,${selectedResult.imageData}`"
-              class="max-w-full max-h-full object-contain rounded"
-              alt="Current generated image"
-            />
-          </div>
-          <div
-            v-else-if="selectedResult?.location && googleMapKey"
-            class="w-full h-full p-4"
-          >
-            <GoogleMap
-              :location="selectedResult.location"
-              :api-key="googleMapKey"
-              :zoom="15"
-            />
-          </div>
-          <div
-            v-else-if="selectedResult?.toolName === 'playOthello'"
+            v-if="selectedResult?.toolName === 'playOthello'"
             class="w-full h-full flex items-center justify-center p-4"
           >
             <canvas
@@ -197,7 +132,100 @@
               @mousemove="handleOthelloCanvasMouseMove"
             />
           </div>
-          <div v-else class="w-full h-full flex items-center justify-center">
+
+          <!-- Browse tool content -->
+          <div
+            v-if="selectedResult?.toolName === 'browse'"
+            class="w-full h-full"
+          >
+            <!-- Twitter embed -->
+            <div
+              v-if="selectedResult?.url && isTwitterUrl(selectedResult.url)"
+              class="overflow-auto p-4 bg-white h-full"
+            >
+              <div
+                v-if="twitterEmbedData[selectedResult.url]"
+                v-html="twitterEmbedData[selectedResult.url]"
+              />
+              <div
+                v-else-if="twitterEmbedData[selectedResult.url] === null"
+                class="h-full flex items-center justify-center"
+              >
+                <div class="text-center">
+                  <div class="text-gray-600 mb-4">
+                    Unable to load Twitter embed
+                  </div>
+                  <a
+                    :href="selectedResult.url"
+                    target="_blank"
+                    class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  >
+                    Open on Twitter/X
+                  </a>
+                </div>
+              </div>
+              <div v-else class="h-full flex items-center justify-center">
+                <div class="text-center">
+                  <div
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"
+                  ></div>
+                  <div class="text-gray-600">Loading Twitter embed...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generic URL iframe -->
+            <div
+              v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
+              class="w-full h-full"
+            >
+              <iframe
+                :src="selectedResult.url"
+                class="w-full h-full rounded"
+                frameborder="0"
+              />
+            </div>
+          </div>
+
+          <!-- MulmoCast presentation -->
+          <div
+            v-if="selectedResult?.toolName === 'pushMulmoScript'"
+            class="w-full h-full overflow-auto p-4 bg-white"
+            v-html="selectedResult.htmlData"
+          />
+
+          <!-- Image generation and editing -->
+          <div
+            v-if="
+              selectedResult?.toolName === 'generateImage' ||
+              selectedResult?.toolName === 'editImage'
+            "
+            class="w-full h-full flex items-center justify-center p-4"
+          >
+            <img
+              :src="`data:image/png;base64,${selectedResult.imageData}`"
+              class="max-w-full max-h-full object-contain rounded"
+              alt="Current generated image"
+            />
+          </div>
+
+          <!-- Map presentation -->
+          <div
+            v-if="selectedResult?.toolName === 'presentMap'"
+            class="w-full h-full p-4"
+          >
+            <GoogleMap
+              :location="selectedResult.location"
+              :api-key="googleMapKey"
+              :zoom="15"
+            />
+          </div>
+
+          <!-- Default empty state -->
+          <div
+            v-if="!selectedResult"
+            class="w-full h-full flex items-center justify-center"
+          >
             <div class="text-gray-400 text-lg">Canvas</div>
           </div>
         </div>
