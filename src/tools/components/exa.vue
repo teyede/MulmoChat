@@ -25,19 +25,12 @@
               <h3
                 class="text-lg font-semibold text-blue-600 hover:text-blue-800"
               >
-                <a
-                  :href="result.url"
-                  target="_blank"
-                  class="hover:underline"
-                >
+                <a :href="result.url" target="_blank" class="hover:underline">
                   {{ result.title }}
                 </a>
               </h3>
               <p class="text-sm text-gray-500 mt-1">{{ result.url }}</p>
-              <p
-                v-if="result.text"
-                class="text-gray-700 mt-2 line-clamp-3"
-              >
+              <p v-if="result.text" class="text-gray-700 mt-2 line-clamp-3">
                 {{ result.text }}
               </p>
               <div
@@ -49,9 +42,7 @@
                 </p>
                 <div class="space-y-1">
                   <p
-                    v-for="(
-                      highlight, hIndex
-                    ) in result.highlights.slice(0, 3)"
+                    v-for="(highlight, hIndex) in result.highlights.slice(0, 3)"
                     :key="hIndex"
                     class="text-sm text-gray-600 italic"
                   >
@@ -59,14 +50,9 @@
                   </p>
                 </div>
               </div>
-              <p
-                v-if="result.publishedDate"
-                class="text-xs text-gray-400 mt-2"
-              >
+              <p v-if="result.publishedDate" class="text-xs text-gray-400 mt-2">
                 Published:
-                {{
-                  new Date(result.publishedDate).toLocaleDateString()
-                }}
+                {{ new Date(result.publishedDate).toLocaleDateString() }}
               </p>
             </div>
           </div>
