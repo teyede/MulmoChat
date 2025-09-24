@@ -3,7 +3,7 @@
     <div role="toolbar" class="flex justify-between items-center">
       <h1 class="text-2xl font-bold">
         MulmoChat
-        <span class="text-sm text-gray-500 font-normal">Multi-modal Chat</span>
+        <span class="text-sm text-gray-500 font-normal">NLUI of AI-native Operating System</span>
       </h1>
       <button
         @click="showConfigPopup = true"
@@ -48,15 +48,12 @@
             :send-text-message="sendTextMessage"
             @update:user-input="userInput = $event"
           />
-          <BrowseView
-            :selected-result="selectedResult"
-            :twitter-embed-data="twitterEmbedData"
-          />
+          <BrowseView :selected-result="selectedResult" />
           <MulmocastView :selected-result="selectedResult" />
           <ImageView :selected-result="selectedResult" />
           <MapView
             :selected-result="selectedResult"
-            :google-map-key="googleMapKey"
+            :google-map-key="startResponse?.googleMapKey || null"
           />
           <div
             v-if="!selectedResult"
@@ -117,6 +114,7 @@ import {
   pluginTools,
   pluginExecute,
   ToolResult,
+  ToolContext,
   pluginGeneratingMessage,
   pluginWaitingMessage,
   pluginDelayAfterExecution,
@@ -147,19 +145,12 @@ const pendingToolArgs: Record<string, string> = {};
 const showConfigPopup = ref(false);
 const selectedResult = ref<ToolResult | null>(null);
 const userInput = ref("");
-const twitterEmbedData = ref<{ [key: string]: string }>({});
-const googleMapKey = ref<string | null>(null);
 const startResponse = ref<StartApiResponse | null>(null);
 
 watch(systemPrompt, (val) => {
   localStorage.setItem(SYSTEM_PROMPT_KEY, val);
 });
 
-watch(selectedResult, (newResult) => {
-  if (newResult?.url && isTwitterUrl(newResult.url)) {
-    handleTwitterEmbed(newResult.url);
-  }
-});
 const chatActive = ref(false);
 
 const webrtc = {
@@ -201,48 +192,6 @@ function scrollCurrentResultToTop(): void {
   });
 }
 
-function isTwitterUrl(url: string): boolean {
-  try {
-    const urlObj = new URL(url);
-    return (
-      urlObj.hostname === "twitter.com" ||
-      urlObj.hostname === "www.twitter.com" ||
-      urlObj.hostname === "x.com" ||
-      urlObj.hostname === "www.x.com"
-    );
-  } catch {
-    return false;
-  }
-}
-
-async function fetchTwitterEmbed(url: string): Promise<string | null> {
-  try {
-    const response = await fetch(
-      `/api/twitter-embed?url=${encodeURIComponent(url)}`,
-    );
-
-    if (!response.ok) {
-      throw new Error(`Twitter embed API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.success ? data.html : null;
-  } catch (error) {
-    console.error("Failed to fetch Twitter embed:", error);
-    return null;
-  }
-}
-
-async function handleTwitterEmbed(url: string): Promise<void> {
-  if (!isTwitterUrl(url) || url in twitterEmbedData.value) {
-    return;
-  }
-
-  const embedHtml = await fetchTwitterEmbed(url);
-  console.log("*** Twitter embed", url, embedHtml);
-  twitterEmbedData.value[url] = embedHtml;
-}
-
 async function processToolCall(msg: any): Promise<void> {
   const id = msg.id || msg.call_id;
   try {
@@ -252,7 +201,7 @@ async function processToolCall(msg: any): Promise<void> {
     isGeneratingImage.value = true;
     generatingMessage.value = pluginGeneratingMessage(msg.name);
     scrollToBottomOfSideBar();
-    const context: PluginContext = {
+    const context: ToolContext = {
       images: [],
     };
     if (selectedResult.value?.imageData) {
@@ -362,9 +311,6 @@ async function startChat(): Promise<void> {
   connecting.value = true;
 
   // Call the start API endpoint to get ephemeral key
-  const config = {
-    apiKey: undefined as string | undefined,
-  };
   try {
     const response = await fetch("/api/start", {
       method: "GET",
@@ -378,10 +324,8 @@ async function startChat(): Promise<void> {
     }
 
     startResponse.value = await response.json();
-    config.apiKey = startResponse.value.ephemeralKey;
-    googleMapKey.value = startResponse.value.googleMapKey;
 
-    if (!config.apiKey) {
+    if (!startResponse.value?.ephemeralKey) {
       throw new Error("No ephemeral key received from server");
     }
   } catch (err) {
@@ -444,7 +388,7 @@ async function startChat(): Promise<void> {
     const response = await fetch("https://api.openai.com/v1/realtime/calls", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${startResponse.value.ephemeralKey}`,
         "Content-Type": "application/sdp",
       },
       body: offer.sdp,

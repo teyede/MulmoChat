@@ -2,6 +2,52 @@ import { ToolPlugin, ToolContext, ToolResult } from "./type";
 
 const toolName = "browse";
 
+const twitterEmbedData: { [key: string]: string } = {};
+
+function isTwitterUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return (
+      urlObj.hostname === "twitter.com" ||
+      urlObj.hostname === "www.twitter.com" ||
+      urlObj.hostname === "x.com" ||
+      urlObj.hostname === "www.x.com"
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function fetchTwitterEmbed(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `/api/twitter-embed?url=${encodeURIComponent(url)}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Twitter embed API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.success ? data.html : null;
+  } catch (error) {
+    console.error("Failed to fetch Twitter embed:", error);
+    return null;
+  }
+}
+
+async function handleTwitterEmbed(url: string): Promise<void> {
+  if (!isTwitterUrl(url) || url in twitterEmbedData) {
+    return;
+  }
+
+  const embedHtml = await fetchTwitterEmbed(url);
+  console.log("*** Twitter embed", url, embedHtml);
+  if (embedHtml) {
+    twitterEmbedData[url] = embedHtml;
+  }
+}
+
 const toolDefinition = {
   type: "function" as const,
   name: toolName,
@@ -27,6 +73,11 @@ const browse = async (
   const url = args.url as string;
   console.log("******** Browse URL", url);
 
+  // Handle Twitter embeds
+  if (isTwitterUrl(url)) {
+    await handleTwitterEmbed(url);
+  }
+
   try {
     const response = await fetch("/api/browse", {
       method: "POST",
@@ -44,7 +95,7 @@ const browse = async (
 
     if (data.success && data.data) {
       console.log("*** Browse succeeded", data.data);
-      return {
+      const result: any = {
         toolName,
         message: "Successfully browsed the webpage",
         title: data.data.data.title || "Untitled",
@@ -53,6 +104,13 @@ const browse = async (
         instructions:
           "Acknowledge that the webpage was successfully browsed and the content has been retrieved. Just read the title, but don't read the contents unlil the user asks for it.",
       };
+
+      // Add Twitter embed data if it's a Twitter URL
+      if (isTwitterUrl(url)) {
+        result.twitterEmbedHtml = twitterEmbedData[url] || null;
+      }
+
+      return result;
     } else {
       console.log("*** Browse failed");
       return {
