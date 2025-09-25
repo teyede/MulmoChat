@@ -47,7 +47,6 @@ import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
-  userInput: string;
   sendTextMessage: (text?: string) => void;
 }>();
 

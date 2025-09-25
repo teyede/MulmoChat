@@ -46,7 +46,6 @@
           <ExaView :selected-result="selectedResult" />
           <OthelloView
             :selected-result="selectedResult"
-            :user-input="userInput"
             :send-text-message="sendTextMessage"
           />
           <BrowseView :selected-result="selectedResult" />
