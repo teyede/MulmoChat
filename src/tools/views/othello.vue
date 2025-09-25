@@ -11,7 +11,7 @@
 
       <!-- Game board -->
       <div
-        class="grid grid-cols-8 gap-1 p-4 bg-green-800 rounded-lg border-2 border-green-900"
+        class="grid grid-cols-8 gap-0.5 p-4 bg-green-800 rounded-lg border-2 border-green-900"
       >
         <div
           v-for="(cell, index) in flatBoard"
