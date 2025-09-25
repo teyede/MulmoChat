@@ -213,7 +213,6 @@ async function processToolCall(msg: any): Promise<void> {
     }
 
     const result = await promise;
-    isGeneratingImage.value = false;
     pluginResults.value.push(result);
     selectedResult.value = result;
     scrollToBottomOfSideBar();
@@ -268,6 +267,9 @@ async function processToolCall(msg: any): Promise<void> {
       }),
     );
     // We don't need to send "response.create" here.
+  } finally {
+    isGeneratingImage.value = false;
+    generatingMessage.value = "";
   }
 }
 
