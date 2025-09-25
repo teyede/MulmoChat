@@ -1,5 +1,5 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
-import { playOthello, Command, Side } from "./othelloLogic";
+import { playOthello, Command, Side } from "./logic/othelloLogic";
 
 const toolName = "playOthello";
 
