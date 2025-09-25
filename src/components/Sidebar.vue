@@ -40,8 +40,8 @@
           @click="$emit('selectResult', result)"
         >
           <component
-            v-if="getPluginPreviewComponent(result.toolName)"
-            :is="getPluginPreviewComponent(result.toolName)"
+            v-if="getPlugin(result.toolName)?.previewComponent"
+            :is="getPlugin(result.toolName).previewComponent"
             :result="result"
           />
         </div>
@@ -85,7 +85,7 @@
 <script setup lang="ts">
 import { ref, nextTick, defineProps, defineEmits } from "vue";
 import type { ToolResult } from "../tools/type";
-import { pluginPreviewComponent } from "../tools/type";
+import { getPlugin } from "../tools/type";
 
 defineProps<{
   chatActive: boolean;
@@ -107,10 +107,6 @@ defineEmits<{
 
 const audioEl = ref<HTMLAudioElement | null>(null);
 const imageContainer = ref<HTMLDivElement | null>(null);
-
-function getPluginPreviewComponent(toolName: string) {
-  return pluginPreviewComponent(toolName);
-}
 
 function scrollToBottom(): void {
   nextTick(() => {

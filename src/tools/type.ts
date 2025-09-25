@@ -85,42 +85,6 @@ export const pluginExecute = (
   return plugin.execute(context, args);
 };
 
-export const pluginGeneratingMessage = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    throw new Error(`Plugin ${name} not found`);
-  }
-  return plugin.generatingMessage;
-};
-
-export const pluginWaitingMessage = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    throw new Error(`Plugin ${name} not found`);
-  }
-  return plugin.waitingMessage;
-};
-
-export const pluginDelayAfterExecution = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    throw new Error(`Plugin ${name} not found`);
-  }
-  return plugin.delayAfterExecution;
-};
-
-export const pluginViewComponent = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    return null;
-  }
-  return plugin.viewComponent;
-};
-
-export const pluginPreviewComponent = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    return null;
-  }
-  return plugin.previewComponent;
+export const getPlugin = (name: string) => {
+  return plugins[name] || null;
 };

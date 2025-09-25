@@ -45,9 +45,10 @@
         <div class="flex-1 border rounded bg-gray-50 overflow-hidden">
           <component
             v-if="
-              selectedResult && getPluginViewComponent(selectedResult.toolName)
+              selectedResult &&
+              getPlugin(selectedResult.toolName)?.viewComponent
             "
-            :is="getPluginViewComponent(selectedResult.toolName)"
+            :is="getPlugin(selectedResult.toolName).viewComponent"
             :selected-result="selectedResult"
             :send-text-message="sendTextMessage"
             :google-map-key="startResponse?.googleMapKey || null"
@@ -112,10 +113,7 @@ import {
   pluginExecute,
   ToolResult,
   ToolContext,
-  pluginGeneratingMessage,
-  pluginWaitingMessage,
-  pluginDelayAfterExecution,
-  pluginViewComponent,
+  getPlugin,
 } from "./tools/type";
 import type { StartApiResponse } from "../server/types";
 import Sidebar from "./components/Sidebar.vue";
@@ -191,7 +189,8 @@ async function processToolCall(msg: any): Promise<void> {
     const args = typeof argStr === "string" ? JSON.parse(argStr) : argStr;
     delete pendingToolArgs[id];
     isGeneratingImage.value = true;
-    generatingMessage.value = pluginGeneratingMessage(msg.name);
+    generatingMessage.value =
+      getPlugin(msg.name)?.generatingMessage || "Processing...";
     scrollToBottomOfSideBar();
     const context: ToolContext = {
       images: [],
@@ -200,7 +199,7 @@ async function processToolCall(msg: any): Promise<void> {
       context.images = [selectedResult.value.imageData];
     }
     const promise = pluginExecute(context, msg.name, args);
-    const waitingMessage = pluginWaitingMessage(msg.name);
+    const waitingMessage = getPlugin(msg.name)?.waitingMessage;
     if (waitingMessage) {
       webrtc.dc?.send(
         JSON.stringify({
@@ -238,7 +237,7 @@ async function processToolCall(msg: any): Promise<void> {
       }),
     );
     if (result.instructions) {
-      const delay = pluginDelayAfterExecution(msg.name);
+      const delay = getPlugin(msg.name)?.delayAfterExecution;
       if (delay) {
         await sleep(delay);
       }
@@ -442,10 +441,6 @@ function sendTextMessage(providedText?: string): void {
 function handleSelectResult(result: ToolResult): void {
   selectedResult.value = result;
   scrollCurrentResultToTop();
-}
-
-function getPluginViewComponent(toolName: string) {
-  return pluginViewComponent(toolName);
 }
 
 function stopChat(): void {
