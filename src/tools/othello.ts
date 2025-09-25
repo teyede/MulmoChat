@@ -1,5 +1,6 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import { playOthello, Command, Side } from "./logic/othelloLogic";
+import OthelloView from "./views/othello.vue";
 
 const toolName = "playOthello";
 
@@ -181,4 +182,5 @@ export const plugin: ToolPlugin = {
   execute: othello,
   generatingMessage: "Processing Othello move...",
   isEnabled: () => true,
+  viewComponent: OthelloView,
 };

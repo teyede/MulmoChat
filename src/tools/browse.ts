@@ -1,4 +1,5 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
+import BrowseView from "./views/browse.vue";
 
 const toolName = "browse";
 
@@ -137,4 +138,5 @@ export const plugin: ToolPlugin = {
     "Tell the user to that you are accessing the specified web page.",
   isEnabled: () => true,
   delayAfterExecution: 3000,
+  viewComponent: BrowseView,
 };

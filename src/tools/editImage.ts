@@ -1,5 +1,6 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import { generateImageCommon } from "./generateImage";
+import ImageView from "./views/image.vue";
 
 const toolName = "editImage";
 
@@ -34,4 +35,5 @@ export const plugin: ToolPlugin = {
   execute: editImage,
   generatingMessage: "Editing image...",
   isEnabled: () => true,
+  viewComponent: ImageView,
 };

@@ -44,6 +44,7 @@ export interface ToolPlugin {
   waitingMessage?: string;
   isEnabled: (startResponse?: StartApiResponse) => boolean;
   delayAfterExecution?: number;
+  viewComponent?: any; // Vue component for rendering results
 }
 
 const pluginList = [
@@ -105,4 +106,12 @@ export const pluginDelayAfterExecution = (name: string) => {
     throw new Error(`Plugin ${name} not found`);
   }
   return plugin.delayAfterExecution;
+};
+
+export const pluginViewComponent = (name: string) => {
+  const plugin = plugins[name];
+  if (!plugin) {
+    return null;
+  }
+  return plugin.viewComponent;
 };
