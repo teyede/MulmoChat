@@ -1,5 +1,6 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import BrowseView from "./views/browse.vue";
+import BrowsePreview from "./previews/browse.vue";
 
 const toolName = "browse";
 
@@ -139,4 +140,5 @@ export const plugin: ToolPlugin = {
   isEnabled: () => true,
   delayAfterExecution: 3000,
   viewComponent: BrowseView,
+  previewComponent: BrowsePreview,
 };

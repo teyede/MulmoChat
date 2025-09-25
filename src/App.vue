@@ -44,7 +44,9 @@
       <div class="flex-1 flex flex-col">
         <div class="flex-1 border rounded bg-gray-50 overflow-hidden">
           <component
-            v-if="selectedResult && getPluginViewComponent(selectedResult.toolName)"
+            v-if="
+              selectedResult && getPluginViewComponent(selectedResult.toolName)
+            "
             :is="getPluginViewComponent(selectedResult.toolName)"
             :selected-result="selectedResult"
             :send-text-message="sendTextMessage"

@@ -45,6 +45,7 @@ export interface ToolPlugin {
   isEnabled: (startResponse?: StartApiResponse) => boolean;
   delayAfterExecution?: number;
   viewComponent?: any; // Vue component for rendering results
+  previewComponent?: any; // Vue component for sidebar preview
 }
 
 const pluginList = [
@@ -114,4 +115,12 @@ export const pluginViewComponent = (name: string) => {
     return null;
   }
   return plugin.viewComponent;
+};
+
+export const pluginPreviewComponent = (name: string) => {
+  const plugin = plugins[name];
+  if (!plugin) {
+    return null;
+  }
+  return plugin.previewComponent;
 };

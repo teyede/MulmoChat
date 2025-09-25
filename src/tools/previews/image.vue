@@ -1,8 +1,5 @@
 <template>
   <img
-    v-if="
-      result.toolName === 'generateImage' || result.toolName === 'editImage'
-    "
     :src="`data:image/png;base64,${result.imageData}`"
     class="max-w-full h-auto rounded"
     alt="Generated image"
