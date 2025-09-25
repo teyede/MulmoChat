@@ -48,7 +48,6 @@
             :selected-result="selectedResult"
             :user-input="userInput"
             :send-text-message="sendTextMessage"
-            @update:user-input="userInput = $event"
           />
           <BrowseView :selected-result="selectedResult" />
           <MulmocastView :selected-result="selectedResult" />
@@ -408,8 +407,8 @@ async function startChat(): Promise<void> {
   }
 }
 
-function sendTextMessage(): void {
-  const text = userInput.value.trim();
+function sendTextMessage(providedText?: string): void {
+  const text = (providedText || userInput.value).trim();
   if (!text) return;
 
   const dc = webrtc.dc;
@@ -444,7 +443,9 @@ function sendTextMessage(): void {
   );
 
   messages.value.push(`You: ${text}`);
-  userInput.value = "";
+  if (!providedText) {
+    userInput.value = "";
+  }
 }
 
 function handleSelectResult(result: ToolResult): void {

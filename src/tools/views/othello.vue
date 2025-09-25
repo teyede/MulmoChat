@@ -48,11 +48,7 @@ import type { ToolResult } from "../type";
 const props = defineProps<{
   selectedResult: ToolResult | null;
   userInput: string;
-  sendTextMessage: () => void;
-}>();
-
-const emit = defineEmits<{
-  "update:user-input": [value: string];
+  sendTextMessage: (text?: string) => void;
 }>();
 
 const gameState = ref<any>(null);
@@ -138,11 +134,9 @@ function handleCellClick(index: number): void {
   const columnLetter = String.fromCharCode(65 + cell.col);
   const rowNumber = cell.row + 1;
 
-  emit(
-    "update:user-input",
+  props.sendTextMessage(
     `I want to play at ${columnLetter}${rowNumber}, which is column=${cell.col}, row=${cell.row} `,
   );
-  props.sendTextMessage();
 }
 
 function handleCellHover(index: number, isEntering: boolean): void {
