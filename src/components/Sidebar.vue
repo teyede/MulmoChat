@@ -39,12 +39,11 @@
           :class="{ 'ring-2 ring-blue-500': selectedResult === result }"
           @click="$emit('selectResult', result)"
         >
-          <ImagePreview :result="result" />
-          <ExaPreview :result="result" />
-          <BrowsePreview :result="result" />
-          <MulmocastPreview :result="result" />
-          <MapPreview :result="result" />
-          <OthelloPreview :result="result" />
+          <component
+            v-if="getPlugin(result.toolName)?.previewComponent"
+            :is="getPlugin(result.toolName).previewComponent"
+            :result="result"
+          />
         </div>
         <div
           v-if="isGeneratingImage"
@@ -86,12 +85,7 @@
 <script setup lang="ts">
 import { ref, nextTick, defineProps, defineEmits } from "vue";
 import type { ToolResult } from "../tools/type";
-import ImagePreview from "../tools/previews/image.vue";
-import ExaPreview from "../tools/previews/exa.vue";
-import BrowsePreview from "../tools/previews/browse.vue";
-import MulmocastPreview from "../tools/previews/mulmocast.vue";
-import MapPreview from "../tools/previews/map.vue";
-import OthelloPreview from "../tools/previews/othello.vue";
+import { getPlugin } from "../tools/type";
 
 defineProps<{
   chatActive: boolean;

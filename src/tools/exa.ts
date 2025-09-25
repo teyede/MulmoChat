@@ -1,4 +1,6 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
+import ExaView from "./views/exa.vue";
+import ExaPreview from "./previews/exa.vue";
 
 const toolName = "exaSearch";
 
@@ -139,4 +141,6 @@ export const plugin: ToolPlugin = {
     "Tell the user that you are searching for relevant information.",
   isEnabled: (startResponse) => !!startResponse?.hasExaApiKey,
   delayAfterExecution: 3000,
+  viewComponent: ExaView,
+  previewComponent: ExaPreview,
 };

@@ -43,16 +43,14 @@
       <!-- Main content -->
       <div class="flex-1 flex flex-col">
         <div class="flex-1 border rounded bg-gray-50 overflow-hidden">
-          <ExaView :selected-result="selectedResult" />
-          <OthelloView
+          <component
+            v-if="
+              selectedResult &&
+              getPlugin(selectedResult.toolName)?.viewComponent
+            "
+            :is="getPlugin(selectedResult.toolName).viewComponent"
             :selected-result="selectedResult"
             :send-text-message="sendTextMessage"
-          />
-          <BrowseView :selected-result="selectedResult" />
-          <MulmocastView :selected-result="selectedResult" />
-          <ImageView :selected-result="selectedResult" />
-          <MapView
-            :selected-result="selectedResult"
             :google-map-key="startResponse?.googleMapKey || null"
           />
           <div
@@ -115,18 +113,10 @@ import {
   pluginExecute,
   ToolResult,
   ToolContext,
-  pluginGeneratingMessage,
-  pluginWaitingMessage,
-  pluginDelayAfterExecution,
+  getPlugin,
 } from "./tools/type";
 import type { StartApiResponse } from "../server/types";
 import Sidebar from "./components/Sidebar.vue";
-import ExaView from "./tools/views/exa.vue";
-import BrowseView from "./tools/views/browse.vue";
-import MulmocastView from "./tools/views/mulmocast.vue";
-import MapView from "./tools/views/map.vue";
-import ImageView from "./tools/views/image.vue";
-import OthelloView from "./tools/views/othello.vue";
 
 const SYSTEM_PROMPT_KEY = "system_prompt_v2";
 const DEFAULT_SYSTEM_PROMPT =
@@ -199,7 +189,8 @@ async function processToolCall(msg: any): Promise<void> {
     const args = typeof argStr === "string" ? JSON.parse(argStr) : argStr;
     delete pendingToolArgs[id];
     isGeneratingImage.value = true;
-    generatingMessage.value = pluginGeneratingMessage(msg.name);
+    generatingMessage.value =
+      getPlugin(msg.name)?.generatingMessage || "Processing...";
     scrollToBottomOfSideBar();
     const context: ToolContext = {
       images: [],
@@ -208,7 +199,7 @@ async function processToolCall(msg: any): Promise<void> {
       context.images = [selectedResult.value.imageData];
     }
     const promise = pluginExecute(context, msg.name, args);
-    const waitingMessage = pluginWaitingMessage(msg.name);
+    const waitingMessage = getPlugin(msg.name)?.waitingMessage;
     if (waitingMessage) {
       webrtc.dc?.send(
         JSON.stringify({
@@ -246,7 +237,7 @@ async function processToolCall(msg: any): Promise<void> {
       }),
     );
     if (result.instructions) {
-      const delay = pluginDelayAfterExecution(msg.name);
+      const delay = getPlugin(msg.name)?.delayAfterExecution;
       if (delay) {
         await sleep(delay);
       }

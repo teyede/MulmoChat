@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="selectedResult?.toolName === 'playOthello'"
-    class="w-full h-full flex flex-col items-center justify-center p-4"
-  >
+  <div class="w-full h-full flex flex-col items-center justify-center p-4">
     <div v-if="gameState" class="flex flex-col items-center">
       <!-- Turn indicator -->
       <div class="text-white text-lg font-bold mb-4 text-center">

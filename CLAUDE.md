@@ -36,6 +36,8 @@ This is a Vue 3 application called "MulmoChat" that provides a multi-modal voice
 
 The application implements a comprehensive plugin architecture located in `src/tools/`:
 
+**IMPORTANT**: Keep all plugin-specific code out of App.vue. The plugin system is designed to be modular and self-contained - App.vue should only handle generic plugin execution through the centralized plugin interface.
+
 #### Core Plugin Interface (src/tools/type.ts)
 - **ToolPlugin**: Defines plugin structure with tool definition, execute function, and metadata
 - **ToolResult**: Standardized result format for all plugins

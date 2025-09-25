@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="selectedResult?.toolName === 'exaSearch'"
-    class="w-full h-full overflow-auto p-6 bg-white"
-  >
+  <div class="w-full h-full overflow-auto p-6 bg-white">
     <div class="max-w-4xl mx-auto">
       <h2 class="text-2xl font-bold text-gray-800 mb-6">
         Search Results

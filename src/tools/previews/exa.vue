@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="result.toolName === 'exaSearch'"
-    class="text-center p-4 bg-purple-50 rounded"
-  >
+  <div class="text-center p-4 bg-purple-50 rounded">
     <div class="text-purple-600 font-medium">🔍 Search Result</div>
     <div class="text-xs text-gray-600 mt-1 truncate">
       {{ result.jsonData?.query || extractQueryFromMessage(result.message) }}

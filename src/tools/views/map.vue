@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="selectedResult?.toolName === 'presentMap'"
-    class="w-full h-full p-4"
-  >
+  <div class="w-full h-full p-4">
     <GoogleMap
       :location="selectedResult.location"
       :api-key="googleMapKey"

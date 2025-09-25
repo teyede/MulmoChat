@@ -1,5 +1,7 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import { blankImageBase64 } from "./blank";
+import MulmocastView from "./views/mulmocast.vue";
+import MulmocastPreview from "./previews/mulmocast.vue";
 
 const toolName = "pushMulmoScript";
 
@@ -116,4 +118,6 @@ export const plugin: ToolPlugin = {
   generatingMessage: "Processing with Mulmocast...",
   waitingMessage: "Tell the user that you are processing with Mulmocast.",
   isEnabled: () => true,
+  viewComponent: MulmocastView,
+  previewComponent: MulmocastPreview,
 };

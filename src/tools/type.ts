@@ -44,6 +44,8 @@ export interface ToolPlugin {
   waitingMessage?: string;
   isEnabled: (startResponse?: StartApiResponse) => boolean;
   delayAfterExecution?: number;
+  viewComponent?: any; // Vue component for rendering results
+  previewComponent?: any; // Vue component for sidebar preview
 }
 
 const pluginList = [
@@ -83,26 +85,6 @@ export const pluginExecute = (
   return plugin.execute(context, args);
 };
 
-export const pluginGeneratingMessage = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    throw new Error(`Plugin ${name} not found`);
-  }
-  return plugin.generatingMessage;
-};
-
-export const pluginWaitingMessage = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    throw new Error(`Plugin ${name} not found`);
-  }
-  return plugin.waitingMessage;
-};
-
-export const pluginDelayAfterExecution = (name: string) => {
-  const plugin = plugins[name];
-  if (!plugin) {
-    throw new Error(`Plugin ${name} not found`);
-  }
-  return plugin.delayAfterExecution;
+export const getPlugin = (name: string) => {
+  return plugins[name] || null;
 };

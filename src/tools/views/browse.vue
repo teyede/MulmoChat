@@ -1,5 +1,5 @@
 <template>
-  <div v-if="selectedResult?.toolName === 'browse'" class="w-full h-full">
+  <div class="w-full h-full">
     <!-- Twitter embed -->
     <div
       v-if="selectedResult?.url && isTwitterUrl(selectedResult.url)"

@@ -1,4 +1,6 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
+import ImageView from "./views/image.vue";
+import ImagePreview from "./previews/image.vue";
 
 const toolName = "generateImage";
 
@@ -80,4 +82,6 @@ export const plugin: ToolPlugin = {
   execute: generateImage,
   generatingMessage: "Generating image...",
   isEnabled: () => true,
+  viewComponent: ImageView,
+  previewComponent: ImagePreview,
 };
