@@ -121,12 +121,12 @@ import {
 } from "./tools/type";
 import type { StartApiResponse } from "../server/types";
 import Sidebar from "./components/Sidebar.vue";
-import ExaView from "./tools/components/exa.vue";
-import BrowseView from "./tools/components/browse.vue";
-import MulmocastView from "./tools/components/mulmocast.vue";
-import MapView from "./tools/components/map.vue";
-import ImageView from "./tools/components/image.vue";
-import OthelloView from "./tools/components/othello.vue";
+import ExaView from "./tools/views/exa.vue";
+import BrowseView from "./tools/views/browse.vue";
+import MulmocastView from "./tools/views/mulmocast.vue";
+import MapView from "./tools/views/map.vue";
+import ImageView from "./tools/views/image.vue";
+import OthelloView from "./tools/views/othello.vue";
 
 const SYSTEM_PROMPT_KEY = "system_prompt_v2";
 const DEFAULT_SYSTEM_PROMPT =

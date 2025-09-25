@@ -7,7 +7,7 @@
 
 ## Repository Layout
 - `src/` — Vue 3 + TypeScript client. Entry: `src/main.ts`; root component: `src/App.vue`; sidebar UI: `src/components/Sidebar.vue`.
-- `src/tools/` — Tool plugins (`generateImage`, `editImage`, `browse`, `mulmocast`, `presentMap`, `exaSearch`, `playOthello`) plus result views under `src/tools/components/` and previews under `src/tools/previews/`.
+- `src/tools/` — Tool plugins (`generateImage`, `editImage`, `browse`, `mulmocast`, `presentMap`, `exaSearch`, `playOthello`) plus result views under `src/tools/views/` and previews under `src/tools/previews/`.
 - `server/` — Express server in TypeScript. Entry: `server/index.ts`; REST endpoints live in `server/routes/api.ts`; shared types in `server/types.ts`.
 - Builds and configs: `vite.config.ts`, `tailwind.config.cjs`, `postcss.config.cjs`, `tsconfig*.json`, `eslint.config.mjs`.
 - `dist/` — Vite build output (client). Do not edit.
@@ -15,7 +15,7 @@
 ## Client Architecture
 - `App.vue` manages WebRTC setup, receives the `/api/start` payload, and registers tools returned by `pluginTools(startResponse)`.
 - Outgoing tool calls stream arguments through the data channel; `processToolCall` dispatches to `pluginExecute` with any cached image context.
-- Views in `src/tools/components/*.vue` render the active tool result (images, browse summaries, Exa hits, MulmoCast HTML, map, Othello board) based on the `ToolResult` payload.
+- Views in `src/tools/views/*.vue` render the active tool result (images, browse summaries, Exa hits, MulmoCast HTML, map, Othello board) based on the `ToolResult` payload.
 - `Sidebar.vue` shows the execution history, exposes audio playback for remote audio, and provides a text input that sends conversation items via the same data channel.
 - Tool enablement is dynamic: `presentMap` requires a Google Maps key; `exaSearch` is available only when `EXA_API_KEY` is configured; all others are always enabled.
 

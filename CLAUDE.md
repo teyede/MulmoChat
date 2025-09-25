@@ -52,7 +52,7 @@ The application implements a comprehensive plugin architecture located in `src/t
 
 #### Plugin Components and Previews
 Each plugin has associated Vue components:
-- **Components** (src/tools/components/): Full-view components for displaying tool results
+- **Components** (src/tools/views/): Full-view components for displaying tool results
 - **Previews** (src/tools/previews/): Sidebar thumbnail previews of tool results
 
 ### Key Integration Points
