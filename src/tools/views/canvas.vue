@@ -74,18 +74,24 @@
         }"
         :lock="false"
         @mousemove="updateCanUndo"
+        @mouseup="saveDrawingState"
+        @touchend="saveDrawingState"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, onMounted, computed, nextTick, watch } from "vue";
 import VueDrawingCanvas from "vue-drawing-canvas";
 import type { ToolResult } from "../type";
 
-defineProps<{
+const props = defineProps<{
   selectedResult: ToolResult | null;
+}>();
+
+const emit = defineEmits<{
+  updateResult: [result: ToolResult];
 }>();
 
 const canvasRef = ref<any>(null);
@@ -102,18 +108,21 @@ const canRedo = computed(() => canvasRef.value?.canRedo() || false);
 const undo = () => {
   if (canvasRef.value) {
     canvasRef.value.undo();
+    saveDrawingState();
   }
 };
 
 const redo = () => {
   if (canvasRef.value) {
     canvasRef.value.redo();
+    saveDrawingState();
   }
 };
 
 const clear = () => {
   if (canvasRef.value) {
     canvasRef.value.reset();
+    saveDrawingState();
   }
 };
 
@@ -122,6 +131,86 @@ const updateCanUndo = () => {
   // This function can be used for manual updates if needed
   // The computed properties will automatically update
 };
+
+const saveDrawingState = async () => {
+  if (canvasRef.value && props.selectedResult) {
+    try {
+      const imageData = await canvasRef.value.save();
+      const drawingState = {
+        imageData,
+        brushSize: brushSize.value,
+        brushColor: brushColor.value,
+        canvasWidth: canvasWidth.value,
+        canvasHeight: canvasHeight.value,
+      };
+
+      console.log('Saving drawing state:', drawingState);
+
+      const updatedResult = {
+        ...props.selectedResult,
+        jsonData: {
+          ...props.selectedResult.jsonData,
+          drawingState,
+        },
+      };
+
+      emit('updateResult', updatedResult);
+    } catch (error) {
+      console.error('Failed to save drawing state:', error);
+    }
+  }
+};
+
+const restoreDrawingState = async () => {
+  console.log('Attempting to restore drawing state...');
+  console.log('Selected result:', props.selectedResult);
+
+  if (props.selectedResult?.jsonData?.drawingState) {
+    const state = props.selectedResult.jsonData.drawingState;
+    console.log('Found drawing state:', state);
+
+    brushSize.value = state.brushSize || 5;
+    brushColor.value = state.brushColor || "#000000";
+    canvasWidth.value = state.canvasWidth || 800;
+    canvasHeight.value = state.canvasHeight || 600;
+
+    if (state.imageData && canvasRef.value) {
+      console.log('Attempting to restore image data...');
+      console.log('Canvas ref methods:', Object.keys(canvasRef.value));
+
+      // Wait for canvas to be ready and then restore the image
+      await nextTick();
+      try {
+        // For vue-drawing-canvas, we need to use the correct method
+        // The component typically accepts initial images through props
+        console.log('Using v-model to restore image');
+        canvasImage.value = state.imageData;
+      } catch (error) {
+        console.warn('Failed to restore canvas image:', error);
+        // Fallback to setting the v-model value
+        canvasImage.value = state.imageData;
+      }
+    } else {
+      console.log('No image data to restore or canvas ref not available');
+    }
+  } else {
+    console.log('No drawing state found in selectedResult');
+  }
+};
+
+// Watch for changes to automatically save drawing state
+watch([brushSize, brushColor], () => {
+  saveDrawingState();
+});
+
+// Watch for selectedResult changes to restore state
+watch(() => props.selectedResult, async () => {
+  if (props.selectedResult?.jsonData?.drawingState) {
+    // Add a small delay to ensure canvas is fully mounted
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await restoreDrawingState();
+  }
+}, { immediate: true });
 
 onMounted(async () => {
   await nextTick();
@@ -132,5 +221,10 @@ onMounted(async () => {
     canvasWidth.value = Math.max(600, rect.width - 32);
     canvasHeight.value = Math.max(400, rect.height - 120);
   }
+
+  // Restore state after canvas is mounted with a delay
+  setTimeout(() => {
+    restoreDrawingState();
+  }, 200);
 });
 </script>

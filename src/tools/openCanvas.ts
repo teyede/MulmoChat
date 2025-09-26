@@ -19,6 +19,9 @@ const openCanvas = async (
     toolName,
     message: "Drawing canvas opened",
     title: "Drawing Canvas",
+    jsonData: {
+      drawingState: null,
+    },
   };
 };
 

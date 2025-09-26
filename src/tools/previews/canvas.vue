@@ -2,7 +2,21 @@
   <div
     class="flex items-center justify-center p-2 bg-gray-50 rounded border min-h-[60px]"
   >
-    <div class="flex items-center gap-2 text-gray-600">
+    <!-- Show thumbnail if drawing exists -->
+    <div
+      v-if="hasDrawing"
+      class="w-full h-full flex items-center justify-center"
+    >
+      <img
+        :src="drawingImage"
+        alt="Drawing thumbnail"
+        class="max-w-full max-h-full object-contain rounded"
+        style="max-height: 56px;"
+      />
+    </div>
+
+    <!-- Show icon if no drawing -->
+    <div v-else class="flex items-center gap-2 text-gray-600">
       <svg
         class="w-6 h-6"
         fill="none"
@@ -23,9 +37,18 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import type { ToolResult } from "../type";
 
-defineProps<{
+const props = defineProps<{
   result: ToolResult;
 }>();
+
+const hasDrawing = computed(() => {
+  return props.result?.jsonData?.drawingState?.imageData;
+});
+
+const drawingImage = computed(() => {
+  return props.result?.jsonData?.drawingState?.imageData || "";
+});
 </script>

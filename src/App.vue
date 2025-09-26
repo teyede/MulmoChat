@@ -52,6 +52,7 @@
             :selected-result="selectedResult"
             :send-text-message="sendTextMessage"
             :google-map-key="startResponse?.googleMapKey || null"
+            @update-result="handleUpdateResult"
           />
           <div
             v-if="!selectedResult"
@@ -463,6 +464,20 @@ async function sendTextMessage(providedText?: string): Promise<void> {
 function handleSelectResult(result: ToolResult): void {
   selectedResult.value = result;
   scrollCurrentResultToTop();
+}
+
+function handleUpdateResult(updatedResult: ToolResult): void {
+  console.log('handleUpdateResult called with:', updatedResult);
+  // Update the result in the pluginResults array
+  const index = pluginResults.value.findIndex(r => r === selectedResult.value);
+  console.log('Found index in pluginResults:', index);
+  if (index !== -1) {
+    pluginResults.value[index] = updatedResult;
+    console.log('Updated pluginResults array');
+  }
+  // Update the selected result
+  selectedResult.value = updatedResult;
+  console.log('Updated selectedResult');
 }
 
 function stopChat(): void {
