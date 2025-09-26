@@ -49,7 +49,7 @@ const mulmocast = async (
   context: ToolContext,
   args: Record<string, any>,
 ): Promise<ToolResult> => {
-  console.log("******** Mulmocast plugin\n", JSON.stringify(args, null, 2));
+  console.log("MULMOSCRIPT:\n", JSON.stringify(args, null, 2));
 
   const { title, beats, style: styleParam } = args;
 
@@ -88,7 +88,7 @@ const mulmocast = async (
         }
       }
     } catch (error) {
-      console.error("Failed to generate image for beat:", error);
+      console.error("EXC: exception\nFailed to generate image for beat:", error);
     }
     return null;
   });
