@@ -11,10 +11,7 @@ const toolDefinition = {
     "Open a drawing canvas for the user to create drawings, sketches, or diagrams.",
 };
 
-const openCanvas = async (
-  context: ToolContext,
-  args: Record<string, any>,
-): Promise<ToolResult> => {
+const openCanvas = async (__: ToolContext): Promise<ToolResult> => {
   return {
     toolName,
     message: "Drawing canvas opened",
