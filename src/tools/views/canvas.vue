@@ -5,14 +5,27 @@
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2">
             <label class="text-sm font-medium">Brush Size:</label>
-            <input
-              v-model.number="brushSize"
-              type="range"
-              min="1"
-              max="50"
-              class="w-20"
-            />
-            <span class="text-sm w-8">{{ brushSize }}</span>
+            <div class="flex gap-1">
+              <button
+                v-for="size in [2, 5, 10, 20]"
+                :key="size"
+                @click="brushSize = size"
+                :class="[
+                  'w-8 h-8 rounded border-2 transition-colors',
+                  brushSize === size
+                    ? 'border-blue-500 bg-blue-100'
+                    : 'border-gray-300 bg-white hover:bg-gray-50'
+                ]"
+              >
+                <div
+                  :class="'bg-gray-800 rounded-full mx-auto'"
+                  :style="{
+                    width: Math.max(2, Math.min(size * 0.3, 12)) + 'px',
+                    height: Math.max(2, Math.min(size * 0.3, 12)) + 'px'
+                  }"
+                ></div>
+              </button>
+            </div>
           </div>
 
           <div class="flex items-center gap-2">
