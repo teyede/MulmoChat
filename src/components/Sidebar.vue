@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[30%] bg-gray-50 border rounded p-4 flex flex-col space-y-4">
+  <div class="w-60 flex-shrink-0 bg-gray-50 border rounded p-4 flex flex-col space-y-4">
     <!-- Voice chat controls -->
     <div class="space-y-2 flex-shrink-0">
       <button
