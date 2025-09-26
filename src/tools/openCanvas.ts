@@ -1,6 +1,6 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import CanvasView from "./views/canvas.vue";
-import CanvasPreview from "./previews/canvas.vue";
+import ImagePreview from "./previews/image.vue";
 
 const toolName = "openCanvas";
 
@@ -31,5 +31,5 @@ export const plugin: ToolPlugin = {
   generatingMessage: "Opening drawing canvas...",
   isEnabled: () => true,
   viewComponent: CanvasView,
-  previewComponent: CanvasPreview,
+  previewComponent: ImagePreview,
 };
