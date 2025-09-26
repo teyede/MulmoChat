@@ -73,9 +73,8 @@
           borderRadius: '8px',
         }"
         :lock="false"
-        @mousemove="updateCanUndo"
-        @mouseup="saveDrawingState"
-        @touchend="saveDrawingState"
+        @mouseup="handleDrawingEnd"
+        @touchend="handleDrawingEnd"
       />
     </div>
   </div>
@@ -105,23 +104,27 @@ const canvasHeight = ref(600);
 const canUndo = ref(false);
 const canRedo = ref(false);
 
-const undo = () => {
+const undo = async () => {
   if (canvasRef.value && canUndo.value) {
     try {
       canvasRef.value.undo();
       canRedo.value = true; // Enable redo after undo
-      saveDrawingState();
+      // Wait for the canvas to update, then save state
+      await nextTick();
+      setTimeout(saveDrawingState, 50);
     } catch (error) {
       console.warn('Undo operation failed:', error);
     }
   }
 };
 
-const redo = () => {
+const redo = async () => {
   if (canvasRef.value && canRedo.value) {
     try {
       canvasRef.value.redo();
-      saveDrawingState();
+      // Wait for the canvas to update, then save state
+      await nextTick();
+      setTimeout(saveDrawingState, 50);
     } catch (error) {
       console.warn('Redo operation failed:', error);
     }
@@ -142,14 +145,11 @@ const clear = () => {
 };
 
 
-const updateCanUndo = () => {
-  if (canvasRef.value) {
-    // Check if the canvas has undo/redo history
-    // Since vue-drawing-canvas doesn't expose canUndo/canRedo methods,
-    // we'll track this manually through the drawing state
-    canUndo.value = true; // Assume we can undo after any drawing action
-    canRedo.value = false; // Reset redo when new action is performed
-  }
+const handleDrawingEnd = () => {
+  // Enable undo after actual drawing is complete
+  canUndo.value = true;
+  canRedo.value = false; // Reset redo when new action is performed
+  saveDrawingState();
 };
 
 const saveDrawingState = async () => {
@@ -196,7 +196,6 @@ const restoreDrawingState = async () => {
 
     if (state.imageData && canvasRef.value) {
       console.log('Attempting to restore image data...');
-      console.log('Canvas ref methods:', Object.keys(canvasRef.value));
 
       // Wait for canvas to be ready and then restore the image
       await nextTick();
