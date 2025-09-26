@@ -142,6 +142,7 @@ watch(systemPrompt, (val) => {
 });
 
 const chatActive = ref(false);
+const conversationActive = ref(false);
 
 const webrtc = {
   pc: null as RTCPeerConnection | null,
@@ -273,27 +274,40 @@ async function processToolCall(
 
 async function messageHandler(event: MessageEvent): Promise<void> {
   const msg = JSON.parse(event.data);
-  if (msg.type === "error") {
-    console.error("Error", msg.error);
-  }
-  if (msg.type === "response.text.delta") {
-    currentText.value += msg.delta;
-  }
-  if (msg.type === "response.completed") {
-    if (currentText.value.trim()) {
-      messages.value.push(currentText.value);
+  const id = msg.id || msg.call_id;
+
+  switch (msg.type) {
+    case "error":
+      console.error("Error", msg.error);
+      break;
+
+    case "response.text.delta":
+      currentText.value += msg.delta;
+      break;
+
+    case "response.completed":
+      if (currentText.value.trim()) {
+        messages.value.push(currentText.value);
+      }
+      currentText.value = "";
+      break;
+
+    case "response.function_call_arguments.delta":
+      pendingToolArgs[id] = (pendingToolArgs[id] || "") + msg.delta;
+      break;
+
+    case "response.function_call_arguments.done": {
+      const argStr = pendingToolArgs[id] || msg.arguments || "";
+      delete pendingToolArgs[id];
+      await processToolCall(msg, id, argStr);
+      break;
     }
-    currentText.value = "";
-  }
-  if (msg.type === "response.function_call_arguments.delta") {
-    const id = msg.id || msg.call_id;
-    pendingToolArgs[id] = (pendingToolArgs[id] || "") + msg.delta;
-  }
-  if (msg.type === "response.function_call_arguments.done") {
-    const id = msg.id || msg.call_id;
-    const argStr = pendingToolArgs[id] || msg.arguments || "";
-    delete pendingToolArgs[id];
-    await processToolCall(msg, id, argStr);
+    case "response.created":
+      conversationActive.value = true;
+      break;
+    case "response.done":
+      conversationActive.value = false;
+      break;
   }
 }
 
@@ -399,9 +413,15 @@ async function startChat(): Promise<void> {
   }
 }
 
-function sendTextMessage(providedText?: string): void {
+async function sendTextMessage(providedText?: string): Promise<void> {
   const text = (providedText || userInput.value).trim();
   if (!text) return;
+
+  // Wait for conversation to be active (up to 5 seconds)
+  for (let i = 0; i < 5 && conversationActive.value; i++) {
+    console.log(`WAIT:${i} \n`, text);
+    await sleep(1000);
+  }
 
   const dc = webrtc.dc;
   if (!chatActive.value || !dc || dc.readyState !== "open") {
@@ -411,7 +431,7 @@ function sendTextMessage(providedText?: string): void {
     return;
   }
 
-  console.log(`MSG:${dc.readyState} \n`, text);
+  console.log(`MSG:\n`, text);
   dc.send(
     JSON.stringify({
       type: "conversation.item.create",
