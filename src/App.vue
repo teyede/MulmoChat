@@ -182,12 +182,13 @@ function scrollCurrentResultToTop(): void {
   });
 }
 
-async function processToolCall(msg: any): Promise<void> {
-  const id = msg.id || msg.call_id;
+async function processToolCall(
+  msg: any,
+  id: string,
+  argStr: string,
+): Promise<void> {
   try {
-    const argStr = pendingToolArgs[id] || msg.arguments || "";
     const args = typeof argStr === "string" ? JSON.parse(argStr) : argStr;
-    delete pendingToolArgs[id];
     isGeneratingImage.value = true;
     generatingMessage.value =
       getPlugin(msg.name)?.generatingMessage || "Processing...";
@@ -293,7 +294,10 @@ async function messageHandler(event: MessageEvent): Promise<void> {
     pendingToolArgs[id] = (pendingToolArgs[id] || "") + msg.delta;
   }
   if (msg.type === "response.function_call_arguments.done") {
-    await processToolCall(msg);
+    const id = msg.id || msg.call_id;
+    const argStr = pendingToolArgs[id] || msg.arguments || "";
+    delete pendingToolArgs[id];
+    await processToolCall(msg, id, argStr);
   }
 }
 
