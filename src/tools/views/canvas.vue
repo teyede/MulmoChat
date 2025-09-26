@@ -4,7 +4,6 @@
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2">
-            <label class="text-sm font-medium">Brush Size:</label>
             <div class="flex gap-1">
               <button
                 v-for="size in [2, 5, 10, 20]"
@@ -14,14 +13,14 @@
                   'w-8 h-8 rounded border-2 transition-colors',
                   brushSize === size
                     ? 'border-blue-500 bg-blue-100'
-                    : 'border-gray-300 bg-white hover:bg-gray-50'
+                    : 'border-gray-300 bg-white hover:bg-gray-50',
                 ]"
               >
                 <div
                   :class="'bg-gray-800 rounded-full mx-auto'"
                   :style="{
-                    width: Math.max(2, Math.min(size * 0.3, 12)) + 'px',
-                    height: Math.max(2, Math.min(size * 0.3, 12)) + 'px'
+                    width: Math.max(2, size * 1) + 'px',
+                    height: Math.max(2, size * 1) + 'px',
                   }"
                 ></div>
               </button>
@@ -29,7 +28,6 @@
           </div>
 
           <div class="flex items-center gap-2">
-            <label class="text-sm font-medium">Color:</label>
             <input
               v-model="brushColor"
               type="color"
