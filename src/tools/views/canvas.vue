@@ -39,16 +39,14 @@
         <div class="flex items-center gap-1">
           <button
             @click="undo"
-            :disabled="!canUndo"
-            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 text-lg"
             title="Undo"
           >
             ↪️
           </button>
           <button
             @click="redo"
-            :disabled="!canRedo"
-            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 text-lg"
             title="Redo"
           >
             ↩️
@@ -115,9 +113,6 @@ const initialStrokes = ref([]);
 const canvasWidth = ref(800);
 const canvasHeight = ref(600);
 
-const canUndo = ref(false);
-const canRedo = ref(false);
-
 const restoreDrawingState = () => {
   if (props.selectedResult?.jsonData?.drawingState) {
     const state = props.selectedResult.jsonData.drawingState;
@@ -139,10 +134,9 @@ const restoreDrawingState = () => {
 restoreDrawingState();
 
 const undo = async () => {
-  if (canvasRef.value && canUndo.value) {
+  if (canvasRef.value) {
     try {
       canvasRef.value.undo();
-      canRedo.value = true; // Enable redo after undo
       // Wait for the canvas to update, then save state
       //await nextTick();
       setTimeout(saveDrawingState, 50);
@@ -153,7 +147,7 @@ const undo = async () => {
 };
 
 const redo = async () => {
-  if (canvasRef.value && canRedo.value) {
+  if (canvasRef.value) {
     try {
       canvasRef.value.redo();
       // Wait for the canvas to update, then save state
@@ -169,8 +163,6 @@ const clear = () => {
   if (canvasRef.value) {
     try {
       canvasRef.value.reset();
-      canUndo.value = false;
-      canRedo.value = false;
       saveDrawingState();
     } catch (error) {
       console.warn("Clear operation failed:", error);
@@ -179,9 +171,6 @@ const clear = () => {
 };
 
 const handleDrawingEnd = () => {
-  // Enable undo after actual drawing is complete
-  canUndo.value = true;
-  canRedo.value = false; // Reset redo when new action is performed
   saveDrawingState();
 };
 
