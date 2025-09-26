@@ -27,7 +27,6 @@ const editImage = async (
   args: Record<string, any>,
 ): Promise<ToolResult> => {
   const prompt = args.prompt as string;
-  console.log("******** Edit image", prompt);
   return generateImageCommon(context, prompt, true, toolName);
 };
 

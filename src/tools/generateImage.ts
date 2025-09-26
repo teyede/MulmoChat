@@ -42,7 +42,6 @@ export async function generateImageCommon(
     const data = await response.json();
 
     if (data.success && data.imageData) {
-      console.log("*** Image generation succeeded", data.imageData.length);
       return {
         toolName: thisToolName,
         imageData: data.imageData,
@@ -51,7 +50,7 @@ export async function generateImageCommon(
           "Acknowledge that the image was generated and has been already presented to the user.",
       };
     } else {
-      console.log("*** Image generation failed");
+      console.error("ERR:1\n no image data", data);
       return {
         toolName: thisToolName,
         message: data.message || "image generation failed",
@@ -59,7 +58,7 @@ export async function generateImageCommon(
       };
     }
   } catch (error) {
-    console.error("*** Image generation failed", error);
+    console.error("ERR: exception\n Image generation failed", error);
     return {
       toolName: thisToolName,
       message: "image generation failed",
@@ -73,7 +72,6 @@ const generateImage = async (
   args: Record<string, any>,
 ): Promise<ToolResult> => {
   const prompt = args.prompt as string;
-  console.log("******** Generate image", prompt);
   return generateImageCommon(context, prompt, false, toolName);
 };
 

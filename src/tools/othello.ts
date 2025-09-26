@@ -168,7 +168,7 @@ const othello = async (
       instructions,
     };
   } catch (error) {
-    console.error("*** Othello game error", error);
+    console.error("ERR: exception\n Othello game error", error);
     return {
       toolName,
       message: `Othello game error: ${error instanceof Error ? error.message : "Unknown error"}`,

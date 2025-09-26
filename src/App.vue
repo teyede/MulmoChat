@@ -225,7 +225,7 @@ async function processToolCall(
     if (result.jsonData) {
       outputPayload.data = result.jsonData;
     }
-    console.log(`Res:${result.toolName}\n`, outputPayload);
+    console.log(`RES:${result.toolName}\n`, outputPayload);
     webrtc.dc?.send(
       JSON.stringify({
         type: "conversation.item.create",
@@ -242,7 +242,7 @@ async function processToolCall(
         await sleep(delay);
       }
       console.log(
-        `Ins:${result.toolName}\n${result.instructions}`
+        `INS:${result.toolName}\n${result.instructions}`
       );
       webrtc.dc?.send(
         JSON.stringify({
@@ -275,7 +275,6 @@ async function processToolCall(
 
 async function messageHandler(event: MessageEvent): Promise<void> {
   const msg = JSON.parse(event.data);
-  // console.log("Message", event.data.length, msg.type);
   if (msg.type === "error") {
     console.error("Error", msg.error);
   }
@@ -414,7 +413,7 @@ function sendTextMessage(providedText?: string): void {
     return;
   }
 
-  console.log("*** Sending text message:", text);
+  console.log(`MSG:${dc.readyState} \n`, text);
   dc.send(
     JSON.stringify({
       type: "conversation.item.create",

@@ -77,7 +77,7 @@ export const pluginExecute = (
   name: string,
   args: Record<string, any>,
 ) => {
-  console.log(`Exe:${name}\n`, args);
+  console.log(`EXE:${name}\n`, args);
   const plugin = plugins[name];
   if (!plugin) {
     throw new Error(`Plugin ${name} not found`);

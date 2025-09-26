@@ -70,16 +70,6 @@ const exaSearch = async (
   const startPublishedDate = args.startPublishedDate;
   const endPublishedDate = args.endPublishedDate;
 
-  console.log("******** Exa Search", query, {
-    numResults,
-    includeText,
-    fetchHighlights,
-    includeDomains,
-    excludeDomains,
-    startPublishedDate,
-    endPublishedDate,
-  });
-
   try {
     const response = await fetch("/api/exa-search", {
       method: "POST",
@@ -105,7 +95,6 @@ const exaSearch = async (
     const data = await response.json();
 
     if (data.success && data.results) {
-      console.log("*** Exa search succeeded", data.results.length, "results");
       return {
         toolName,
         message: `Found ${data.results.length} relevant results for "${query}"`,
@@ -114,7 +103,7 @@ const exaSearch = async (
           "Acknowledge that the search was successful and provide a very short summary, focusing only on the most relevant information.",
       };
     } else {
-      console.log("*** Exa search failed");
+      console.error("ERR:1\n Exa search failed");
       return {
         toolName,
         message: data.error || "Exa search failed",
@@ -123,7 +112,7 @@ const exaSearch = async (
       };
     }
   } catch (error) {
-    console.error("*** Exa search failed", error);
+    console.error("EXC: exception\n Exa search failed", error);
     return {
       toolName,
       message: `Exa search failed: ${error instanceof Error ? error.message : "Unknown error"}`,
