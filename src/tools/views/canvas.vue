@@ -36,26 +36,29 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1">
           <button
             @click="undo"
             :disabled="!canUndo"
-            class="px-3 py-1 bg-blue-500 text-white rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+            title="Undo"
           >
-            Undo
+            ↪️
           </button>
           <button
             @click="redo"
             :disabled="!canRedo"
-            class="px-3 py-1 bg-blue-500 text-white rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+            title="Redo"
           >
-            Redo
+            ↩️
           </button>
           <button
             @click="clear"
-            class="px-3 py-1 bg-red-500 text-white rounded text-sm"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-red-300 bg-white hover:bg-red-50 text-red-600 text-lg"
+            title="Clear"
           >
-            Clear
+            🗑️
           </button>
         </div>
       </div>
