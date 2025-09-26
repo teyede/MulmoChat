@@ -98,12 +98,38 @@ const canvasImage = ref("");
 const brushSize = ref(5);
 const brushColor = ref("#000000");
 const initialStrokes = ref([]);
-
 const canvasWidth = ref(800);
 const canvasHeight = ref(600);
 
 const canUndo = ref(false);
 const canRedo = ref(false);
+
+const restoreDrawingState = () => {
+  console.log('Attempting to restore drawing state...');
+  console.log('Selected result:', props.selectedResult);
+
+  if (props.selectedResult?.jsonData?.drawingState) {
+    const state = props.selectedResult.jsonData.drawingState;
+    console.log('Found drawing state:', state);
+
+    brushSize.value = state.brushSize || 5;
+    brushColor.value = state.brushColor || "#000000";
+    canvasWidth.value = state.canvasWidth || 800;
+    canvasHeight.value = state.canvasHeight || 600;
+
+    if (state.strokes) {
+      console.log('Restoring strokes:', state.strokes);
+      initialStrokes.value = state.strokes;
+    } else {
+      console.log('No strokes to restore');
+      initialStrokes.value = [];
+    }
+  } else {
+    console.log('No drawing state found in selectedResult');
+    initialStrokes.value = [];
+  }
+};
+restoreDrawingState();
 
 const undo = async () => {
   if (canvasRef.value && canUndo.value) {
@@ -145,7 +171,6 @@ const clear = () => {
   }
 };
 
-
 const handleDrawingEnd = () => {
   // Enable undo after actual drawing is complete
   canUndo.value = true;
@@ -185,32 +210,6 @@ const saveDrawingState = async () => {
   }
 };
 
-const restoreDrawingState = async () => {
-  console.log('Attempting to restore drawing state...');
-  console.log('Selected result:', props.selectedResult);
-
-  if (props.selectedResult?.jsonData?.drawingState) {
-    const state = props.selectedResult.jsonData.drawingState;
-    console.log('Found drawing state:', state);
-
-    brushSize.value = state.brushSize || 5;
-    brushColor.value = state.brushColor || "#000000";
-    canvasWidth.value = state.canvasWidth || 800;
-    canvasHeight.value = state.canvasHeight || 600;
-
-    if (state.strokes) {
-      console.log('Restoring strokes:', state.strokes);
-      initialStrokes.value = state.strokes;
-    } else {
-      console.log('No strokes to restore');
-      initialStrokes.value = [];
-    }
-  } else {
-    console.log('No drawing state found in selectedResult');
-    initialStrokes.value = [];
-  }
-};
-
 // Watch for changes to automatically save drawing state
 watch([brushSize, brushColor], () => {
   saveDrawingState();
@@ -228,15 +227,16 @@ watch([canvasWidth, canvasHeight], async () => {
   }, 100);
 });
 
+/*
 // Watch for selectedResult changes to restore state
 watch(() => props.selectedResult, async () => {
   if (props.selectedResult?.jsonData?.drawingState) {
     // Add a small delay to ensure canvas is fully mounted
     await new Promise(resolve => setTimeout(resolve, 100));
-    await restoreDrawingState();
+    restoreDrawingState();
   }
 }, { immediate: true });
-
+*/
 const updateCanvasSize = () => {
   // Get the canvas container (the div with flex-1 p-4 overflow-hidden)
   const canvasContainer = canvasRef.value?.$el?.parentElement;
@@ -269,10 +269,12 @@ onMounted(async () => {
   // Listen for window resize to update canvas size
   window.addEventListener('resize', updateCanvasSize);
 
+  /*
   // Restore state after canvas is mounted with a delay
   setTimeout(() => {
     restoreDrawingState();
   }, 200);
+  */
 });
 
 // Clean up resize listener
