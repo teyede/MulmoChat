@@ -467,17 +467,13 @@ function handleSelectResult(result: ToolResult): void {
 }
 
 function handleUpdateResult(updatedResult: ToolResult): void {
-  console.log('handleUpdateResult called with:', updatedResult);
   // Update the result in the pluginResults array
   const index = pluginResults.value.findIndex(r => r === selectedResult.value);
-  console.log('Found index in pluginResults:', index);
   if (index !== -1) {
     pluginResults.value[index] = updatedResult;
-    console.log('Updated pluginResults array');
   }
   // Update the selected result
   selectedResult.value = updatedResult;
-  console.log('Updated selectedResult');
 }
 
 function stopChat(): void {

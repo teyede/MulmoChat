@@ -105,12 +105,9 @@ const canUndo = ref(false);
 const canRedo = ref(false);
 
 const restoreDrawingState = () => {
-  console.log('Attempting to restore drawing state...');
-  console.log('Selected result:', props.selectedResult);
 
   if (props.selectedResult?.jsonData?.drawingState) {
     const state = props.selectedResult.jsonData.drawingState;
-    console.log('Found drawing state:', state);
 
     brushSize.value = state.brushSize || 5;
     brushColor.value = state.brushColor || "#000000";
@@ -118,14 +115,11 @@ const restoreDrawingState = () => {
     canvasHeight.value = state.canvasHeight || 600;
 
     if (state.strokes) {
-      console.log('Restoring strokes:', state.strokes);
       initialStrokes.value = state.strokes;
     } else {
-      console.log('No strokes to restore');
       initialStrokes.value = [];
     }
   } else {
-    console.log('No drawing state found in selectedResult');
     initialStrokes.value = [];
   }
 };
@@ -137,7 +131,7 @@ const undo = async () => {
       canvasRef.value.undo();
       canRedo.value = true; // Enable redo after undo
       // Wait for the canvas to update, then save state
-      await nextTick();
+      //await nextTick();
       setTimeout(saveDrawingState, 50);
     } catch (error) {
       console.warn('Undo operation failed:', error);
@@ -150,7 +144,7 @@ const redo = async () => {
     try {
       canvasRef.value.redo();
       // Wait for the canvas to update, then save state
-      await nextTick();
+      //await nextTick();
       setTimeout(saveDrawingState, 50);
     } catch (error) {
       console.warn('Redo operation failed:', error);
@@ -184,15 +178,12 @@ const saveDrawingState = async () => {
       const imageData = await canvasRef.value.save();
       const strokes = canvasRef.value.getAllStrokes();
       const drawingState = {
-        imageData,
         strokes,
         brushSize: brushSize.value,
         brushColor: brushColor.value,
         canvasWidth: canvasWidth.value,
         canvasHeight: canvasHeight.value,
       };
-
-      console.log('Saving drawing state:', drawingState);
 
       const updatedResult = {
         ...props.selectedResult,
@@ -215,6 +206,7 @@ watch([brushSize, brushColor], () => {
   saveDrawingState();
 });
 
+/*
 // Watch for canvas size changes and give the canvas time to recalibrate
 watch([canvasWidth, canvasHeight], async () => {
   await nextTick();
@@ -226,16 +218,6 @@ watch([canvasWidth, canvasHeight], async () => {
     }
   }, 100);
 });
-
-/*
-// Watch for selectedResult changes to restore state
-watch(() => props.selectedResult, async () => {
-  if (props.selectedResult?.jsonData?.drawingState) {
-    // Add a small delay to ensure canvas is fully mounted
-    await new Promise(resolve => setTimeout(resolve, 100));
-    restoreDrawingState();
-  }
-}, { immediate: true });
 */
 const updateCanvasSize = () => {
   // Get the canvas container (the div with flex-1 p-4 overflow-hidden)
@@ -250,9 +232,6 @@ const updateCanvasSize = () => {
     // Cap the width to ensure it doesn't overflow
     const newWidth = Math.max(300, Math.min(600, Math.floor(availableWidth)));
     const newHeight = Math.max(200, Math.min(400, Math.floor(availableHeight)));
-
-    console.log('Container size:', containerRect.width, 'x', containerRect.height);
-    console.log('Canvas size:', newWidth, 'x', newHeight);
 
     // Only update if the size actually changed to avoid unnecessary re-renders
     if (newWidth !== canvasWidth.value || newHeight !== canvasHeight.value) {
