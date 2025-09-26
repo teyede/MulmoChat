@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, nextTick, watch } from "vue";
 import VueDrawingCanvas from "vue-drawing-canvas";
 import type { ToolResult } from "../type";
 
@@ -222,6 +222,18 @@ watch([brushSize, brushColor], () => {
   saveDrawingState();
 });
 
+// Watch for canvas size changes and give the canvas time to recalibrate
+watch([canvasWidth, canvasHeight], async () => {
+  await nextTick();
+  // Small delay to allow the canvas to adjust its internal coordinates
+  setTimeout(() => {
+    if (canvasRef.value) {
+      // Force the canvas to recalculate its dimensions
+      canvasRef.value.$forceUpdate?.();
+    }
+  }, 100);
+});
+
 // Watch for selectedResult changes to restore state
 watch(() => props.selectedResult, async () => {
   if (props.selectedResult?.jsonData?.drawingState) {
@@ -231,19 +243,46 @@ watch(() => props.selectedResult, async () => {
   }
 }, { immediate: true });
 
+const updateCanvasSize = () => {
+  // Get the canvas container (the div with flex-1 p-4 overflow-hidden)
+  const canvasContainer = canvasRef.value?.$el?.parentElement;
+  if (canvasContainer) {
+    const containerRect = canvasContainer.getBoundingClientRect();
+
+    // Be more conservative with width - subtract more for padding, borders, scrollbars
+    const availableWidth = containerRect.width - 64; // More margin for width
+    const availableHeight = containerRect.height - 64; // More margin for height
+
+    // Cap the width to ensure it doesn't overflow
+    const newWidth = Math.max(300, Math.min(600, Math.floor(availableWidth)));
+    const newHeight = Math.max(200, Math.min(400, Math.floor(availableHeight)));
+
+    console.log('Container size:', containerRect.width, 'x', containerRect.height);
+    console.log('Canvas size:', newWidth, 'x', newHeight);
+
+    // Only update if the size actually changed to avoid unnecessary re-renders
+    if (newWidth !== canvasWidth.value || newHeight !== canvasHeight.value) {
+      canvasWidth.value = newWidth;
+      canvasHeight.value = newHeight;
+    }
+  }
+};
+
 onMounted(async () => {
   await nextTick();
+  updateCanvasSize();
 
-  const container = canvasRef.value?.$el?.parentElement;
-  if (container) {
-    const rect = container.getBoundingClientRect();
-    canvasWidth.value = Math.max(600, rect.width - 32);
-    canvasHeight.value = Math.max(400, rect.height - 120);
-  }
+  // Listen for window resize to update canvas size
+  window.addEventListener('resize', updateCanvasSize);
 
   // Restore state after canvas is mounted with a delay
   setTimeout(() => {
     restoreDrawingState();
   }, 200);
+});
+
+// Clean up resize listener
+onUnmounted(() => {
+  window.removeEventListener('resize', updateCanvasSize);
 });
 </script>
