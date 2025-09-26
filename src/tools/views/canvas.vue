@@ -66,7 +66,7 @@
         :background-color="'#FFFFFF'"
         :background-image="undefined"
         :watermark="undefined"
-        :initial-image="[]"
+        :initial-image="initialStrokes"
         saveAs="png"
         :styles="{
           border: '1px solid #ddd',
@@ -97,6 +97,7 @@ const canvasRef = ref<any>(null);
 const canvasImage = ref("");
 const brushSize = ref(5);
 const brushColor = ref("#000000");
+const initialStrokes = ref([]);
 
 const canvasWidth = ref(800);
 const canvasHeight = ref(600);
@@ -156,8 +157,10 @@ const saveDrawingState = async () => {
   if (canvasRef.value && props.selectedResult) {
     try {
       const imageData = await canvasRef.value.save();
+      const strokes = canvasRef.value.getAllStrokes();
       const drawingState = {
         imageData,
+        strokes,
         brushSize: brushSize.value,
         brushColor: brushColor.value,
         canvasWidth: canvasWidth.value,
@@ -195,26 +198,16 @@ const restoreDrawingState = async () => {
     canvasWidth.value = state.canvasWidth || 800;
     canvasHeight.value = state.canvasHeight || 600;
 
-    if (state.imageData && canvasRef.value) {
-      console.log('Attempting to restore image data...');
-
-      // Wait for canvas to be ready and then restore the image
-      await nextTick();
-      try {
-        // For vue-drawing-canvas, we need to use the correct method
-        // The component typically accepts initial images through props
-        console.log('Using v-model to restore image');
-        canvasImage.value = state.imageData;
-      } catch (error) {
-        console.warn('Failed to restore canvas image:', error);
-        // Fallback to setting the v-model value
-        canvasImage.value = state.imageData;
-      }
+    if (state.strokes) {
+      console.log('Restoring strokes:', state.strokes);
+      initialStrokes.value = state.strokes;
     } else {
-      console.log('No image data to restore or canvas ref not available');
+      console.log('No strokes to restore');
+      initialStrokes.value = [];
     }
   } else {
     console.log('No drawing state found in selectedResult');
+    initialStrokes.value = [];
   }
 };
 
