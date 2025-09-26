@@ -88,7 +88,10 @@ const mulmocast = async (
         }
       }
     } catch (error) {
-      console.error("EXC: exception\nFailed to generate image for beat:", error);
+      console.error(
+        "EXC: exception\nFailed to generate image for beat:",
+        error,
+      );
     }
     return null;
   });

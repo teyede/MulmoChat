@@ -241,9 +241,7 @@ async function processToolCall(
       if (delay) {
         await sleep(delay);
       }
-      console.log(
-        `INS:${result.toolName}\n${result.instructions}`
-      );
+      console.log(`INS:${result.toolName}\n${result.instructions}`);
       webrtc.dc?.send(
         JSON.stringify({
           type: "response.create",
