@@ -225,7 +225,7 @@ async function processToolCall(
     if (result.jsonData) {
       outputPayload.data = result.jsonData;
     }
-    console.log("*** Function call output", outputPayload);
+    console.log(`Res:${result.toolName}\n`, outputPayload);
     webrtc.dc?.send(
       JSON.stringify({
         type: "conversation.item.create",
@@ -242,8 +242,7 @@ async function processToolCall(
         await sleep(delay);
       }
       console.log(
-        "*** Sending instructions after function call:",
-        result.instructions,
+        `Ins:${result.toolName}\n${result.instructions}`
       );
       webrtc.dc?.send(
         JSON.stringify({
