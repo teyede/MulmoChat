@@ -46,12 +46,6 @@
           >
             Clear
           </button>
-          <button
-            @click="save"
-            class="px-3 py-1 bg-green-500 text-white rounded text-sm"
-          >
-            Save
-          </button>
         </div>
       </div>
     </div>
@@ -123,12 +117,6 @@ const clear = () => {
   }
 };
 
-const save = async () => {
-  if (canvasRef.value) {
-    const imageData = await canvasRef.value.save();
-    console.log("Canvas saved:", imageData);
-  }
-};
 
 const updateCanUndo = () => {
   // This function can be used for manual updates if needed
