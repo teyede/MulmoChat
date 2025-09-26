@@ -468,7 +468,9 @@ function handleSelectResult(result: ToolResult): void {
 
 function handleUpdateResult(updatedResult: ToolResult): void {
   // Update the result in the pluginResults array
-  const index = pluginResults.value.findIndex(r => r === selectedResult.value);
+  const index = pluginResults.value.findIndex(
+    (r) => r === selectedResult.value,
+  );
   if (index !== -1) {
     pluginResults.value[index] = updatedResult;
   }

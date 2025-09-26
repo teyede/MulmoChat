@@ -105,7 +105,6 @@ const canUndo = ref(false);
 const canRedo = ref(false);
 
 const restoreDrawingState = () => {
-
   if (props.selectedResult?.jsonData?.drawingState) {
     const state = props.selectedResult.jsonData.drawingState;
 
@@ -134,7 +133,7 @@ const undo = async () => {
       //await nextTick();
       setTimeout(saveDrawingState, 50);
     } catch (error) {
-      console.warn('Undo operation failed:', error);
+      console.warn("Undo operation failed:", error);
     }
   }
 };
@@ -147,7 +146,7 @@ const redo = async () => {
       //await nextTick();
       setTimeout(saveDrawingState, 50);
     } catch (error) {
-      console.warn('Redo operation failed:', error);
+      console.warn("Redo operation failed:", error);
     }
   }
 };
@@ -160,7 +159,7 @@ const clear = () => {
       canRedo.value = false;
       saveDrawingState();
     } catch (error) {
-      console.warn('Clear operation failed:', error);
+      console.warn("Clear operation failed:", error);
     }
   }
 };
@@ -187,16 +186,16 @@ const saveDrawingState = async () => {
 
       const updatedResult = {
         ...props.selectedResult,
-        imageData: imageData.replace(/^data:image\/[^;]+;base64,/, ''),
+        imageData: imageData.replace(/^data:image\/[^;]+;base64,/, ""),
         jsonData: {
           ...props.selectedResult.jsonData,
           drawingState,
         },
       };
 
-      emit('updateResult', updatedResult);
+      emit("updateResult", updatedResult);
     } catch (error) {
-      console.error('Failed to save drawing state:', error);
+      console.error("Failed to save drawing state:", error);
     }
   }
 };
@@ -246,7 +245,7 @@ onMounted(async () => {
   updateCanvasSize();
 
   // Listen for window resize to update canvas size
-  window.addEventListener('resize', updateCanvasSize);
+  window.addEventListener("resize", updateCanvasSize);
 
   /*
   // Restore state after canvas is mounted with a delay
@@ -258,6 +257,6 @@ onMounted(async () => {
 
 // Clean up resize listener
 onUnmounted(() => {
-  window.removeEventListener('resize', updateCanvasSize);
+  window.removeEventListener("resize", updateCanvasSize);
 });
 </script>
