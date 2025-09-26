@@ -64,8 +64,8 @@
         :lineWidth="brushSize"
         :color="brushColor"
         :background-color="'#FFFFFF'"
-        :background-image="null"
-        :watermark="null"
+        :background-image="undefined"
+        :watermark="undefined"
         :initial-image="[]"
         saveAs="png"
         :styles="{
@@ -102,34 +102,54 @@ const brushColor = ref("#000000");
 const canvasWidth = ref(800);
 const canvasHeight = ref(600);
 
-const canUndo = computed(() => canvasRef.value?.canUndo() || false);
-const canRedo = computed(() => canvasRef.value?.canRedo() || false);
+const canUndo = ref(false);
+const canRedo = ref(false);
 
 const undo = () => {
-  if (canvasRef.value) {
-    canvasRef.value.undo();
-    saveDrawingState();
+  if (canvasRef.value && canUndo.value) {
+    try {
+      canvasRef.value.undo();
+      canRedo.value = true; // Enable redo after undo
+      saveDrawingState();
+    } catch (error) {
+      console.warn('Undo operation failed:', error);
+    }
   }
 };
 
 const redo = () => {
-  if (canvasRef.value) {
-    canvasRef.value.redo();
-    saveDrawingState();
+  if (canvasRef.value && canRedo.value) {
+    try {
+      canvasRef.value.redo();
+      saveDrawingState();
+    } catch (error) {
+      console.warn('Redo operation failed:', error);
+    }
   }
 };
 
 const clear = () => {
   if (canvasRef.value) {
-    canvasRef.value.reset();
-    saveDrawingState();
+    try {
+      canvasRef.value.reset();
+      canUndo.value = false;
+      canRedo.value = false;
+      saveDrawingState();
+    } catch (error) {
+      console.warn('Clear operation failed:', error);
+    }
   }
 };
 
 
 const updateCanUndo = () => {
-  // This function can be used for manual updates if needed
-  // The computed properties will automatically update
+  if (canvasRef.value) {
+    // Check if the canvas has undo/redo history
+    // Since vue-drawing-canvas doesn't expose canUndo/canRedo methods,
+    // we'll track this manually through the drawing state
+    canUndo.value = true; // Assume we can undo after any drawing action
+    canRedo.value = false; // Reset redo when new action is performed
+  }
 };
 
 const saveDrawingState = async () => {
