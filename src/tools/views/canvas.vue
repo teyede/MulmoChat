@@ -168,7 +168,7 @@ const saveDrawingState = async () => {
 
       const updatedResult = {
         ...props.selectedResult,
-        imageData,
+        imageData: imageData.replace(/^data:image\/[^;]+;base64,/, ''),
         jsonData: {
           ...props.selectedResult.jsonData,
           drawingState,
