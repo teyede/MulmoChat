@@ -33,8 +33,10 @@
         :generating-message="generatingMessage"
         :selected-result="selectedResult"
         :user-input="userInput"
+        :is-muted="isMuted"
         @start-chat="startChat"
         @stop-chat="stopChat"
+        @toggle-mute="toggleMute"
         @select-result="handleSelectResult"
         @send-text-message="sendTextMessage"
         @update:user-input="userInput = $event"
@@ -144,6 +146,7 @@ watch(systemPrompt, (val) => {
 
 const chatActive = ref(false);
 const conversationActive = ref(false);
+const isMuted = ref(false);
 
 const webrtc = {
   pc: null as RTCPeerConnection | null,
@@ -499,6 +502,17 @@ function stopChat(): void {
     sidebarRef.value.audioEl.srcObject = null;
   }
   chatActive.value = false;
+  isMuted.value = false;
+}
+
+function toggleMute(): void {
+  if (webrtc.localStream) {
+    const audioTracks = webrtc.localStream.getAudioTracks();
+    audioTracks.forEach((track) => {
+      track.enabled = !track.enabled;
+    });
+    isMuted.value = !isMuted.value;
+  }
 }
 </script>
 

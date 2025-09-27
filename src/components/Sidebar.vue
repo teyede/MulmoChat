@@ -12,13 +12,28 @@
       >
         {{ connecting ? "Connecting..." : "Start Voice Chat" }}
       </button>
-      <button
-        v-else
-        @click="$emit('stopChat')"
-        class="w-full px-4 py-2 bg-red-600 text-white rounded"
-      >
-        Stop
-      </button>
+      <div v-else class="flex gap-2">
+        <button
+          @click="$emit('stopChat')"
+          class="flex-1 px-4 py-2 bg-red-600 text-white rounded"
+        >
+          Stop
+        </button>
+        <button
+          @click="$emit('toggleMute')"
+          class="px-3 py-2 rounded border flex items-center justify-center"
+          :class="
+            isMuted
+              ? 'bg-red-100 text-red-600 border-red-300'
+              : 'bg-gray-100 text-gray-600 border-gray-300'
+          "
+          :title="isMuted ? 'Unmute microphone' : 'Mute microphone'"
+        >
+          <span class="material-icons text-lg">{{
+            isMuted ? "mic_off" : "mic"
+          }}</span>
+        </button>
+      </div>
       <audio ref="audioEl" autoplay></audio>
     </div>
 
@@ -97,11 +112,13 @@ defineProps<{
   generatingMessage: string;
   selectedResult: ToolResult | null;
   userInput: string;
+  isMuted: boolean;
 }>();
 
 defineEmits<{
   startChat: [];
   stopChat: [];
+  toggleMute: [];
   selectResult: [result: ToolResult];
   sendTextMessage: [];
   "update:userInput": [value: string];
