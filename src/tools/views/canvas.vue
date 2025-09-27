@@ -39,24 +39,24 @@
         <div class="flex items-center gap-1">
           <button
             @click="undo"
-            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 text-lg"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50"
             title="Undo"
           >
-            ↪️
+            <span class="material-icons text-gray-600">undo</span>
           </button>
           <button
             @click="redo"
-            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50 text-lg"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-gray-300 bg-white hover:bg-gray-50"
             title="Redo"
           >
-            ↩️
+            <span class="material-icons text-gray-600">redo</span>
           </button>
           <button
             @click="clear"
-            class="w-8 h-8 flex items-center justify-center rounded border-2 border-red-300 bg-white hover:bg-red-50 text-red-600 text-lg"
+            class="w-8 h-8 flex items-center justify-center rounded border-2 border-red-300 bg-white hover:bg-red-50"
             title="Clear"
           >
-            🗑️
+            <span class="material-icons text-red-600">delete</span>
           </button>
         </div>
       </div>
