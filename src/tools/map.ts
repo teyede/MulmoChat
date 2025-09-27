@@ -33,7 +33,6 @@ export const plugin: ToolPlugin = {
     }
 
     return {
-      toolName,
       message: `Showing ${location} on the map`,
       location,
     };

@@ -27,7 +27,7 @@ const editImage = async (
   args: Record<string, any>,
 ): Promise<ToolResult> => {
   const prompt = args.prompt as string;
-  return generateImageCommon(context, prompt, true, toolName);
+  return generateImageCommon(context, prompt, true);
 };
 
 export const plugin: ToolPlugin = {

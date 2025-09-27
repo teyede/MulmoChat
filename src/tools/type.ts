@@ -13,7 +13,7 @@ export interface ToolContext {
 }
 
 export interface ToolResult {
-  toolName: string;
+  toolName?: string;
   message: string;
   title?: string;
   imageData?: string;
@@ -22,6 +22,10 @@ export interface ToolResult {
   instructions?: string;
   htmlData?: string;
   location?: string | { lat: number; lng: number };
+}
+
+export interface ToolResultComplete extends ToolResult {
+  toolName: string;
 }
 
 export interface ToolPlugin {
@@ -74,17 +78,21 @@ const plugins = pluginList.reduce(
   {} as Record<string, ToolPlugin>,
 );
 
-export const pluginExecute = (
+export const pluginExecute = async (
   context: ToolContext,
   name: string,
   args: Record<string, any>,
-) => {
+): Promise<ToolResultComplete> => {
   console.log(`EXE:${name}\n`, args);
   const plugin = plugins[name];
   if (!plugin) {
     throw new Error(`Plugin ${name} not found`);
   }
-  return plugin.execute(context, args);
+  const result = await plugin.execute(context, args);
+  return {
+    ...result,
+    toolName: name,
+  };
 };
 
 export const getPlugin = (name: string) => {

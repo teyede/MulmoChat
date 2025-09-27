@@ -24,7 +24,6 @@ export async function generateImageCommon(
   context: ToolContext,
   prompt: string,
   editImage: boolean,
-  thisToolName: string,
 ): Promise<ToolResult> {
   try {
     const response = await fetch("/api/generate-image", {
@@ -43,7 +42,6 @@ export async function generateImageCommon(
 
     if (data.success && data.imageData) {
       return {
-        toolName: thisToolName,
         imageData: data.imageData,
         message: "image generation succeeded",
         instructions:
@@ -52,7 +50,6 @@ export async function generateImageCommon(
     } else {
       console.error("ERR:1\n no image data", data);
       return {
-        toolName: thisToolName,
         message: data.message || "image generation failed",
         instructions: "Acknowledge that the image generation failed.",
       };
@@ -60,7 +57,6 @@ export async function generateImageCommon(
   } catch (error) {
     console.error("ERR: exception\n Image generation failed", error);
     return {
-      toolName: thisToolName,
       message: "image generation failed",
       instructions: "Acknowledge that the image generation failed.",
     };
@@ -72,7 +68,7 @@ const generateImage = async (
   args: Record<string, any>,
 ): Promise<ToolResult> => {
   const prompt = args.prompt as string;
-  return generateImageCommon(context, prompt, false, toolName);
+  return generateImageCommon(context, prompt, false);
 };
 
 export const plugin: ToolPlugin = {
