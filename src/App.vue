@@ -199,11 +199,8 @@ async function processToolCall(
       getToolPlugin(msg.name)?.generatingMessage || "Processing...";
     scrollToBottomOfSideBar();
     const context: ToolContext = {
-      images: [],
+      currentResult: selectedResult.value,
     };
-    if (selectedResult.value?.imageData) {
-      context.images = [selectedResult.value.imageData];
-    }
     const promise = toolExecute(context, msg.name, args);
     const waitingMessage = getToolPlugin(msg.name)?.waitingMessage;
     if (waitingMessage) {
