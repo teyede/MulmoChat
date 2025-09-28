@@ -24,6 +24,7 @@ export interface ToolResult {
   instructions?: string;
   htmlData?: string;
   location?: string | { lat: number; lng: number };
+  updating?: boolean;
 }
 
 export interface ToolResultComplete extends ToolResult {

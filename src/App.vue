@@ -219,10 +219,30 @@ async function processToolCall(
     }
 
     const result = await promise;
-    pluginResults.value.push(result);
-    selectedResult.value = result;
-    scrollToBottomOfSideBar();
-    scrollCurrentResultToTop();
+
+    // Check if this is an update to the currently selected result
+    if (
+      result.updating &&
+      selectedResult.value &&
+      result.toolName === selectedResult.value.toolName
+    ) {
+      // Find and update the existing result
+      const index = pluginResults.value.findIndex(
+        (r) => r.uuid === selectedResult.value?.uuid,
+      );
+      if (index !== -1) {
+        pluginResults.value[index] = result;
+      } else {
+        console.error("ERR:Failed to find the result to update");
+      }
+      selectedResult.value = result;
+    } else {
+      // Add as new result
+      pluginResults.value.push(result);
+      selectedResult.value = result;
+      scrollToBottomOfSideBar();
+      scrollCurrentResultToTop();
+    }
 
     const outputPayload: Record<string, unknown> = {
       status: result.message,
