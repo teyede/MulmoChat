@@ -65,6 +65,7 @@
     <div class="flex-1 p-4 overflow-hidden">
       <VueDrawingCanvas
         ref="canvasRef"
+        :key="`${selectedResult?.uuid || 'default'}-${canvasRenderKey}`"
         v-model:image="canvasImage"
         :width="canvasWidth"
         :height="canvasHeight"
@@ -112,6 +113,7 @@ const brushColor = ref("#000000");
 const initialStrokes = ref([]);
 const canvasWidth = ref(800);
 const canvasHeight = ref(600);
+const canvasRenderKey = ref(0);
 
 const restoreDrawingState = () => {
   if (props.selectedResult?.jsonData?.drawingState) {
@@ -203,24 +205,25 @@ const saveDrawingState = async () => {
   }
 };
 
+// Watch for selectedResult changes to restore drawing state
+watch(
+  () => props.selectedResult,
+  () => {
+    restoreDrawingState();
+  },
+  { immediate: false },
+);
+
 // Watch for changes to automatically save drawing state
 watch([brushSize, brushColor], () => {
   saveDrawingState();
 });
 
-/*
-// Watch for canvas size changes and give the canvas time to recalibrate
-watch([canvasWidth, canvasHeight], async () => {
-  await nextTick();
-  // Small delay to allow the canvas to adjust its internal coordinates
-  setTimeout(() => {
-    if (canvasRef.value) {
-      // Force the canvas to recalculate its dimensions
-      canvasRef.value.$forceUpdate?.();
-    }
-  }, 100);
+// Watch for canvas size changes and force re-mount
+watch([canvasWidth, canvasHeight], () => {
+  // Force canvas to re-mount with new dimensions by changing the key
+  canvasRenderKey.value++;
 });
-*/
 const updateCanvasSize = () => {
   // Get the canvas container (the div with flex-1 p-4 overflow-hidden)
   const canvasContainer = canvasRef.value?.$el?.parentElement;

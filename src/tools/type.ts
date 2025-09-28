@@ -7,6 +7,7 @@ import * as ExaPlugin from "./exa";
 import * as OthelloPlugin from "./othello";
 import * as CanvasPlugin from "./canvas";
 import type { StartApiResponse } from "../../server/types";
+import { v4 as uuidv4 } from "uuid";
 
 export interface ToolContext {
   images: string[];
@@ -14,6 +15,7 @@ export interface ToolContext {
 
 export interface ToolResult {
   toolName?: string;
+  uuid?: string;
   message: string;
   title?: string;
   imageData?: string;
@@ -26,6 +28,7 @@ export interface ToolResult {
 
 export interface ToolResultComplete extends ToolResult {
   toolName: string;
+  uuid: string;
 }
 
 export interface ToolPlugin {
@@ -78,7 +81,7 @@ const plugins = pluginList.reduce(
   {} as Record<string, ToolPlugin>,
 );
 
-export const pluginExecute = async (
+export const toolExecute = async (
   context: ToolContext,
   name: string,
   args: Record<string, any>,
@@ -92,9 +95,10 @@ export const pluginExecute = async (
   return {
     ...result,
     toolName: name,
+    uuid: uuidv4(),
   };
 };
 
-export const getPlugin = (name: string) => {
+export const getToolPlugin = (name: string) => {
   return plugins[name] || null;
 };
