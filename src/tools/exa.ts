@@ -96,7 +96,6 @@ const exaSearch = async (
 
     if (data.success && data.results) {
       return {
-        toolName,
         message: `Found ${data.results.length} relevant results for "${query}"`,
         jsonData: { query, results: data.results },
         instructions:
@@ -105,7 +104,6 @@ const exaSearch = async (
     } else {
       console.error("ERR:1\n Exa search failed");
       return {
-        toolName,
         message: data.error || "Exa search failed",
         instructions:
           "Acknowledge that the search failed and suggest trying a different query.",
@@ -114,7 +112,6 @@ const exaSearch = async (
   } catch (error) {
     console.error("EXC: exception\n Exa search failed", error);
     return {
-      toolName,
       message: `Exa search failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       instructions:
         "Acknowledge that the search failed due to a technical error.",

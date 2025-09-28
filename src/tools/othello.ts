@@ -162,7 +162,6 @@ const othello = async (
         : "The game state has been updated. Tell the user to make a move. Do not describe the state of the game. The user is able to see it. The user will tell you the move by specifying colum (A to H) and row (1 to 8)";
 
     return {
-      toolName,
       message,
       jsonData: state,
       instructions,
@@ -170,7 +169,6 @@ const othello = async (
   } catch (error) {
     console.error("ERR: exception\n Othello game error", error);
     return {
-      toolName,
       message: `Othello game error: ${error instanceof Error ? error.message : "Unknown error"}`,
       instructions:
         "Acknowledge that there was an error with the Othello game and suggest trying again.",

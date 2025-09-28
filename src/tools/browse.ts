@@ -98,7 +98,6 @@ const browse = async (
     if (data.success && data.data) {
       console.log("*** Browse succeeded", data.data);
       const result: any = {
-        toolName,
         message: "Successfully browsed the webpage",
         title: data.data.data.title || "Untitled",
         url,
@@ -116,7 +115,6 @@ const browse = async (
     } else {
       console.log("*** Browse failed");
       return {
-        toolName,
         message: data.error || "Failed to browse webpage",
         instructions: "Acknowledge that the webpage browsing failed.",
       };
@@ -124,7 +122,6 @@ const browse = async (
   } catch (error) {
     console.error("*** Browse failed", error);
     return {
-      toolName,
       message: `Failed to browse webpage: ${error instanceof Error ? error.message : "Unknown error"}`,
       instructions: "Acknowledge that the webpage browsing failed.",
     };

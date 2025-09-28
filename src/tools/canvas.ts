@@ -13,7 +13,6 @@ const toolDefinition = {
 
 const openCanvas = async (__: ToolContext): Promise<ToolResult> => {
   return {
-    toolName,
     message: "Drawing canvas opened",
     instructions:
       "Tell the user that you are able to turn the drawing into a photographic image, a manga or any other art style.",

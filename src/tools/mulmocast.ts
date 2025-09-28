@@ -107,7 +107,6 @@ const mulmocast = async (
   });
 
   return {
-    toolName,
     message: `Mulmocast has processed the MulmoScript for "${title}" with ${beats.length} beats.`,
     title,
     htmlData: htmlContent,
