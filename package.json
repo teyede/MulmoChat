@@ -25,6 +25,7 @@
     "express": "^5.1.0",
     "material-icons": "^1.13.14",
     "mulmocast": "^1.2.36",
+    "uuid": "^13.0.0",
     "vue": "^3.5.22",
     "vue-drawing-canvas": "^1.0.14"
   },
@@ -33,6 +34,7 @@
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
+    "@types/uuid": "^11.0.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.4.16",
     "concurrently": "^9.2.1",
