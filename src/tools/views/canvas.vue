@@ -65,6 +65,7 @@
     <div class="flex-1 p-4 overflow-hidden">
       <VueDrawingCanvas
         ref="canvasRef"
+        :key="selectedResult?.uuid || 'default'"
         v-model:image="canvasImage"
         :width="canvasWidth"
         :height="canvasHeight"
@@ -202,6 +203,15 @@ const saveDrawingState = async () => {
     }
   }
 };
+
+// Watch for selectedResult changes to restore drawing state
+watch(
+  () => props.selectedResult,
+  () => {
+    restoreDrawingState();
+  },
+  { immediate: false },
+);
 
 // Watch for changes to automatically save drawing state
 watch([brushSize, brushColor], () => {
