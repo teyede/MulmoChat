@@ -220,12 +220,12 @@ async function processToolCall(
     // Check if this is an update to the currently selected result
     if (
       result.updating &&
-      selectedResult.value &&
-      result.toolName === selectedResult.value.toolName
+      context.currentResult &&
+      result.toolName === context.currentResult.toolName
     ) {
       // Find and update the existing result
       const index = pluginResults.value.findIndex(
-        (r) => r.uuid === selectedResult.value?.uuid,
+        (r) => r.uuid === context.currentResult?.uuid,
       );
       if (index !== -1) {
         pluginResults.value[index] = result;
