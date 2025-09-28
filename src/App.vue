@@ -470,15 +470,17 @@ function handleSelectResult(result: ToolResult): void {
 }
 
 function handleUpdateResult(updatedResult: ToolResult): void {
-  // Update the result in the pluginResults array
+  // Update the result in the pluginResults array using uuid comparison
   const index = pluginResults.value.findIndex(
-    (r) => r === selectedResult.value,
+    (r) => r.uuid === updatedResult.uuid,
   );
   if (index !== -1) {
     pluginResults.value[index] = updatedResult;
   }
-  // Update the selected result
-  selectedResult.value = updatedResult;
+  // Update the selected result only if it matches the updated result
+  if (selectedResult.value?.uuid === updatedResult.uuid) {
+    selectedResult.value = updatedResult;
+  }
 }
 
 function stopChat(): void {
