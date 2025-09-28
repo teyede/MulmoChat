@@ -48,9 +48,9 @@
           <component
             v-if="
               selectedResult &&
-              getPlugin(selectedResult.toolName)?.viewComponent
+              getToolPlugin(selectedResult.toolName)?.viewComponent
             "
-            :is="getPlugin(selectedResult.toolName).viewComponent"
+            :is="getToolPlugin(selectedResult.toolName).viewComponent"
             :selected-result="selectedResult"
             :send-text-message="sendTextMessage"
             :google-map-key="startResponse?.googleMapKey || null"
@@ -113,10 +113,10 @@
 import { ref, watch, nextTick } from "vue";
 import {
   pluginTools,
-  pluginExecute,
+  toolExecute,
   ToolResult,
   ToolContext,
-  getPlugin,
+  getToolPlugin,
 } from "./tools/type";
 import type { StartApiResponse } from "../server/types";
 import Sidebar from "./components/Sidebar.vue";
@@ -196,7 +196,7 @@ async function processToolCall(
     const args = typeof argStr === "string" ? JSON.parse(argStr) : argStr;
     isGeneratingImage.value = true;
     generatingMessage.value =
-      getPlugin(msg.name)?.generatingMessage || "Processing...";
+      getToolPlugin(msg.name)?.generatingMessage || "Processing...";
     scrollToBottomOfSideBar();
     const context: ToolContext = {
       images: [],
@@ -204,8 +204,8 @@ async function processToolCall(
     if (selectedResult.value?.imageData) {
       context.images = [selectedResult.value.imageData];
     }
-    const promise = pluginExecute(context, msg.name, args);
-    const waitingMessage = getPlugin(msg.name)?.waitingMessage;
+    const promise = toolExecute(context, msg.name, args);
+    const waitingMessage = getToolPlugin(msg.name)?.waitingMessage;
     if (waitingMessage) {
       webrtc.dc?.send(
         JSON.stringify({
@@ -242,7 +242,7 @@ async function processToolCall(
       }),
     );
     if (result.instructions) {
-      const delay = getPlugin(msg.name)?.delayAfterExecution;
+      const delay = getToolPlugin(msg.name)?.delayAfterExecution;
       if (delay) {
         await sleep(delay);
       }

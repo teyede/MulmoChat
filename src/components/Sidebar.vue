@@ -57,8 +57,8 @@
           @click="$emit('selectResult', result)"
         >
           <component
-            v-if="getPlugin(result.toolName)?.previewComponent"
-            :is="getPlugin(result.toolName).previewComponent"
+            v-if="getToolPlugin(result.toolName)?.previewComponent"
+            :is="getToolPlugin(result.toolName).previewComponent"
             :result="result"
           />
         </div>
@@ -102,7 +102,7 @@
 <script setup lang="ts">
 import { ref, nextTick, defineProps, defineEmits } from "vue";
 import type { ToolResult } from "../tools/type";
-import { getPlugin } from "../tools/type";
+import { getToolPlugin } from "../tools/type";
 
 defineProps<{
   chatActive: boolean;

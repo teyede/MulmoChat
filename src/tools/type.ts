@@ -81,7 +81,7 @@ const plugins = pluginList.reduce(
   {} as Record<string, ToolPlugin>,
 );
 
-export const pluginExecute = async (
+export const toolExecute = async (
   context: ToolContext,
   name: string,
   args: Record<string, any>,
@@ -99,6 +99,6 @@ export const pluginExecute = async (
   };
 };
 
-export const getPlugin = (name: string) => {
+export const getToolPlugin = (name: string) => {
   return plugins[name] || null;
 };
