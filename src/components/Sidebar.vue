@@ -77,17 +77,26 @@
     </div>
 
     <div class="space-y-2 flex-shrink-0">
-      <input
-        :value="userInput"
-        @input="
-          $emit('update:userInput', ($event.target as HTMLInputElement).value)
-        "
-        @keyup.enter.prevent="$emit('sendTextMessage')"
-        :disabled="!chatActive"
-        type="text"
-        placeholder="Type a message"
-        class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-      />
+      <div class="flex gap-2">
+        <button
+          :disabled="!chatActive"
+          class="px-3 py-2 bg-gray-100 text-gray-600 border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 flex items-center justify-center"
+          title="Upload image"
+        >
+          <span class="text-lg">+</span>
+        </button>
+        <input
+          :value="userInput"
+          @input="
+            $emit('update:userInput', ($event.target as HTMLInputElement).value)
+          "
+          @keyup.enter.prevent="$emit('sendTextMessage')"
+          :disabled="!chatActive"
+          type="text"
+          placeholder="Type a message"
+          class="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        />
+      </div>
       <button
         @click="$emit('sendTextMessage')"
         :disabled="!chatActive || !userInput.trim()"
