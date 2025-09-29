@@ -120,8 +120,8 @@ const mulmocast = async (
       height: 1080,
     },
     imageParams: {
-      provider: "gemini",
-      model: "gemini-2.0-flash-001",
+      provider: "google",
+      model: "gemini-2.5-flash-image-preview",
       style,
     },
     audioParams: {
