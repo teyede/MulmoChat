@@ -28,7 +28,7 @@
         ref="sidebarRef"
         :chat-active="chatActive"
         :connecting="connecting"
-        :plugin-results="pluginResults"
+        :plugin-results="toolResults"
         :is-generating-image="isGeneratingImage"
         :generating-message="generatingMessage"
         :selected-result="selectedResult"
@@ -131,7 +131,7 @@ const systemPrompt = ref(
 );
 const messages = ref<string[]>([]);
 const currentText = ref("");
-const pluginResults = ref<ToolResult[]>([]);
+const toolResults = ref<ToolResult[]>([]);
 const isGeneratingImage = ref(false);
 const generatingMessage = ref("");
 const pendingToolArgs: Record<string, string> = {};
@@ -224,18 +224,18 @@ async function processToolCall(
       result.toolName === context.currentResult.toolName
     ) {
       // Find and update the existing result
-      const index = pluginResults.value.findIndex(
+      const index = toolResults.value.findIndex(
         (r) => r.uuid === context.currentResult?.uuid,
       );
       if (index !== -1) {
-        pluginResults.value[index] = result;
+        toolResults.value[index] = result;
       } else {
         console.error("ERR:Failed to find the result to update");
       }
       selectedResult.value = result;
     } else {
       // Add as new result
-      pluginResults.value.push(result);
+      toolResults.value.push(result);
       selectedResult.value = result;
       scrollToBottomOfSideBar();
       scrollCurrentResultToTop();
@@ -488,11 +488,11 @@ function handleSelectResult(result: ToolResult): void {
 
 function handleUpdateResult(updatedResult: ToolResult): void {
   // Update the result in the pluginResults array using uuid comparison
-  const index = pluginResults.value.findIndex(
+  const index = toolResults.value.findIndex(
     (r) => r.uuid === updatedResult.uuid,
   );
   if (index !== -1) {
-    pluginResults.value[index] = updatedResult;
+    toolResults.value[index] = updatedResult;
   }
   // Update the selected result only if it matches the updated result
   if (selectedResult.value?.uuid === updatedResult.uuid) {
