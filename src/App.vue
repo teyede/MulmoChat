@@ -511,7 +511,7 @@ function handleUploadImages(
     const result = createUploadedImageResult(
       imageData,
       fileName,
-      "Uploaded by the user",
+      `Uploaded by the user: ${fileName}`,
     );
 
     // Add UUID to make it a complete ToolResult

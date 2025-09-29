@@ -80,8 +80,7 @@
       <div class="flex gap-2">
         <button
           @click="triggerImageUpload"
-          :disabled="!chatActive"
-          class="px-3 py-2 bg-gray-100 text-gray-600 border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 flex items-center justify-center"
+          class="px-3 py-2 bg-gray-100 text-gray-600 border border-gray-300 rounded hover:bg-gray-200 flex items-center justify-center"
           title="Upload image"
         >
           <span class="text-lg">+</span>
