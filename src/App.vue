@@ -40,6 +40,7 @@
         @select-result="handleSelectResult"
         @send-text-message="sendTextMessage"
         @update:user-input="userInput = $event"
+        @upload-images="handleUploadImages"
       />
 
       <!-- Main content -->
@@ -118,6 +119,7 @@ import {
   ToolContext,
   getToolPlugin,
 } from "./tools/type";
+import { createUploadedImageResult } from "./tools/generateImage";
 import type { StartApiResponse } from "../server/types";
 import Sidebar from "./components/Sidebar.vue";
 
@@ -498,6 +500,28 @@ function handleUpdateResult(updatedResult: ToolResult): void {
   if (selectedResult.value?.uuid === updatedResult.uuid) {
     selectedResult.value = updatedResult;
   }
+}
+
+function handleUploadImages(imageDataArray: string[], fileNamesArray: string[]): void {
+  console.log('handleUploadImages called with:', imageDataArray.length, 'images');
+  imageDataArray.forEach((imageData, index) => {
+    const fileName = fileNamesArray[index];
+    const result = createUploadedImageResult(imageData, fileName, "Uploaded by the user");
+
+    // Add UUID to make it a complete ToolResult
+    const completeResult = {
+      ...result,
+      uuid: crypto.randomUUID(),
+    };
+
+    console.log('Adding result to toolResults:', completeResult);
+    toolResults.value.push(completeResult);
+    selectedResult.value = completeResult;
+  });
+
+  console.log('toolResults now has', toolResults.value.length, 'items');
+  scrollToBottomOfSideBar();
+  scrollCurrentResultToTop();
 }
 
 function stopChat(): void {
