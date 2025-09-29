@@ -35,7 +35,12 @@ export async function generateImageCommon(
         prompt,
         images:
           editImage && context.currentResult?.imageData
-            ? [context.currentResult.imageData]
+            ? [
+                context.currentResult.imageData.replace(
+                  /^data:image\/[^;]+;base64,/,
+                  "",
+                ),
+              ]
             : [],
       }),
     });
@@ -48,7 +53,7 @@ export async function generateImageCommon(
 
     if (data.success && data.imageData) {
       return {
-        imageData: data.imageData,
+        imageData: `data:image/png;base64,${data.imageData}`,
         message: "image generation succeeded",
         instructions:
           "Acknowledge that the image was generated and has been already presented to the user.",
