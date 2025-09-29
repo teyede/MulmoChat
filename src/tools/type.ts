@@ -28,6 +28,7 @@ export interface ToolResult {
   updating?: boolean;
   prompt?: string;
   mulmoScript?: MulmoScript;
+  images?: Record<string, string>;
 }
 
 export interface ToolResultComplete extends ToolResult {

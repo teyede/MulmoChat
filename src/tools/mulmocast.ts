@@ -70,8 +70,15 @@ const mulmocast = async (
   // Generate HTML from MulmoScript
   let htmlContent = `<h1 style="font-size: 2em; margin-bottom: 1em;">${title}</h1>`;
 
+  // Generate beat objects with UUIDs first
+  const beatsWithIds = beats.map((beat: { text: string }) => ({
+    id: uuidv4(),
+    speaker: "Presenter",
+    text: beat.text,
+  }));
+
   // Generate images for each beat concurrently
-  const imagePromises = beats.map(async (beat: { text: string }) => {
+  const imagePromises = beatsWithIds.map(async (beat) => {
     const prompt = `generate image appropriate for the text. <text>${beat.text}</text>${style}`;
 
     try {
@@ -86,7 +93,7 @@ const mulmocast = async (
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.imageData) {
-          return data.imageData;
+          return { id: beat.id, imageData: data.imageData };
         }
       }
     } catch (error) {
@@ -95,15 +102,23 @@ const mulmocast = async (
         error,
       );
     }
-    return null;
+    return { id: beat.id, imageData: null };
   });
 
-  const images = await Promise.all(imagePromises);
+  const imageResults = await Promise.all(imagePromises);
+
+  // Create images mapping from beat ID to imageData
+  const imagesMap: Record<string, string> = {};
+  imageResults.forEach((result) => {
+    if (result.imageData) {
+      imagesMap[result.id] = result.imageData;
+    }
+  });
 
   // Build HTML with images and text
-  beats.forEach((beat: { text: string }, index: number) => {
-    if (images[index]) {
-      htmlContent += `<img src="data:image/png;base64,${images[index]}" style="max-width: 100%; margin: 1em 0;" alt="${beat.text}" />`;
+  beatsWithIds.forEach((beat) => {
+    if (imagesMap[beat.id]) {
+      htmlContent += `<img src="data:image/png;base64,${imagesMap[beat.id]}" style="max-width: 100%; margin: 1em 0;" alt="${beat.text}" />`;
     }
     htmlContent += `<p style="margin-bottom: 1em;">${beat.text}</p>`;
   });
@@ -139,11 +154,7 @@ const mulmocast = async (
     },
     title,
     lang: args.lang,
-    beats: beats.map((beat: { text: string }) => ({
-      id: uuidv4(),
-      speaker: "Presenter",
-      text: beat.text,
-    })),
+    beats: beatsWithIds,
   };
 
   return {
@@ -152,6 +163,7 @@ const mulmocast = async (
     htmlData: htmlContent,
     instructions: "Acknowledge that the mulmocast operation was completed.",
     mulmoScript,
+    images: imagesMap,
   };
 };
 
