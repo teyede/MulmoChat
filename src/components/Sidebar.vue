@@ -77,16 +77,33 @@
     </div>
 
     <div class="space-y-2 flex-shrink-0">
+      <div class="flex gap-2">
+        <button
+          @click="triggerImageUpload"
+          class="px-3 py-2 bg-gray-100 text-gray-600 border border-gray-300 rounded hover:bg-gray-200 flex items-center justify-center"
+          title="Upload image"
+        >
+          <span class="text-lg">+</span>
+        </button>
+        <input
+          :value="userInput"
+          @input="
+            $emit('update:userInput', ($event.target as HTMLInputElement).value)
+          "
+          @keyup.enter.prevent="$emit('sendTextMessage')"
+          :disabled="!chatActive"
+          type="text"
+          placeholder="Type a message"
+          class="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        />
+      </div>
       <input
-        :value="userInput"
-        @input="
-          $emit('update:userInput', ($event.target as HTMLInputElement).value)
-        "
-        @keyup.enter.prevent="$emit('sendTextMessage')"
-        :disabled="!chatActive"
-        type="text"
-        placeholder="Type a message"
-        class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        ref="fileInput"
+        type="file"
+        accept="image/png,image/jpeg"
+        multiple
+        class="hidden"
+        @change="handleImageUpload"
       />
       <button
         @click="$emit('sendTextMessage')"
@@ -115,17 +132,19 @@ defineProps<{
   isMuted: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   startChat: [];
   stopChat: [];
   toggleMute: [];
   selectResult: [result: ToolResult];
   sendTextMessage: [];
   "update:userInput": [value: string];
+  uploadImages: [imageData: string[], fileNames: string[]];
 }>();
 
 const audioEl = ref<HTMLAudioElement | null>(null);
 const imageContainer = ref<HTMLDivElement | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
 
 function scrollToBottom(): void {
   nextTick(() => {
@@ -133,6 +152,41 @@ function scrollToBottom(): void {
       imageContainer.value.scrollTop = imageContainer.value.scrollHeight;
     }
   });
+}
+
+function triggerImageUpload(): void {
+  fileInput.value?.click();
+}
+
+function handleImageUpload(event: Event): void {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
+  if (files && files.length > 0) {
+    const imageDataArray: string[] = [];
+    const fileNamesArray: string[] = [];
+    let loadedCount = 0;
+    const validFiles = Array.from(files).filter(
+      (file) => file.type === "image/png" || file.type === "image/jpeg",
+    );
+
+    validFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageData = e.target?.result as string;
+        imageDataArray.push(imageData);
+        fileNamesArray.push(file.name);
+        loadedCount++;
+
+        if (loadedCount === validFiles.length) {
+          emit("uploadImages", imageDataArray, fileNamesArray);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset the input so the same files can be uploaded again
+    target.value = "";
+  }
 }
 
 defineExpose({

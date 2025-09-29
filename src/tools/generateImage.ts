@@ -83,6 +83,20 @@ const generateImage = async (
   return generateImageCommon(context, prompt, false);
 };
 
+export function createUploadedImageResult(
+  imageData: string,
+  fileName: string,
+  prompt: string,
+): ToolResult {
+  return {
+    toolName,
+    imageData,
+    message: "",
+    prompt,
+    title: fileName,
+  };
+}
+
 export const plugin: ToolPlugin = {
   toolDefinition,
   execute: generateImage,
