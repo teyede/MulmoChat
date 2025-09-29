@@ -52,6 +52,7 @@ export async function generateImageCommon(
         message: "image generation succeeded",
         instructions:
           "Acknowledge that the image was generated and has been already presented to the user.",
+        prompt,
       };
     } else {
       console.error("ERR:1\n no image data", data);

@@ -25,6 +25,7 @@ export interface ToolResult {
   htmlData?: string;
   location?: string | { lat: number; lng: number };
   updating?: boolean;
+  prompt?: string;
 }
 
 export interface ToolResultComplete extends ToolResult {
