@@ -31,7 +31,13 @@ export async function generateImageCommon(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt, images: editImage ? context.images : [] }),
+      body: JSON.stringify({
+        prompt,
+        images:
+          editImage && context.currentResult?.imageData
+            ? [context.currentResult.imageData]
+            : [],
+      }),
     });
 
     if (!response.ok) {

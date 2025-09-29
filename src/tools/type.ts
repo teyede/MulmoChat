@@ -10,7 +10,7 @@ import type { StartApiResponse } from "../../server/types";
 import { v4 as uuidv4 } from "uuid";
 
 export interface ToolContext {
-  images: string[];
+  currentResult: ToolResult | null;
 }
 
 export interface ToolResult {
@@ -24,6 +24,7 @@ export interface ToolResult {
   instructions?: string;
   htmlData?: string;
   location?: string | { lat: number; lng: number };
+  updating?: boolean;
 }
 
 export interface ToolResultComplete extends ToolResult {

@@ -165,6 +165,7 @@ const othello = async (
       message,
       jsonData: state,
       instructions,
+      updating: args.action !== "new_game",
     };
   } catch (error) {
     console.error("ERR: exception\n Othello game error", error);

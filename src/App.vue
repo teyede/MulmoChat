@@ -199,11 +199,8 @@ async function processToolCall(
       getToolPlugin(msg.name)?.generatingMessage || "Processing...";
     scrollToBottomOfSideBar();
     const context: ToolContext = {
-      images: [],
+      currentResult: selectedResult.value,
     };
-    if (selectedResult.value?.imageData) {
-      context.images = [selectedResult.value.imageData];
-    }
     const promise = toolExecute(context, msg.name, args);
     const waitingMessage = getToolPlugin(msg.name)?.waitingMessage;
     if (waitingMessage) {
@@ -219,10 +216,30 @@ async function processToolCall(
     }
 
     const result = await promise;
-    pluginResults.value.push(result);
-    selectedResult.value = result;
-    scrollToBottomOfSideBar();
-    scrollCurrentResultToTop();
+
+    // Check if this is an update to the currently selected result
+    if (
+      result.updating &&
+      context.currentResult &&
+      result.toolName === context.currentResult.toolName
+    ) {
+      // Find and update the existing result
+      const index = pluginResults.value.findIndex(
+        (r) => r.uuid === context.currentResult?.uuid,
+      );
+      if (index !== -1) {
+        pluginResults.value[index] = result;
+      } else {
+        console.error("ERR:Failed to find the result to update");
+      }
+      selectedResult.value = result;
+    } else {
+      // Add as new result
+      pluginResults.value.push(result);
+      selectedResult.value = result;
+      scrollToBottomOfSideBar();
+      scrollCurrentResultToTop();
+    }
 
     const outputPayload: Record<string, unknown> = {
       status: result.message,
