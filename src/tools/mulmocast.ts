@@ -2,6 +2,7 @@ import { ToolPlugin, ToolContext, ToolResult } from "./type";
 import { blankImageBase64 } from "./blank";
 import MulmocastView from "./views/mulmocast.vue";
 import MulmocastPreview from "./previews/mulmocast.vue";
+import type { MulmoScript } from "mulmocast";
 
 const toolName = "pushMulmoScript";
 
@@ -106,11 +107,49 @@ const mulmocast = async (
     htmlContent += `<p style="margin-bottom: 1em;">${beat.text}</p>`;
   });
 
+  // Construct MulmoScript object
+  const mulmoScript: MulmoScript = {
+    $mulmocast: { version: "1.1" },
+    canvasSize: {
+      width: 1536,
+      height: 1080,
+    },
+    imageParams: {
+      provider: "gemini",
+      model: "gemini-2.0-flash-001",
+      style,
+    },
+    audioParams: {
+      padding: 0.2,
+      introPadding: 0.5,
+      closingPadding: 0.5,
+      outroPadding: 0.5,
+      bgmVolume: 0,
+      audioVolume: 1,
+      suppressSpeech: false,
+    },
+    soundEffectParams: {},
+    speechParams: {
+      speakers: {
+        Presenter: {
+          voiceId: "shimmer",
+        },
+      },
+    },
+    title,
+    lang: args.lang,
+    beats: beats.map((beat: { text: string }) => ({
+      speaker: "Presenter",
+      text: beat.text,
+    })),
+  };
+
   return {
     message: `Mulmocast has processed the MulmoScript for "${title}" with ${beats.length} beats.`,
     title,
     htmlData: htmlContent,
     instructions: "Acknowledge that the mulmocast operation was completed.",
+    mulmoScript,
   };
 };
 
