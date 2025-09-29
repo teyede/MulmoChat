@@ -160,20 +160,15 @@ function triggerImageUpload(): void {
 }
 
 function handleImageUpload(event: Event): void {
-  console.log('handleImageUpload called');
   const target = event.target as HTMLInputElement;
   const files = target.files;
-  console.log('Files selected:', files?.length);
-
   if (files && files.length > 0) {
     const imageDataArray: string[] = [];
     const fileNamesArray: string[] = [];
     let loadedCount = 0;
-    const validFiles = Array.from(files).filter(file =>
-      file.type === 'image/png' || file.type === 'image/jpeg'
+    const validFiles = Array.from(files).filter(
+      (file) => file.type === "image/png" || file.type === "image/jpeg",
     );
-
-    console.log('Valid image files:', validFiles.length);
 
     validFiles.forEach((file) => {
       const reader = new FileReader();
@@ -182,18 +177,16 @@ function handleImageUpload(event: Event): void {
         imageDataArray.push(imageData);
         fileNamesArray.push(file.name);
         loadedCount++;
-        console.log('Loaded file:', file.name, 'Progress:', loadedCount, '/', validFiles.length);
 
         if (loadedCount === validFiles.length) {
-          console.log('Emitting uploadImages with:', imageDataArray.length, 'images');
-          emit('uploadImages', imageDataArray, fileNamesArray);
+          emit("uploadImages", imageDataArray, fileNamesArray);
         }
       };
       reader.readAsDataURL(file);
     });
 
     // Reset the input so the same files can be uploaded again
-    target.value = '';
+    target.value = "";
   }
 }
 
