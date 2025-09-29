@@ -3,6 +3,7 @@ import { blankImageBase64 } from "./blank";
 import MulmocastView from "./views/mulmocast.vue";
 import MulmocastPreview from "./previews/mulmocast.vue";
 import type { MulmoScript } from "mulmocast";
+import { v4 as uuidv4 } from "uuid";
 
 const toolName = "pushMulmoScript";
 
@@ -139,6 +140,7 @@ const mulmocast = async (
     title,
     lang: args.lang,
     beats: beats.map((beat: { text: string }) => ({
+      id: uuidv4(),
       speaker: "Presenter",
       text: beat.text,
     })),
