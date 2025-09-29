@@ -7,6 +7,7 @@ import * as ExaPlugin from "./exa";
 import * as OthelloPlugin from "./othello";
 import * as CanvasPlugin from "./canvas";
 import type { StartApiResponse } from "../../server/types";
+import type { MulmoScript } from "mulmocast";
 import { v4 as uuidv4 } from "uuid";
 
 export interface ToolContext {
@@ -26,6 +27,7 @@ export interface ToolResult {
   location?: string | { lat: number; lng: number };
   updating?: boolean;
   prompt?: string;
+  mulmoScript?: MulmoScript;
 }
 
 export interface ToolResultComplete extends ToolResult {
