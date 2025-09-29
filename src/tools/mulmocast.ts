@@ -67,9 +67,6 @@ const mulmocast = async (
   const style =
     styleMap[styleParam as keyof typeof styleMap] || styleMap.photorealistic;
 
-  // Generate HTML from MulmoScript
-  let htmlContent = `<h1 style="font-size: 2em; margin-bottom: 1em;">${title}</h1>`;
-
   // Generate beat objects with UUIDs first
   const beatsWithIds = beats.map((beat: { text: string }) => ({
     id: uuidv4(),
@@ -115,14 +112,6 @@ const mulmocast = async (
     }
   });
 
-  // Build HTML with images and text
-  beatsWithIds.forEach((beat) => {
-    if (imagesMap[beat.id]) {
-      htmlContent += `<img src="data:image/png;base64,${imagesMap[beat.id]}" style="max-width: 100%; margin: 1em 0;" alt="${beat.text}" />`;
-    }
-    htmlContent += `<p style="margin-bottom: 1em;">${beat.text}</p>`;
-  });
-
   // Construct MulmoScript object
   const mulmoScript: MulmoScript = {
     $mulmocast: { version: "1.1" },
@@ -160,7 +149,6 @@ const mulmocast = async (
   return {
     message: `Mulmocast has processed the MulmoScript for "${title}" with ${beats.length} beats.`,
     title,
-    htmlData: htmlContent,
     instructions: "Acknowledge that the mulmocast operation was completed.",
     mulmoScript,
     images: imagesMap,
