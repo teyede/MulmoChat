@@ -89,10 +89,10 @@ export function createUploadedImageResult(
   prompt: string,
 ): ToolResult {
   return {
-    toolName: toolName,
-    imageData: imageData,
+    toolName,
+    imageData,
     message: "",
-    prompt: prompt,
+    prompt,
     title: fileName,
   };
 }
