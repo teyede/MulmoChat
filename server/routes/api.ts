@@ -4,9 +4,13 @@ import { GoogleGenAI } from "@google/genai";
 import { puppeteerCrawlerAgent } from "mulmocast";
 import { StartApiResponse } from "../types";
 import { exaSearch, hasExaApiKey } from "../exaSearch";
+import movieRouter from "./movie";
 dotenv.config();
 
 const router: Router = express.Router();
+
+// Mount movie routes
+router.use(movieRouter);
 
 // Session start endpoint
 router.get("/start", async (req: Request, res: Response): Promise<void> => {
