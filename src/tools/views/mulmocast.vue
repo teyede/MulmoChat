@@ -46,10 +46,15 @@
             align-items: center;
             gap: 0.5em;
           "
-          :style="{ opacity: isGenerating ? 0.6 : 1, cursor: isGenerating ? 'not-allowed' : 'pointer' }"
+          :style="{
+            opacity: isGenerating ? 0.6 : 1,
+            cursor: isGenerating ? 'not-allowed' : 'pointer',
+          }"
         >
-          <span class="material-icons" style="font-size: 1.2em">{{ isGenerating ? 'hourglass_empty' : 'movie' }}</span>
-          {{ isGenerating ? 'Generating...' : 'Generate Movie' }}
+          <span class="material-icons" style="font-size: 1.2em">{{
+            isGenerating ? "hourglass_empty" : "movie"
+          }}</span>
+          {{ isGenerating ? "Generating..." : "Generate Movie" }}
         </button>
       </div>
     </div>
@@ -115,14 +120,18 @@ const generateMovie = async () => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.details || error.error || "Failed to generate movie");
+      throw new Error(
+        error.details || error.error || "Failed to generate movie",
+      );
     }
 
     const result = await response.json();
     alert(`Movie generated successfully!\nPath: ${result.outputPath}`);
   } catch (error) {
     console.error("Movie generation failed:", error);
-    alert(`Failed to generate movie: ${error instanceof Error ? error.message : "Unknown error"}`);
+    alert(
+      `Failed to generate movie: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   } finally {
     isGenerating.value = false;
   }

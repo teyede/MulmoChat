@@ -10,7 +10,10 @@ const router: Router = express.Router();
 router.post(
   "/generate-movie",
   async (req: Request, res: Response): Promise<void> => {
-    const { mulmoScript, uuid } = req.body as { mulmoScript: MulmoScript; uuid: string };
+    const { mulmoScript, uuid } = req.body as {
+      mulmoScript: MulmoScript;
+      uuid: string;
+    };
 
     if (!mulmoScript) {
       res.status(400).json({ error: "MulmoScript is required" });
@@ -33,7 +36,9 @@ router.post(
 
       // Initialize context from the script file
       const context = await initializeContext({
-        _: [scriptPath],
+        _: [],
+        $0: "",
+        file: scriptPath,
         o: outputDir,
       });
 
