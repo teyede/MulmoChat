@@ -87,7 +87,7 @@ router.post(
         .then(images)
         .then(captions)
         .then(movie)
-        .then(async (_) => {
+        .then(async () => {
           const outputPath = movieFilePath(context);
 
           res.json({
