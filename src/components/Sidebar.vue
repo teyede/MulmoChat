@@ -20,7 +20,7 @@
           Stop
         </button>
         <button
-          @click="$emit('toggleMute')"
+          @click="$emit('setMute', !isMuted)"
           class="px-3 py-2 rounded border flex items-center justify-center"
           :class="
             isMuted
@@ -135,7 +135,7 @@ defineProps<{
 const emit = defineEmits<{
   startChat: [];
   stopChat: [];
-  toggleMute: [];
+  setMute: [muted: boolean];
   selectResult: [result: ToolResult];
   sendTextMessage: [];
   "update:userInput": [value: string];

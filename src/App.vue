@@ -36,7 +36,7 @@
         :is-muted="isMuted"
         @start-chat="startChat"
         @stop-chat="stopChat"
-        @toggle-mute="toggleMute"
+        @set-mute="setMute"
         @select-result="handleSelectResult"
         @send-text-message="sendTextMessage"
         @update:user-input="userInput = $event"
@@ -55,6 +55,7 @@
             :selected-result="selectedResult"
             :send-text-message="sendTextMessage"
             :google-map-key="startResponse?.googleMapKey || null"
+            :set-mute="setMute"
             @update-result="handleUpdateResult"
           />
           <div
@@ -295,7 +296,8 @@ async function processToolCall(
   }
 }
 
-async function messageHandler(event: MessageEvent): Promise<void> {
+// NOTE: This must be a sync function. Otherwise, we may call the same tool multiple times.
+function messageHandler(event: MessageEvent): void {
   const msg = JSON.parse(event.data);
   const id = msg.id || msg.call_id;
 
@@ -322,7 +324,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
     case "response.function_call_arguments.done": {
       const argStr = pendingToolArgs[id] || msg.arguments || "";
       delete pendingToolArgs[id];
-      await processToolCall(msg, id, argStr);
+      processToolCall(msg, id, argStr);
       break;
     }
     case "response.created":
@@ -552,13 +554,13 @@ function stopChat(): void {
   isMuted.value = false;
 }
 
-function toggleMute(): void {
+function setMute(muted: boolean): void {
+  isMuted.value = muted;
   if (webrtc.localStream) {
     const audioTracks = webrtc.localStream.getAudioTracks();
     audioTracks.forEach((track) => {
-      track.enabled = !track.enabled;
+      track.enabled = !muted;
     });
-    isMuted.value = !isMuted.value;
   }
 }
 </script>

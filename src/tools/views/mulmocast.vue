@@ -60,9 +60,13 @@
       >
         <video
           v-if="index === 0 && selectedResult?.moviePath && movieUrl"
+          ref="videoEl"
           :src="movieUrl"
           controls
           style="max-width: 100%; margin: 1em 0"
+          @play="handlePlay"
+          @pause="handlePause"
+          @ended="handleEnded"
         />
         <img
           v-else-if="beat.id && selectedResult.images?.[beat.id]"
@@ -82,9 +86,11 @@ import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
+  setMute?: (muted: boolean) => void;
 }>();
 
 const movieUrl = ref<string | null>(null);
+const videoEl = ref<HTMLVideoElement | null>(null);
 
 onUnmounted(() => {
   if (movieUrl.value) {
@@ -178,5 +184,17 @@ const downloadMovie = async () => {
       `Failed to download movie: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
+};
+
+const handlePlay = () => {
+  props.setMute?.(true);
+};
+
+const handlePause = () => {
+  props.setMute?.(false);
+};
+
+const handleEnded = () => {
+  props.setMute?.(false);
 };
 </script>
