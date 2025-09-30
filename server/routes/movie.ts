@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from "express";
-import { movie, movieFilePath } from "mulmocast";
-import type { MulmoStudioContext } from "mulmocast";
+import { movie, movieFilePath, initializeContext } from "mulmocast";
+import type { MulmoScript } from "mulmocast";
 import path from "path";
 import fs from "fs/promises";
 
@@ -10,10 +10,15 @@ const router: Router = express.Router();
 router.post(
   "/generate-movie",
   async (req: Request, res: Response): Promise<void> => {
-    const { context } = req.body as { context: MulmoStudioContext };
+    const { mulmoScript, uuid } = req.body as { mulmoScript: MulmoScript; uuid: string };
 
-    if (!context) {
-      res.status(400).json({ error: "MulmoStudioContext is required" });
+    if (!mulmoScript) {
+      res.status(400).json({ error: "MulmoScript is required" });
+      return;
+    }
+
+    if (!uuid) {
+      res.status(400).json({ error: "UUID is required" });
       return;
     }
 
@@ -22,12 +27,18 @@ router.post(
       const outputDir = path.join(process.cwd(), "output");
       await fs.mkdir(outputDir, { recursive: true });
 
-      // Set output path if not already specified
-      if (!context.outputPath) {
-        const timestamp = Date.now();
-        context.outputPath = path.join(outputDir, `movie-${timestamp}.mp4`);
-      } else if (!path.isAbsolute(context.outputPath)) {
-        context.outputPath = path.join(outputDir, context.outputPath);
+      // Create script file with UUID
+      const scriptPath = path.join(outputDir, `${uuid}.json`);
+      await fs.writeFile(scriptPath, JSON.stringify(mulmoScript, null, 2));
+
+      // Initialize context from the script file
+      const context = await initializeContext({
+        _: [scriptPath],
+        o: outputDir,
+      });
+
+      if (!context) {
+        throw new Error("Failed to initialize MulmoStudioContext");
       }
 
       // Generate the movie
