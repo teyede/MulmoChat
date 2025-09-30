@@ -101,7 +101,7 @@ The mulmocast npm package provides programmatic TypeScript/JavaScript API to cre
 ### Installation
 
 ```bash
-npm install mulmocast
+yarn add mulmocast
 ```
 
 **Requirements**: Node.js >= 20.0.0, FFmpeg installed on system
