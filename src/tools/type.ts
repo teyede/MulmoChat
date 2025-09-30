@@ -29,6 +29,7 @@ export interface ToolResult {
   prompt?: string;
   mulmoScript?: MulmoScript;
   images?: Record<string, string>;
+  moviePath?: string;
 }
 
 export interface ToolResultComplete extends ToolResult {

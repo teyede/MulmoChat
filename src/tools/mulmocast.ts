@@ -146,12 +146,50 @@ const mulmocast = async (
     beats: beatsWithIds,
   };
 
+  // Generate movie automatically
+  const uuid = uuidv4();
+  let moviePath = "";
+  let movieError = "";
+
+  try {
+    const movieResponse = await fetch("/api/generate-movie", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mulmoScript,
+        uuid,
+        images: imagesMap,
+      }),
+    });
+
+    if (movieResponse.ok) {
+      const movieResult = await movieResponse.json();
+      moviePath = movieResult.outputPath;
+    } else {
+      const error = await movieResponse.json();
+      movieError = error.details || error.error || "Failed to generate movie";
+      console.error("Movie generation failed:", movieError);
+    }
+  } catch (error) {
+    movieError = error instanceof Error ? error.message : "Unknown error";
+    console.error("Movie generation exception:", error);
+  }
+
+  const message = moviePath
+    ? `Mulmocast has processed the MulmoScript for "${title}" with ${beats.length} beats and generated a movie at: ${moviePath}`
+    : `Mulmocast has processed the MulmoScript for "${title}" with ${beats.length} beats, but movie generation failed: ${movieError}`;
+
   return {
-    message: `Mulmocast has processed the MulmoScript for "${title}" with ${beats.length} beats.`,
+    message,
     title,
-    instructions: "Acknowledge that the mulmocast operation was completed.",
+    instructions: moviePath
+      ? "Acknowledge that the mulmocast operation and movie generation were completed successfully."
+      : "Acknowledge that the mulmocast operation was completed, but inform the user that movie generation failed.",
     mulmoScript,
     images: imagesMap,
+    moviePath: moviePath || undefined,
   };
 };
 
