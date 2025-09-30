@@ -60,18 +60,7 @@
         style="margin-bottom: 1em"
       >
         <div
-          v-if="index === 0 && isGeneratingMovie"
-          style="
-            margin: 1em 0;
-            padding: 1em;
-            background: #f0f0f0;
-            border-radius: 4px;
-          "
-        >
-          Generating movie...
-        </div>
-        <div
-          v-else-if="index === 0 && movieError"
+          v-if="index === 0 && movieError"
           style="
             margin: 1em 0;
             padding: 1em;
