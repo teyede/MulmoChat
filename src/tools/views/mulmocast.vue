@@ -32,8 +32,9 @@
           Script
         </button>
         <button
-          v-if="selectedResult?.moviePath"
+          v-if="moviePath"
           @click="downloadMovie"
+          :disabled="!moviePath"
           style="
             padding: 0.5em 1em;
             background-color: #2196f3;
@@ -58,8 +59,31 @@
         :key="beat.id"
         style="margin-bottom: 1em"
       >
+        <div
+          v-if="index === 0 && isGeneratingMovie"
+          style="
+            margin: 1em 0;
+            padding: 1em;
+            background: #f0f0f0;
+            border-radius: 4px;
+          "
+        >
+          Generating movie...
+        </div>
+        <div
+          v-else-if="index === 0 && movieError"
+          style="
+            margin: 1em 0;
+            padding: 1em;
+            background: #ffebee;
+            border-radius: 4px;
+            color: #c62828;
+          "
+        >
+          Movie generation failed: {{ movieError }}
+        </div>
         <video
-          v-if="index === 0 && selectedResult?.moviePath && movieUrl"
+          v-else-if="index === 0 && moviePath && movieUrl"
           ref="videoEl"
           :src="movieUrl"
           controls
@@ -81,7 +105,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, watch } from "vue";
+import { ref, computed, onUnmounted, watch } from "vue";
+import { v4 as uuidv4 } from "uuid";
 import type { ToolResult } from "../type";
 
 const props = defineProps<{
@@ -89,8 +114,17 @@ const props = defineProps<{
   setMute?: (muted: boolean) => void;
 }>();
 
+const emit = defineEmits<{
+  updateResult: [result: ToolResult];
+}>();
+
 const movieUrl = ref<string | null>(null);
 const videoEl = ref<HTMLVideoElement | null>(null);
+const isGeneratingMovie = ref(false);
+const movieError = ref<string | null>(null);
+
+// moviePath comes from selectedResult now
+const moviePath = computed(() => props.selectedResult?.moviePath || null);
 
 onUnmounted(() => {
   if (movieUrl.value) {
@@ -98,11 +132,66 @@ onUnmounted(() => {
   }
 });
 
+// Generate movie when component mounts with mulmoScript
+watch(
+  () => props.selectedResult?.mulmoScript,
+  async (mulmoScript) => {
+    if (
+      !mulmoScript ||
+      props.selectedResult?.moviePath ||
+      isGeneratingMovie.value ||
+      !props.selectedResult
+    )
+      return;
+
+    isGeneratingMovie.value = true;
+    movieError.value = null;
+
+    try {
+      const uuid = uuidv4();
+      const movieResponse = await fetch("/api/generate-movie", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mulmoScript,
+          uuid,
+          images: props.selectedResult?.images || {},
+        }),
+      });
+
+      if (movieResponse.ok) {
+        const movieResult = await movieResponse.json();
+
+        // Update the result with moviePath and notify parent
+        const updatedResult: ToolResult = {
+          ...props.selectedResult,
+          moviePath: movieResult.outputPath,
+        };
+        emit("updateResult", updatedResult);
+      } else {
+        const error = await movieResponse.json();
+        movieError.value =
+          error.details || error.error || "Failed to generate movie";
+        console.error("Movie generation failed:", movieError.value);
+      }
+    } catch (error) {
+      movieError.value =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("Movie generation exception:", error);
+    } finally {
+      isGeneratingMovie.value = false;
+    }
+  },
+  { immediate: true },
+);
+
 // Load movie automatically when moviePath exists
 watch(
-  () => props.selectedResult?.moviePath,
-  async (moviePath) => {
-    if (!moviePath) return;
+  moviePath,
+  async (path) => {
+    if (!path) return;
 
     try {
       const response = await fetch("/api/download-movie", {
@@ -111,7 +200,7 @@ watch(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          moviePath,
+          moviePath: path,
         }),
       });
 
@@ -147,7 +236,7 @@ const downloadMulmoScript = () => {
 };
 
 const downloadMovie = async () => {
-  if (!props.selectedResult?.moviePath) return;
+  if (!moviePath.value) return;
 
   try {
     const response = await fetch("/api/download-movie", {
@@ -156,7 +245,7 @@ const downloadMovie = async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        moviePath: props.selectedResult.moviePath,
+        moviePath: moviePath.value,
       }),
     });
 
