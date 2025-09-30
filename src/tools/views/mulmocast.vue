@@ -32,8 +32,8 @@
           Script
         </button>
         <button
-          @click="generateMovie"
-          :disabled="isGenerating"
+          v-if="selectedResult?.moviePath"
+          @click="downloadMovie"
           style="
             padding: 0.5em 1em;
             background-color: #2196f3;
@@ -46,15 +46,9 @@
             align-items: center;
             gap: 0.5em;
           "
-          :style="{
-            opacity: isGenerating ? 0.6 : 1,
-            cursor: isGenerating ? 'not-allowed' : 'pointer',
-          }"
         >
-          <span class="material-icons" style="font-size: 1.2em">{{
-            isGenerating ? "hourglass_empty" : "movie"
-          }}</span>
-          {{ isGenerating ? "Generating..." : "Generate Movie" }}
+          <span class="material-icons" style="font-size: 1.2em">movie</span>
+          Download Movie
         </button>
       </div>
     </div>
@@ -77,14 +71,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
 }>();
-
-const isGenerating = ref(false);
 
 const downloadMulmoScript = () => {
   if (!props.selectedResult?.mulmoScript) return;
@@ -101,40 +92,36 @@ const downloadMulmoScript = () => {
   URL.revokeObjectURL(url);
 };
 
-const generateMovie = async () => {
-  if (!props.selectedResult?.mulmoScript || isGenerating.value) return;
-
-  isGenerating.value = true;
+const downloadMovie = async () => {
+  if (!props.selectedResult?.moviePath) return;
 
   try {
-    const response = await fetch("/api/generate-movie", {
+    const response = await fetch("/api/download-movie", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        mulmoScript: props.selectedResult.mulmoScript,
-        uuid: props.selectedResult.uuid,
-        images: props.selectedResult.images,
+        moviePath: props.selectedResult.moviePath,
       }),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(
-        error.details || error.error || "Failed to generate movie",
-      );
+      throw new Error("Failed to download movie");
     }
 
-    const result = await response.json();
-    alert(`Movie generated successfully!\nPath: ${result.outputPath}`);
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = props.selectedResult.moviePath.split("/").pop() || "movie.mp4";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   } catch (error) {
-    console.error("Movie generation failed:", error);
-    alert(
-      `Failed to generate movie: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  } finally {
-    isGenerating.value = false;
+    console.error("Movie download failed:", error);
+    alert(`Failed to download movie: ${error instanceof Error ? error.message : "Unknown error"}`);
   }
 };
 </script>
