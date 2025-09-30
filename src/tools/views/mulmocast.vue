@@ -54,12 +54,18 @@
     </div>
     <template v-if="selectedResult?.mulmoScript?.beats">
       <div
-        v-for="beat in selectedResult.mulmoScript.beats"
+        v-for="(beat, index) in selectedResult.mulmoScript.beats"
         :key="beat.id"
         style="margin-bottom: 1em"
       >
+        <video
+          v-if="index === 0 && selectedResult?.moviePath && movieUrl"
+          :src="movieUrl"
+          controls
+          style="max-width: 100%; margin: 1em 0"
+        />
         <img
-          v-if="beat.id && selectedResult.images?.[beat.id]"
+          v-else-if="beat.id && selectedResult.images?.[beat.id]"
           :src="`data:image/png;base64,${selectedResult.images[beat.id]}`"
           :alt="beat.text"
           style="max-width: 100%; margin: 1em 0"
@@ -71,11 +77,53 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onUnmounted, watch } from "vue";
 import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
 }>();
+
+const movieUrl = ref<string | null>(null);
+
+onUnmounted(() => {
+  if (movieUrl.value) {
+    URL.revokeObjectURL(movieUrl.value);
+  }
+});
+
+// Load movie automatically when moviePath exists
+watch(
+  () => props.selectedResult?.moviePath,
+  async (moviePath) => {
+    if (!moviePath) return;
+
+    try {
+      const response = await fetch("/api/download-movie", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          moviePath,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load movie");
+      }
+
+      const blob = await response.blob();
+      if (movieUrl.value) {
+        URL.revokeObjectURL(movieUrl.value);
+      }
+      movieUrl.value = URL.createObjectURL(blob);
+    } catch (error) {
+      console.error("Movie loading failed:", error);
+    }
+  },
+  { immediate: true },
+);
 
 const downloadMulmoScript = () => {
   if (!props.selectedResult?.mulmoScript) return;
