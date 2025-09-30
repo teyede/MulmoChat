@@ -197,7 +197,8 @@ export const plugin: ToolPlugin = {
   toolDefinition,
   execute: mulmocast,
   generatingMessage: "Processing with Mulmocast...",
-  waitingMessage: "Tell the user that you are processing with Mulmocast.",
+  waitingMessage:
+    "Tell the user that the script was written and we are genenerating images and video with Mulmocast.",
   isEnabled: () => true,
   viewComponent: MulmocastView,
   previewComponent: MulmocastPreview,
