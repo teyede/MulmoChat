@@ -47,7 +47,15 @@
             gap: '0.5em',
           }"
         >
-          <span class="material-icons" style="font-size: 1.2em">download</span>
+          <span
+            class="material-icons"
+            :style="{
+              fontSize: '1.2em',
+              animation: isGeneratingMovie ? 'spin 1s linear infinite' : 'none',
+            }"
+          >
+            {{ isGeneratingMovie ? "hourglass_empty" : "download" }}
+          </span>
           Movie
         </button>
       </div>
@@ -275,3 +283,14 @@ const handleEnded = () => {
   props.setMute?.(false);
 };
 </script>
+
+<style scoped>
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
