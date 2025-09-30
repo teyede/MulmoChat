@@ -92,6 +92,101 @@ The application integrates multiple AI services and APIs:
 5. Response sent back to OpenAI model
 6. Optional follow-up instructions processed
 
+## Mulmocast NPM Package API
+
+### Overview
+
+The mulmocast npm package provides programmatic access to create movies from MulmoScript. It exports both Node.js and browser-compatible modules.
+
+### Installation
+
+```bash
+npm install mulmocast
+```
+
+**Requirements**: Node.js >= 20.0.0, FFmpeg installed on system
+
+### Main Entry Points
+
+```typescript
+// Node.js import
+import { movie, movieFilePath } from 'mulmocast';
+
+// Package exports:
+// - Node: "./lib/index.node.js" (types: "./lib/index.node.d.ts")
+// - Browser: "./lib/index.browser.js" (types: "./lib/index.browser.d.ts")
+```
+
+### Key Function: `movie()`
+
+The primary function to create a movie from MulmoScript:
+
+```typescript
+movie(context: MulmoStudioContext): Promise<void>
+```
+
+**Parameters:**
+- `context`: A `MulmoStudioContext` object containing:
+  - The MulmoScript data (JSON/YAML format with beats)
+  - Audio files for each beat
+  - Image files for visual content
+  - Canvas dimensions and layout settings
+  - Output file path and settings
+  - Localization options (language, captions)
+
+**Returns:** A Promise that resolves when the video MP4 file is created
+
+### Supporting Functions
+
+1. **`movieFilePath(context: MulmoStudioContext): string`**
+   - Generates the output video file path based on the context
+   - Returns the full path where the video will be saved
+
+2. **`getVideoPart(inputIndex, mediaType, duration, canvasInfo, fillOption, speed)`**
+   - Generates video processing parameters for FFmpeg filtering
+   - Handles different media types (image, video, screen)
+   - Returns video filter configuration
+
+3. **`getAudioPart(inputIndex, duration, delay, mixAudio)`**
+   - Creates audio processing parameters for mixing
+   - Handles audio trimming, delay, and volume mixing
+   - Returns audio filter configuration
+
+### Usage Pattern
+
+The typical workflow to create a movie:
+
+1. Prepare your MulmoScript JSON with beats defining the content
+2. Generate audio files for narration (using audio generation)
+3. Prepare image/video files for visuals (using image generation)
+4. Create a `MulmoStudioContext` with all resources
+5. Call `movie(context)` to generate the final MP4 video
+
+The package uses FFmpeg internally for video generation, combining audio, images, and transitions into a single video file.
+
+### MulmoScript Format
+
+Basic structure:
+```json
+{
+  "$mulmocast": { "version": "1.0" },
+  "beats": [
+    {
+      "text": "Hello World",
+      "image": "path/to/image.png",
+      "audio": "path/to/audio.mp3"
+    }
+  ]
+}
+```
+
+### CLI Alternative
+
+The package also provides CLI commands via the `mulmo` binary:
+- `mulmo movie <script.json>` - Generate movie from script
+- `mulmo audio <script.json>` - Generate audio only
+- `mulmo images <script.json>` - Generate images only
+
 ## File Restrictions
 
 - **Do not read src/tools/blank.ts**: This file is too long and should be avoided when analyzing the codebase
