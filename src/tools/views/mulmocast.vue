@@ -115,6 +115,7 @@ const generateMovie = async () => {
       body: JSON.stringify({
         mulmoScript: props.selectedResult.mulmoScript,
         uuid: props.selectedResult.uuid,
+        images: props.selectedResult.images,
       }),
     });
 

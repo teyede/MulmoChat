@@ -17,9 +17,14 @@ const router: Router = express.Router();
 router.post(
   "/generate-movie",
   async (req: Request, res: Response): Promise<void> => {
-    const { mulmoScript, uuid } = req.body as {
+    const {
+      mulmoScript,
+      uuid,
+      images: beatImages,
+    } = req.body as {
       mulmoScript: MulmoScript;
       uuid: string;
+      images?: Record<string, string>;
     };
 
     if (!mulmoScript) {
@@ -40,6 +45,26 @@ router.post(
       // Create script file with UUID
       const scriptPath = path.join(outputDir, `${uuid}.json`);
       await fs.writeFile(scriptPath, JSON.stringify(mulmoScript, null, 2));
+
+      // Save images if provided
+      if (beatImages && Object.keys(beatImages).length > 0) {
+        const imagesDir = path.join(outputDir, "images", uuid);
+        await fs.mkdir(imagesDir, { recursive: true });
+
+        // Save each image as PNG file
+        await Promise.all(
+          Object.entries(beatImages).map(async ([beatId, base64Data]) => {
+            const imagePath = path.join(imagesDir, `${beatId}.png`);
+            // Remove data:image/png;base64, prefix if present
+            const base64Image = base64Data.replace(
+              /^data:image\/\w+;base64,/,
+              "",
+            );
+            const imageBuffer = Buffer.from(base64Image, "base64");
+            await fs.writeFile(imagePath, imageBuffer);
+          }),
+        );
+      }
 
       // Initialize context from the script file
       const context = await initializeContext(
