@@ -40,7 +40,8 @@ router.post(
         $0: "",
         file: scriptPath,
         o: outputDir,
-      });
+        v: true,
+      }, true);
 
       if (!context) {
         throw new Error("Failed to initialize MulmoStudioContext");
