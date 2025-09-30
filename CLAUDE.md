@@ -96,7 +96,7 @@ The application integrates multiple AI services and APIs:
 
 ### Overview
 
-The mulmocast npm package provides programmatic access to create movies from MulmoScript. It exports both Node.js and browser-compatible modules.
+The mulmocast npm package provides programmatic TypeScript/JavaScript API to create movies from MulmoScript. It exports both Node.js and browser-compatible modules with full TypeScript type definitions.
 
 ### Installation
 
@@ -111,6 +111,7 @@ npm install mulmocast
 ```typescript
 // Node.js import
 import { movie, movieFilePath } from 'mulmocast';
+import type { MulmoStudioContext, MulmoCanvasDimension, BeatMediaType, MulmoFillOption } from 'mulmocast';
 
 // Package exports:
 // - Node: "./lib/index.node.js" (types: "./lib/index.node.d.ts")
@@ -122,11 +123,11 @@ import { movie, movieFilePath } from 'mulmocast';
 The primary function to create a movie from MulmoScript:
 
 ```typescript
-movie(context: MulmoStudioContext): Promise<void>
+function movie(context: MulmoStudioContext): Promise<void>
 ```
 
 **Parameters:**
-- `context`: A `MulmoStudioContext` object containing:
+- `context: MulmoStudioContext` - Studio context object containing:
   - The MulmoScript data (JSON/YAML format with beats)
   - Audio files for each beat
   - Image files for visual content
@@ -134,23 +135,44 @@ movie(context: MulmoStudioContext): Promise<void>
   - Output file path and settings
   - Localization options (language, captions)
 
-**Returns:** A Promise that resolves when the video MP4 file is created
+**Returns:** `Promise<void>` - Resolves when the video MP4 file is created
 
 ### Supporting Functions
 
 1. **`movieFilePath(context: MulmoStudioContext): string`**
+   ```typescript
+   function movieFilePath(context: MulmoStudioContext): string
+   ```
    - Generates the output video file path based on the context
    - Returns the full path where the video will be saved
 
-2. **`getVideoPart(inputIndex, mediaType, duration, canvasInfo, fillOption, speed)`**
+2. **`getVideoPart(inputIndex: number, mediaType: BeatMediaType, duration: number, canvasInfo: MulmoCanvasDimension, fillOption: MulmoFillOption, speed: number)`**
+   ```typescript
+   function getVideoPart(
+     inputIndex: number,
+     mediaType: BeatMediaType,
+     duration: number,
+     canvasInfo: MulmoCanvasDimension,
+     fillOption: MulmoFillOption,
+     speed: number
+   ): { videoId: string; videoPart: string }
+   ```
    - Generates video processing parameters for FFmpeg filtering
    - Handles different media types (image, video, screen)
-   - Returns video filter configuration
+   - Returns video filter configuration with `videoId` and `videoPart`
 
-3. **`getAudioPart(inputIndex, duration, delay, mixAudio)`**
+3. **`getAudioPart(inputIndex: number, duration: number, delay: number, mixAudio: number)`**
+   ```typescript
+   function getAudioPart(
+     inputIndex: number,
+     duration: number,
+     delay: number,
+     mixAudio: number
+   ): { audioId: string; audioPart: string }
+   ```
    - Creates audio processing parameters for mixing
    - Handles audio trimming, delay, and volume mixing
-   - Returns audio filter configuration
+   - Returns audio filter configuration with `audioId` and `audioPart`
 
 ### Usage Pattern
 
@@ -167,8 +189,18 @@ The package uses FFmpeg internally for video generation, combining audio, images
 ### MulmoScript Format
 
 Basic structure:
-```json
-{
+```typescript
+interface MulmoScript {
+  $mulmocast: { version: string };
+  beats: Array<{
+    text: string;
+    image?: string;
+    audio?: string;
+  }>;
+}
+
+// Example:
+const script: MulmoScript = {
   "$mulmocast": { "version": "1.0" },
   "beats": [
     {
@@ -177,7 +209,7 @@ Basic structure:
       "audio": "path/to/audio.mp3"
     }
   ]
-}
+};
 ```
 
 ### CLI Alternative
