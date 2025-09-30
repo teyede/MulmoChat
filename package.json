@@ -15,7 +15,8 @@
     "lint": "eslint src server",
     "preview": "vite preview",
     "start": "NODE_ENV=production node server/dist/index.js",
-    "format": "prettier --write '{src,server}/**/*.{ts,json,yaml,vue}'"
+    "format": "prettier --write '{src,server}/**/*.{ts,json,yaml,vue}'",
+    "latest": "yarn upgrade-interactive  --latest"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",
@@ -24,7 +25,7 @@
     "exa-js": "^1.9.3",
     "express": "^5.1.0",
     "material-icons": "^1.13.14",
-    "mulmocast": "^1.2.36",
+    "mulmocast": "^1.2.40",
     "uuid": "^13.0.0",
     "vue": "^3.5.22",
     "vue-drawing-canvas": "^1.0.14"
