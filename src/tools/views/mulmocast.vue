@@ -32,21 +32,20 @@
           Script
         </button>
         <button
-          v-if="moviePath"
           @click="downloadMovie"
           :disabled="!moviePath"
-          style="
-            padding: 0.5em 1em;
-            background-color: #2196f3;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            display: flex;
-            align-items: center;
-            gap: 0.5em;
-          "
+          :style="{
+            padding: '0.5em 1em',
+            backgroundColor: moviePath ? '#2196f3' : '#ccc',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: moviePath ? 'pointer' : 'not-allowed',
+            fontSize: '0.9em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5em',
+          }"
         >
           <span class="material-icons" style="font-size: 1.2em">download</span>
           Movie
