@@ -1,11 +1,27 @@
 import { ToolPlugin, ToolContext, ToolResult } from "./type";
-import { blankImageBase64 } from "./blank";
 import MulmocastView from "./views/mulmocast.vue";
 import MulmocastPreview from "./previews/mulmocast.vue";
 import type { MulmoScript } from "mulmocast";
 import { v4 as uuidv4 } from "uuid";
 
 const toolName = "pushMulmoScript";
+
+// Load blank.png and convert to base64 (without data URL prefix)
+async function loadBlankImageBase64(): Promise<string> {
+  const response = await fetch('/blank.png');
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      // Remove "data:image/png;base64," prefix
+      const base64Data = base64.split(',')[1];
+      resolve(base64Data);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
 
 const toolDefinition = {
   type: "function" as const,
@@ -75,6 +91,7 @@ const mulmocast = async (
   }));
 
   // Generate images for each beat concurrently
+  const blankImageBase64 = await loadBlankImageBase64();
   const imagePromises = beatsWithIds.map(async (beat) => {
     const prompt = `generate image appropriate for the text. <text>${beat.text}</text>${style}`;
 
