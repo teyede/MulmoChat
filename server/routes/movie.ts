@@ -10,6 +10,7 @@ import {
 import type { MulmoScript } from "mulmocast";
 import path from "path";
 import fs from "fs/promises";
+import { createReadStream } from "fs";
 
 const router: Router = express.Router();
 
@@ -102,6 +103,46 @@ router.post(
         error instanceof Error ? error.message : "Unknown error";
       res.status(500).json({
         error: "Failed to generate movie",
+        details: errorMessage,
+      });
+    }
+  },
+);
+
+// Movie download endpoint
+router.post(
+  "/download-movie",
+  async (req: Request, res: Response): Promise<void> => {
+    const { moviePath } = req.body as { moviePath: string };
+
+    if (!moviePath) {
+      res.status(400).json({ error: "Movie path is required" });
+      return;
+    }
+
+    try {
+      // Check if file exists
+      await fs.access(moviePath);
+
+      // Get the filename from the path
+      const filename = path.basename(moviePath);
+
+      // Set headers for file download
+      res.setHeader("Content-Type", "video/mp4");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`,
+      );
+
+      // Stream the file
+      const fileStream = createReadStream(moviePath);
+      fileStream.pipe(res);
+    } catch (error: unknown) {
+      console.error("Movie download failed:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      res.status(500).json({
+        error: "Failed to download movie",
         details: errorMessage,
       });
     }

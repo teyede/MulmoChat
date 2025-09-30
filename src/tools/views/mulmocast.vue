@@ -47,8 +47,8 @@
             gap: 0.5em;
           "
         >
-          <span class="material-icons" style="font-size: 1.2em">movie</span>
-          Download Movie
+          <span class="material-icons" style="font-size: 1.2em">download</span>
+          Movie
         </button>
       </div>
     </div>
@@ -110,18 +110,25 @@ const downloadMovie = async () => {
       throw new Error("Failed to download movie");
     }
 
+    // Extract filename from Content-Disposition header
+    const contentDisposition = response.headers.get("Content-Disposition");
+    const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+    const filename = filenameMatch ? filenameMatch[1] : "movie.mp4";
+
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = props.selectedResult.moviePath.split("/").pop() || "movie.mp4";
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Movie download failed:", error);
-    alert(`Failed to download movie: ${error instanceof Error ? error.message : "Unknown error"}`);
+    alert(
+      `Failed to download movie: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 };
 </script>
