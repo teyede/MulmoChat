@@ -8,14 +8,14 @@ const toolName = "pushMulmoScript";
 
 // Load blank.png and convert to base64 (without data URL prefix)
 async function loadBlankImageBase64(): Promise<string> {
-  const response = await fetch('/blank.png');
+  const response = await fetch("/blank.png");
   const blob = await response.blob();
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64 = reader.result as string;
       // Remove "data:image/png;base64," prefix
-      const base64Data = base64.split(',')[1];
+      const base64Data = base64.split(",")[1];
       resolve(base64Data);
     };
     reader.onerror = reject;
@@ -169,7 +169,7 @@ const mulmocast = async (
     message,
     title,
     instructions:
-      "Acknowledge that the mulmocast operation was completed successfully and that the movie is being generated.",
+      "Acknowledge that all the images were successfully generated and that the movie is being generated.",
     mulmoScript,
     images: imagesMap,
   };

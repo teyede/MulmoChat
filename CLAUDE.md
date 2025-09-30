@@ -218,7 +218,3 @@ The package also provides CLI commands via the `mulmo` binary:
 - `mulmo movie <script.json>` - Generate movie from script
 - `mulmo audio <script.json>` - Generate audio only
 - `mulmo images <script.json>` - Generate images only
-
-## File Restrictions
-
-- **Do not read src/tools/blank.ts**: This file is too long and should be avoided when analyzing the codebase
