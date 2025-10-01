@@ -5,7 +5,7 @@ import type { MulmoScript } from "mulmocast";
 import { v4 as uuidv4 } from "uuid";
 
 const toolName = "pushMulmoScript";
-const dryRun = true;
+const dryRun = false;
 
 // Load blank.png and convert to base64 (without data URL prefix)
 async function loadBlankImageBase64(): Promise<string> {
@@ -118,6 +118,7 @@ const mulmocast = async (
         }
       }
     } catch (error) {
+      // Notice that we just display the error and return null for the image data
       console.error(
         "EXC: exception\nFailed to generate image for beat:",
         error,
