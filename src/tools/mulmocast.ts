@@ -5,6 +5,7 @@ import type { MulmoScript } from "mulmocast";
 import { v4 as uuidv4 } from "uuid";
 
 const toolName = "pushMulmoScript";
+const dryRun = true;
 
 // Load blank.png and convert to base64 (without data URL prefix)
 async function loadBlankImageBase64(): Promise<string> {
@@ -94,7 +95,13 @@ const mulmocast = async (
   const blankImageBase64 = await loadBlankImageBase64();
   const imagePromises = beatsWithIds.map(async (beat) => {
     const prompt = `generate image appropriate for the text. <text>${beat.text}</text>${style}`;
-
+    if (dryRun) {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      return {
+        id: beat.id,
+        imageData: `data:image/png;base64,${blankImageBase64}`,
+      };
+    }
     try {
       const response = await fetch("/api/generate-image", {
         method: "POST",
@@ -172,6 +179,7 @@ const mulmocast = async (
       "Acknowledge that all the images were successfully generated and that the movie is being generated.",
     mulmoScript,
     images: imagesMap,
+    moviePath: dryRun ? "__dryrun__.mp4" : undefined, // __dryrun__.mp4 is a placeholder for the dry run
   };
 };
 
