@@ -25,7 +25,7 @@ async function urlToBase64(url: string): Promise<string> {
 }
 
 // Load blank.png and convert to base64 (without data URL prefix)
-async function loadBlankImageBase64(): Promise<string> {
+export async function loadBlankImageBase64(): Promise<string> {
   return urlToBase64("/blank.png");
 }
 
