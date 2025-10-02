@@ -138,6 +138,7 @@ const toolResults = ref<ToolResult[]>([]);
 const isGeneratingImage = ref(false);
 const generatingMessage = ref("");
 const pendingToolArgs: Record<string, string> = {};
+const processedToolCalls = new Map<string, string>();
 const showConfigPopup = ref(false);
 const selectedResult = ref<ToolResult | null>(null);
 const userInput = ref("");
@@ -278,6 +279,7 @@ async function processToolCall(
     }
   } catch (e) {
     console.error("Failed to parse function call arguments", e);
+    processedToolCalls.delete(id);
     // Let the model know that we failed to parse the function call arguments.
     webrtc.dc?.send(
       JSON.stringify({
@@ -324,6 +326,14 @@ function messageHandler(event: MessageEvent): void {
     case "response.function_call_arguments.done": {
       const argStr = pendingToolArgs[id] || msg.arguments || "";
       delete pendingToolArgs[id];
+      const previousArgs = processedToolCalls.get(id);
+      if (previousArgs === argStr) {
+        console.warn(
+          `******* Skipping duplicate tool call for ${msg.name || msg.call_id}`,
+        );
+        break;
+      }
+      processedToolCalls.set(id, argStr);
       processToolCall(msg, id, argStr);
       break;
     }
