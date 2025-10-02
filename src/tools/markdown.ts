@@ -48,7 +48,7 @@ const pushMarkdown = async (
 
     // Generate images for each placeholder in parallel
     const imagePromises = matches.map(async (match, i) => {
-      const prompt = match[1];
+      const prompt = `${match[1]}. Use the last image as the output dimension.`;
       const imageId = `image_${i}`;
 
       try {

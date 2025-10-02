@@ -134,6 +134,12 @@ router.post(
     a:hover {
       text-decoration: underline;
     }
+    img {
+      max-width: 80%;
+      height: auto;
+      display: block;
+      margin: 1em auto;
+    }
   </style>
 </head>
 <body>
