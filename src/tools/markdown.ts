@@ -19,7 +19,7 @@ const toolDefinition = {
       markdown: {
         type: "string",
         description:
-          "The markdown content to display. Embed images ONLY IF the user explicitly asks for it, in following format: ![Detailed image prompt](__too_be_replaced_image_path__)",
+          "The markdown content to display. Describe embedded images in the following format: ![Detailed image prompt](__too_be_replaced_image_path__)",
       },
     },
     required: ["title", "markdown"],
@@ -120,6 +120,8 @@ export const plugin: ToolPlugin = {
   toolDefinition,
   execute: pushMarkdown,
   generatingMessage: "Creating document...",
+  waitingMessage:
+    "Tell the user that the document was created, will be presented to the user shortly.",
   isEnabled: () => true,
   viewComponent: MarkdownView,
   previewComponent: MarkdownPreview,
