@@ -105,7 +105,7 @@ export const toolExecute = async (
   return {
     ...result,
     toolName: name,
-    uuid: uuidv4(),
+    uuid: result.uuid || uuidv4(),
   };
 };
 
