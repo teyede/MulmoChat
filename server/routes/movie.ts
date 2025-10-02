@@ -14,6 +14,32 @@ import { createReadStream } from "fs";
 
 const router: Router = express.Router();
 
+// Save images to disk
+async function saveImages(
+  outputDir: string,
+  uuid: string,
+  images: Record<string, string>,
+): Promise<void> {
+  if (images && Object.keys(images).length > 0) {
+    const imagesDir = path.join(outputDir, "images", uuid);
+    await fs.mkdir(imagesDir, { recursive: true });
+
+    // Save each image as PNG file
+    await Promise.all(
+      Object.entries(images).map(async ([beatId, base64Data]) => {
+        const imagePath = path.join(imagesDir, `${beatId}.png`);
+        // Remove data:image/png;base64, prefix if present
+        const base64Image = base64Data.replace(
+          /^data:image\/\w+;base64,/,
+          "",
+        );
+        const imageBuffer = Buffer.from(base64Image, "base64");
+        await fs.writeFile(imagePath, imageBuffer);
+      }),
+    );
+  }
+}
+
 // Movie generation endpoint
 router.post(
   "/generate-movie",
@@ -48,24 +74,7 @@ router.post(
       await fs.writeFile(scriptPath, JSON.stringify(mulmoScript, null, 2));
 
       // Save images if provided
-      if (beatImages && Object.keys(beatImages).length > 0) {
-        const imagesDir = path.join(outputDir, "images", uuid);
-        await fs.mkdir(imagesDir, { recursive: true });
-
-        // Save each image as PNG file
-        await Promise.all(
-          Object.entries(beatImages).map(async ([beatId, base64Data]) => {
-            const imagePath = path.join(imagesDir, `${beatId}.png`);
-            // Remove data:image/png;base64, prefix if present
-            const base64Image = base64Data.replace(
-              /^data:image\/\w+;base64,/,
-              "",
-            );
-            const imageBuffer = Buffer.from(base64Image, "base64");
-            await fs.writeFile(imagePath, imageBuffer);
-          }),
-        );
-      }
+      await saveImages(outputDir, uuid, beatImages || {});
 
       // Initialize context from the script file
       const context = await initializeContext(
