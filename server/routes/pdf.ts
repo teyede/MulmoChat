@@ -146,11 +146,15 @@ ${htmlContent}
       const outputDir = path.join(process.cwd(), "output");
       await fs.mkdir(outputDir, { recursive: true });
 
-      // Create PDF file path with UUID
+      // Create PDF and HTML file paths with UUID
       const sanitizedTitle = (title || "document")
         .replace(/[^a-z0-9]/gi, "_")
         .toLowerCase();
       const pdfPath = path.join(outputDir, `${uuid}_${sanitizedTitle}.pdf`);
+      const htmlPath = path.join(outputDir, `${uuid}_${sanitizedTitle}.html`);
+
+      // Write HTML file to output directory
+      await fs.writeFile(htmlPath, html, "utf-8");
 
       // Launch puppeteer and generate PDF
       const browser = await puppeteer.launch({
@@ -159,7 +163,12 @@ ${htmlContent}
 
       try {
         const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: "networkidle0" });
+        // Navigate to the HTML file via HTTP server
+        const port = process.env.PORT || 3001;
+        const htmlFilename = path.basename(htmlPath);
+        await page.goto(`http://localhost:${port}/output/${htmlFilename}`, {
+          waitUntil: "networkidle0",
+        });
         await page.pdf({
           path: pdfPath,
           format: "A4",
