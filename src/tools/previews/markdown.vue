@@ -1,7 +1,11 @@
 <template>
   <div class="text-center p-4 bg-purple-50 dark:bg-purple-900 rounded">
-    <div class="text-purple-600 dark:text-purple-300 font-medium">📄 Markdown</div>
-    <div class="text-sm text-gray-800 dark:text-gray-200 mt-1 font-medium truncate">
+    <div class="text-purple-600 dark:text-purple-300 font-medium">
+      📄 Document
+    </div>
+    <div
+      class="text-sm text-gray-800 dark:text-gray-200 mt-1 font-medium truncate"
+    >
       {{ displayTitle }}
     </div>
   </div>
