@@ -10,7 +10,7 @@
         :disabled="connecting"
         class="w-full px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
       >
-        {{ connecting ? "Connecting..." : "Start Voice Chat" }}
+        {{ connecting ? "Connecting..." : "Connect" }}
       </button>
       <div v-else class="flex gap-2">
         <button
