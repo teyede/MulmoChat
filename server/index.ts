@@ -29,6 +29,9 @@ app.get("/api/config", (req: Request, res: Response) => {
 // API Routes
 app.use("/api", apiRoutes);
 
+// Serve output directory for generated files
+app.use("/output", express.static(path.join(process.cwd(), "output")));
+
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../dist")));
