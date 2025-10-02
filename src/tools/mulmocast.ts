@@ -90,7 +90,7 @@ const mulmocast = async (
             type: "image",
             source: {
               kind: "url",
-              url: "https://raw.githubusercontent.com/receptron/mulmocast-media/refs/heads/main/characters/ani.png",
+              url: "https://raw.githubusercontent.com/receptron/mulmocast-media/refs/heads/main/characters/ani_h.png",
             },
           },
         }
