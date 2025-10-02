@@ -34,7 +34,7 @@ const pushMarkdown = async (
   return {
     message: `Created markdown document: ${title}`,
     title,
-    htmlData: markdown,
+    markdown,
     instructions:
       "Acknowledge that the markdown document has been created and is displayed to the user.",
   };

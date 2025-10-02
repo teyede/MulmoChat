@@ -1,6 +1,7 @@
 <template>
-  <div class="p-2">
-    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+  <div class="text-center p-4 bg-purple-50 dark:bg-purple-900 rounded">
+    <div class="text-purple-600 dark:text-purple-300 font-medium">📄 Markdown</div>
+    <div class="text-sm text-gray-800 dark:text-gray-200 mt-1 font-medium truncate">
       {{ displayTitle }}
     </div>
   </div>
@@ -21,8 +22,8 @@ const displayTitle = computed(() => {
   }
 
   // Otherwise extract first # heading from markdown
-  if (props.result.htmlData) {
-    const match = props.result.htmlData.match(/^#\s+(.+)$/m);
+  if (props.result.markdown) {
+    const match = props.result.markdown.match(/^#\s+(.+)$/m);
     if (match) {
       return match[1];
     }

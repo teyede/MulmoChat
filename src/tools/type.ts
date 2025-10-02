@@ -25,6 +25,7 @@ export interface ToolResult {
   jsonData?: any;
   instructions?: string;
   htmlData?: string;
+  markdown?: string;
   location?: string | { lat: number; lng: number };
   updating?: boolean;
   prompt?: string;
