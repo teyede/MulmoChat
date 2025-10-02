@@ -7,9 +7,9 @@ import { v4 as uuidv4 } from "uuid";
 const toolName = "pushMulmoScript";
 const dryRun = false;
 
-// Load blank.png and convert to base64 (without data URL prefix)
-async function loadBlankImageBase64(): Promise<string> {
-  const response = await fetch("/blank.png");
+// Convert URL to base64 (without data URL prefix)
+async function urlToBase64(url: string): Promise<string> {
+  const response = await fetch(url);
   const blob = await response.blob();
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -22,6 +22,11 @@ async function loadBlankImageBase64(): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
+}
+
+// Load blank.png and convert to base64 (without data URL prefix)
+async function loadBlankImageBase64(): Promise<string> {
+  return urlToBase64("/blank.png");
 }
 
 const toolDefinition = {
@@ -98,18 +103,13 @@ const mulmocast = async (
   const imageRefs: string[] = [];
   for (const image of Object.values(images)) {
     if (image.source.kind === "url") {
-      const response = await fetch(image.source.url);
-      const blob = await response.blob();
-      const base64Image = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result as string;
-          const base64Data = base64.split(",")[1];
-          resolve(base64Data);
-        };
-        reader.readAsDataURL(blob);
-      });
-      imageRefs.push(base64Image);
+      try {
+        const base64Image = await urlToBase64(image.source.url);
+        imageRefs.push(base64Image);
+      } catch (error) {
+        console.error("Failed to load reference image:", error);
+        // Continue without this image
+      }
     }
   }
   const blankImageBase64 = await loadBlankImageBase64();
