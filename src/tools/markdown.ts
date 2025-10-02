@@ -46,9 +46,8 @@ const pushMarkdown = async (
     // Load blank image for image generation
     const blankImageBase64 = await loadBlankImageBase64();
 
-    // Generate images for each placeholder
-    for (let i = 0; i < matches.length; i++) {
-      const match = matches[i];
+    // Generate images for each placeholder in parallel
+    const imagePromises = matches.map(async (match, i) => {
       const prompt = match[1];
       const imageId = `image_${i}`;
 
@@ -71,7 +70,9 @@ const pushMarkdown = async (
       } catch (error) {
         console.error(`Failed to generate image for prompt: ${prompt}`, error);
       }
-    }
+    });
+
+    await Promise.all(imagePromises);
 
     // Save images to server and get URLs
     if (Object.keys(images).length > 0) {
