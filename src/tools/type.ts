@@ -32,6 +32,7 @@ export interface ToolResult {
   mulmoScript?: MulmoScript;
   images?: Record<string, string>;
   moviePath?: string;
+  pdfPath?: string;
 }
 
 export interface ToolResultComplete extends ToolResult {

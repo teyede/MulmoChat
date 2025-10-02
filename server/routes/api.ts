@@ -5,12 +5,16 @@ import { puppeteerCrawlerAgent } from "mulmocast";
 import { StartApiResponse } from "../types";
 import { exaSearch, hasExaApiKey } from "../exaSearch";
 import movieRouter from "./movie";
+import pdfRouter from "./pdf";
 dotenv.config();
 
 const router: Router = express.Router();
 
 // Mount movie routes
 router.use(movieRouter);
+
+// Mount PDF routes
+router.use(pdfRouter);
 
 // Session start endpoint
 router.get("/start", async (req: Request, res: Response): Promise<void> => {

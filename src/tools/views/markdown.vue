@@ -16,26 +16,69 @@
         "
       >
         <h1 style="font-size: 2em; margin: 0">
-          {{ selectedResult.title || 'Document' }}
+          {{ selectedResult.title || "Document" }}
         </h1>
-        <button
-          @click="downloadMarkdown"
-          style="
-            padding: 0.5em 1em;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            display: flex;
-            align-items: center;
-            gap: 0.5em;
-          "
-        >
-          <span class="material-icons" style="font-size: 1.2em">download</span>
-          Markdown
-        </button>
+        <div style="display: flex; gap: 0.5em">
+          <button
+            @click="downloadMarkdown"
+            style="
+              padding: 0.5em 1em;
+              background-color: #4caf50;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 0.9em;
+              display: flex;
+              align-items: center;
+              gap: 0.5em;
+            "
+          >
+            <span class="material-icons" style="font-size: 1.2em"
+              >download</span
+            >
+            MD
+          </button>
+          <button
+            @click="downloadPdf"
+            :disabled="!pdfPath"
+            :style="{
+              padding: '0.5em 1em',
+              backgroundColor: pdfPath ? '#2196f3' : '#ccc',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: pdfPath ? 'pointer' : 'not-allowed',
+              fontSize: '0.9em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5em',
+            }"
+          >
+            <span
+              class="material-icons"
+              :style="{
+                fontSize: '1.2em',
+                animation: isGeneratingPdf ? 'spin 1s linear infinite' : 'none',
+              }"
+            >
+              {{ isGeneratingPdf ? "hourglass_empty" : "download" }}
+            </span>
+            PDF
+          </button>
+        </div>
+      </div>
+      <div
+        v-if="pdfError"
+        style="
+          margin: 1em 0;
+          padding: 1em;
+          background: #ffebee;
+          border-radius: 4px;
+          color: #c62828;
+        "
+      >
+        PDF generation failed: {{ pdfError }}
       </div>
       <div
         class="markdown-content prose prose-slate max-w-none"
@@ -46,13 +89,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { marked } from "marked";
 import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult;
 }>();
+
+const emit = defineEmits<{
+  updateResult: [result: ToolResult];
+}>();
+
+const isGeneratingPdf = ref(false);
+const pdfError = ref<string | null>(null);
+
+const pdfPath = computed(() => props.selectedResult?.pdfPath || null);
 
 const renderedHtml = computed(() => {
   if (!props.selectedResult.markdown) {
@@ -63,21 +115,116 @@ const renderedHtml = computed(() => {
   return marked(props.selectedResult.markdown);
 });
 
+// Generate PDF when component mounts with markdown
+watch(
+  () => props.selectedResult?.markdown,
+  async (markdown) => {
+    if (
+      !markdown ||
+      props.selectedResult?.pdfPath ||
+      isGeneratingPdf.value ||
+      !props.selectedResult
+    )
+      return;
+
+    isGeneratingPdf.value = true;
+    pdfError.value = null;
+
+    try {
+      const pdfResponse = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          markdown,
+          title: props.selectedResult.title || "Document",
+          uuid: props.selectedResult.uuid,
+        }),
+      });
+
+      if (pdfResponse.ok) {
+        const pdfResult = await pdfResponse.json();
+
+        // Update the result with pdfPath and notify parent
+        const updatedResult: ToolResult = {
+          ...props.selectedResult,
+          pdfPath: pdfResult.pdfPath,
+        };
+        emit("updateResult", updatedResult);
+      } else {
+        const error = await pdfResponse.json();
+        pdfError.value =
+          error.details || error.error || "Failed to generate PDF";
+        console.error("PDF generation failed:", pdfError.value);
+      }
+    } catch (error) {
+      pdfError.value = error instanceof Error ? error.message : "Unknown error";
+      console.error("PDF generation exception:", error);
+    } finally {
+      isGeneratingPdf.value = false;
+    }
+  },
+  { immediate: true },
+);
+
 const downloadMarkdown = () => {
   if (!props.selectedResult?.markdown) return;
 
-  const blob = new Blob([props.selectedResult.markdown], { type: "text/markdown" });
+  const blob = new Blob([props.selectedResult.markdown], {
+    type: "text/markdown",
+  });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   const filename = props.selectedResult.title
-    ? `${props.selectedResult.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`
+    ? `${props.selectedResult.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.md`
     : "document.md";
   link.download = filename;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+const downloadPdf = async () => {
+  if (!pdfPath.value) return;
+
+  try {
+    const response = await fetch("/api/download-pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pdfPath: pdfPath.value,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to download PDF");
+    }
+
+    // Extract filename from Content-Disposition header
+    const contentDisposition = response.headers.get("Content-Disposition");
+    const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+    const filename = filenameMatch ? filenameMatch[1] : "document.pdf";
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("PDF download failed:", error);
+    alert(
+      `Failed to download PDF: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
 };
 </script>
 
@@ -122,5 +269,14 @@ const downloadMarkdown = () => {
   font-weight: bold;
   margin-top: 1em;
   margin-bottom: 0.5em;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
