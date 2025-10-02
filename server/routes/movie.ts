@@ -2,7 +2,7 @@ import express, { Request, Response, Router } from "express";
 import {
   movie,
   audio,
-  images,
+  images as imagesAction,
   captions,
   movieFilePath,
   initializeContext,
@@ -96,7 +96,7 @@ router.post(
 
       // Generate the movie
       await audio(context)
-        .then(images)
+        .then(imagesAction)
         .then(captions)
         .then(movie)
         .then(async () => {
