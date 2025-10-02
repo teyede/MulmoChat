@@ -1,0 +1,50 @@
+import { ToolPlugin, ToolContext, ToolResult } from "./type";
+import MarkdownView from "./views/markdown.vue";
+import MarkdownPreview from "./previews/markdown.vue";
+
+const toolName = "pushMarkdown";
+
+const toolDefinition = {
+  type: "function" as const,
+  name: toolName,
+  description: "Generate and display a document in markdown format.",
+  parameters: {
+    type: "object" as const,
+    properties: {
+      title: {
+        type: "string",
+        description: "Title for the document",
+      },
+      markdown: {
+        type: "string",
+        description: "The markdown content to display",
+      },
+    },
+    required: ["title", "markdown"],
+  },
+};
+
+const pushMarkdown = async (
+  context: ToolContext,
+  args: Record<string, any>,
+): Promise<ToolResult> => {
+  const markdown = args.markdown as string;
+  const title = args.title as string;
+
+  return {
+    message: `Created markdown document: ${title}`,
+    title,
+    htmlData: markdown,
+    instructions:
+      "Acknowledge that the markdown document has been created and is displayed to the user.",
+  };
+};
+
+export const plugin: ToolPlugin = {
+  toolDefinition,
+  execute: pushMarkdown,
+  generatingMessage: "Creating document...",
+  isEnabled: () => true,
+  viewComponent: MarkdownView,
+  previewComponent: MarkdownPreview,
+};
