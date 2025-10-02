@@ -17,7 +17,7 @@ const toolDefinition = {
       },
       markdown: {
         type: "string",
-        description: "The markdown content to display",
+        description: "The markdown content to display. Embed images ONLY IF the user explicitly asks for it, in following format: ![Detailed image prompt](__too_be_replaced_image_path__)",
       },
     },
     required: ["title", "markdown"],
