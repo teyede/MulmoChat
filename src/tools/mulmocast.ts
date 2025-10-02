@@ -83,6 +83,37 @@ const mulmocast = async (
 
   const style =
     styleMap[styleParam as keyof typeof styleMap] || styleMap.photorealistic;
+  const images =
+    styleParam === "anime"
+      ? {
+          ani: {
+            type: "image",
+            source: {
+              kind: "url",
+              url: "https://raw.githubusercontent.com/receptron/mulmocast-media/refs/heads/main/characters/ani.png",
+            },
+          },
+        }
+      : {};
+  const imageRefs: string[] = [];
+  for (const image of Object.values(images)) {
+    if (image.source.kind === "url") {
+      const response = await fetch(image.source.url);
+      const blob = await response.blob();
+      const base64Image = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result as string;
+          const base64Data = base64.split(",")[1];
+          resolve(base64Data);
+        };
+        reader.readAsDataURL(blob);
+      });
+      imageRefs.push(base64Image);
+    }
+  }
+  const blankImageBase64 = await loadBlankImageBase64();
+  imageRefs.push(blankImageBase64);
 
   // Generate beat objects with UUIDs first
   const beatsWithIds = beats.map((beat: { text: string }) => ({
@@ -92,7 +123,6 @@ const mulmocast = async (
   }));
 
   // Generate images for each beat concurrently
-  const blankImageBase64 = await loadBlankImageBase64();
   const imagePromises = beatsWithIds.map(async (beat) => {
     const prompt = `generate image appropriate for the text. <text>${beat.text}</text>${style}`;
     if (dryRun) {
@@ -108,7 +138,7 @@ const mulmocast = async (
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt, images: [blankImageBase64] }),
+        body: JSON.stringify({ prompt, images: imageRefs }),
       });
 
       if (response.ok) {
@@ -148,6 +178,7 @@ const mulmocast = async (
       provider: "google",
       model: "gemini-2.5-flash-image-preview",
       style,
+      images,
     },
     audioParams: {
       padding: 0.2,
