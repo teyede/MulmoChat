@@ -35,68 +35,59 @@
     </div>
 
     <!-- Generic URL extracted content -->
-    <TextSelectionMenu
+    <div
       v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
-      :send-text-message="sendTextMessage"
+      class="w-full h-full overflow-auto p-6 bg-white"
     >
-      <template #default="{ onMouseUp, onMouseDown }">
-        <div
-          class="w-full h-full overflow-auto p-6 bg-white"
-          @mouseup="onMouseUp"
-          @mousedown="onMouseDown"
-        >
-          <div class="max-w-4xl mx-auto">
-            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
-              <div class="text-sm text-blue-800">
-                <a
-                  :href="selectedResult.url"
-                  target="_blank"
-                  class="text-blue-600 hover:underline"
-                >
-                  Open original page →
-                </a>
-              </div>
-            </div>
-
-            <!-- Article header -->
-            <article>
-              <h1 class="text-3xl font-bold mb-3 text-gray-900">
-                {{ extractedTitle }}
-              </h1>
-
-              <div v-if="extractedByline" class="text-sm text-gray-600 mb-2">
-                By {{ extractedByline }}
-              </div>
-
-              <div
-                v-if="extractedExcerpt"
-                class="text-lg text-gray-700 mb-4 italic border-l-4 border-blue-500 pl-4"
-              >
-                {{ extractedExcerpt }}
-              </div>
-
-              <!-- Main content -->
-              <div class="text-gray-800 leading-relaxed">
-                <div
-                  v-for="(paragraph, index) in formattedContent"
-                  :key="index"
-                  class="mb-4"
-                >
-                  {{ paragraph }}
-                </div>
-              </div>
-            </article>
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+          <div class="text-sm text-blue-800">
+            <a
+              :href="selectedResult.url"
+              target="_blank"
+              class="text-blue-600 hover:underline"
+            >
+              Open original page →
+            </a>
           </div>
         </div>
-      </template>
-    </TextSelectionMenu>
+
+        <!-- Article header -->
+        <article>
+          <h1 class="text-3xl font-bold mb-3 text-gray-900">
+            {{ extractedTitle }}
+          </h1>
+
+          <div v-if="extractedByline" class="text-sm text-gray-600 mb-2">
+            By {{ extractedByline }}
+          </div>
+
+          <div
+            v-if="extractedExcerpt"
+            class="text-lg text-gray-700 mb-4 italic border-l-4 border-blue-500 pl-4"
+          >
+            {{ extractedExcerpt }}
+          </div>
+
+          <!-- Main content -->
+          <div class="text-gray-800 leading-relaxed">
+            <div
+              v-for="(paragraph, index) in formattedContent"
+              :key="index"
+              class="mb-4"
+            >
+              {{ paragraph }}
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import type { ToolResult } from "../type";
-import TextSelectionMenu from "../../components/TextSelectionMenu.vue";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;

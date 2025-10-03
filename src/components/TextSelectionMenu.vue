@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <slot :on-mouse-up="handleTextSelection" :on-mouse-down="handleMouseDown" />
+  <div @mousedown="handleMouseDown">
+    <slot :on-mouse-up="handleTextSelection" />
 
     <!-- Selection popup menu -->
     <div
@@ -61,10 +61,9 @@ function handleTextSelection(event: MouseEvent): void {
   }, 10);
 }
 
-function handleMouseDown(event: MouseEvent): void {
+function handleMouseDown(): void {
   // Only hide menu if clicking outside the menu itself
-  const target = event.target as HTMLElement;
-  if (showMenu.value && !target.closest(".selection-menu")) {
+  if (showMenu.value) {
     showMenu.value = false;
   }
 }
