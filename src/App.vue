@@ -71,15 +71,15 @@ import {
 import { createUploadedImageResult } from "./tools/generateImage";
 import type { StartApiResponse } from "../server/types";
 import Sidebar from "./components/Sidebar.vue";
+import { DEFAULT_LANGUAGE_CODE, getLanguageName } from "./config/languages";
 
 const USER_LANGUAGE_KEY = "user_language_v1";
 const SYSTEM_PROMPT =
   "You are a teacher who explains various things in a way that even middle school students can easily understand. When words alone are not enough, you MUST use the generateImage API to draw pictures and use them to help explain. When you are talking about places, objects, people, movies, books and other things, you MUST use the generateImage API to draw pictures to make the conversation more engaging. Call the pushMarkdown API to display documents when the user is asking for a document. Call the pushMulmoScript API to display presentations when the user is asking for a presentation.";
-const DEFAULT_USER_LANGUAGE = "en";
 const sidebarRef = ref<InstanceType<typeof Sidebar> | null>(null);
 const connecting = ref(false);
 const userLanguage = ref(
-  localStorage.getItem(USER_LANGUAGE_KEY) || DEFAULT_USER_LANGUAGE,
+  localStorage.getItem(USER_LANGUAGE_KEY) || DEFAULT_LANGUAGE_CODE,
 );
 const messages = ref<string[]>([]);
 const currentText = ref("");
@@ -110,22 +110,6 @@ const webrtc = {
 const sleep = async (milliseconds: number) => {
   return await new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
-
-function getLanguageName(code: string): string {
-  const languages: Record<string, string> = {
-    en: "English",
-    zh: "Chinese (Mandarin)",
-    hi: "Hindi",
-    es: "Spanish",
-    fr: "French",
-    ar: "Arabic",
-    bn: "Bengali",
-    ru: "Russian",
-    pt: "Portuguese",
-    ja: "Japanese",
-  };
-  return languages[code] || "English";
-}
 
 function scrollToBottomOfSideBar(): void {
   sidebarRef.value?.scrollToBottom();
