@@ -13,7 +13,7 @@
         >
           {{ connecting ? "Connecting..." : "Connect" }}
         </button>
-        <div v-else class="flex gap-2 flex-1">
+        <div v-else class="flex gap-2 w-full">
           <button
             @click="$emit('stopChat')"
             class="flex-1 px-4 py-2 bg-red-600 text-white rounded"
@@ -36,6 +36,7 @@
           </button>
         </div>
         <button
+          v-if="!chatActive"
           @click="showConfigPopup = true"
           class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 flex items-center justify-center"
           title="Configuration"
