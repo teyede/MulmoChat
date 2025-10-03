@@ -4,7 +4,7 @@
       <!-- Quiz Title -->
       <h2
         v-if="quizData.title"
-        class="text-white text-3xl font-bold mb-8 text-center"
+        class="text-gray-900 text-3xl font-bold mb-8 text-center"
       >
         {{ quizData.title }}
       </h2>
@@ -82,6 +82,10 @@ const props = defineProps<{
   sendTextMessage: (text?: string) => void;
 }>();
 
+const emit = defineEmits<{
+  updateResult: [result: ToolResult];
+}>();
+
 const quizData = ref<QuizData | null>(null);
 const userAnswers = ref<(number | null)[]>([]);
 
@@ -90,11 +94,34 @@ watch(
   (newResult) => {
     if (newResult?.toolName === "putQuestions" && newResult.jsonData) {
       quizData.value = newResult.jsonData as QuizData;
-      // Initialize user answers array
-      userAnswers.value = new Array(quizData.value.questions.length).fill(null);
+      // Restore user answers from viewState or initialize new array
+      if (newResult.viewState?.userAnswers) {
+        userAnswers.value = newResult.viewState.userAnswers;
+      } else {
+        userAnswers.value = new Array(quizData.value.questions.length).fill(
+          null,
+        );
+      }
     }
   },
   { immediate: true },
+);
+
+// Watch userAnswers and save to viewState whenever they change
+watch(
+  userAnswers,
+  (newAnswers) => {
+    if (props.selectedResult && newAnswers) {
+      const updatedResult: ToolResult = {
+        ...props.selectedResult,
+        viewState: {
+          userAnswers: newAnswers,
+        },
+      };
+      emit("updateResult", updatedResult);
+    }
+  },
+  { deep: true },
 );
 
 const answeredCount = computed(() => {

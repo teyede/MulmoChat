@@ -34,6 +34,7 @@ export interface ToolResult {
   images?: Record<string, string>;
   moviePath?: string;
   pdfPath?: string;
+  viewState?: Record<string, any>;
 }
 
 export interface ToolResultComplete extends ToolResult {
