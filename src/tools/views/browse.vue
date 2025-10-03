@@ -120,6 +120,7 @@ import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
+  sendTextMessage: (text?: string) => void;
 }>();
 
 const showMenu = ref(false);
@@ -207,12 +208,18 @@ function handleMouseDown(event: MouseEvent): void {
 }
 
 function handleReadAloud(): void {
-  // TODO: Implement read aloud functionality
+  if (selectedText.value) {
+    props.sendTextMessage(`Read aloud: "${selectedText.value}"`);
+  }
   showMenu.value = false;
 }
 
 function handleTranslate(): void {
-  // TODO: Implement translate functionality
+  if (selectedText.value) {
+    props.sendTextMessage(
+      `Translate into my native language: "${selectedText.value}"`,
+    );
+  }
   showMenu.value = false;
 }
 </script>
