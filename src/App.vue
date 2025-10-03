@@ -111,6 +111,22 @@ const sleep = async (milliseconds: number) => {
   return await new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
+function getLanguageName(code: string): string {
+  const languages: Record<string, string> = {
+    en: "English",
+    zh: "Chinese (Mandarin)",
+    hi: "Hindi",
+    es: "Spanish",
+    fr: "French",
+    ar: "Arabic",
+    bn: "Bengali",
+    ru: "Russian",
+    pt: "Portuguese",
+    ja: "Japanese",
+  };
+  return languages[code] || "English";
+}
+
 function scrollToBottomOfSideBar(): void {
   sidebarRef.value?.scrollToBottom();
 }
@@ -338,7 +354,7 @@ async function startChat(): Promise<void> {
           session: {
             type: "realtime",
             model: "gpt-realtime",
-            instructions: SYSTEM_PROMPT,
+            instructions: `${SYSTEM_PROMPT} The user's native language is ${getLanguageName(userLanguage.value)}.`,
             audio: {
               output: {
                 voice: "shimmer",
