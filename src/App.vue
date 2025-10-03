@@ -7,19 +7,6 @@
           >AI-native Operating System</span
         >
       </h1>
-      <button
-        @click="showConfigPopup = true"
-        class="p-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-        title="Configuration"
-      >
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fill-rule="evenodd"
-            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </button>
     </div>
 
     <!-- Main content area with sidebar -->
@@ -34,12 +21,14 @@
         :selected-result="selectedResult"
         :user-input="userInput"
         :is-muted="isMuted"
+        :system-prompt="systemPrompt"
         @start-chat="startChat"
         @stop-chat="stopChat"
         @set-mute="setMute"
         @select-result="handleSelectResult"
         @send-text-message="sendTextMessage"
         @update:user-input="userInput = $event"
+        @update:system-prompt="systemPrompt = $event"
         @upload-images="handleUploadImages"
       />
 
@@ -63,47 +52,6 @@
             class="w-full h-full flex items-center justify-center"
           >
             <div class="text-gray-400 text-lg">Canvas</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Config Popup -->
-    <div
-      v-if="showConfigPopup"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      @click.self="showConfigPopup = false"
-    >
-      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Configuration</h2>
-          <button
-            @click="showConfigPopup = false"
-            class="text-gray-500 hover:text-gray-700"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              System Prompt
-            </label>
-            <textarea
-              v-model="systemPrompt"
-              placeholder="You are a helpful assistant."
-              class="w-full border rounded px-3 py-2 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            ></textarea>
-          </div>
-
-          <div class="flex justify-end">
-            <button
-              @click="showConfigPopup = false"
-              class="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Close
-            </button>
           </div>
         </div>
       </div>
@@ -139,7 +87,6 @@ const isGeneratingImage = ref(false);
 const generatingMessage = ref("");
 const pendingToolArgs: Record<string, string> = {};
 const processedToolCalls = new Map<string, string>();
-const showConfigPopup = ref(false);
 const selectedResult = ref<ToolResult | null>(null);
 const userInput = ref("");
 const startResponse = ref<StartApiResponse | null>(null);

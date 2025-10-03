@@ -4,34 +4,49 @@
   >
     <!-- Voice chat controls -->
     <div class="space-y-2 flex-shrink-0">
-      <button
-        v-if="!chatActive"
-        @click="$emit('startChat')"
-        :disabled="connecting"
-        class="w-full px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
-      >
-        {{ connecting ? "Connecting..." : "Connect" }}
-      </button>
-      <div v-else class="flex gap-2">
+      <div class="flex gap-2">
         <button
-          @click="$emit('stopChat')"
-          class="flex-1 px-4 py-2 bg-red-600 text-white rounded"
+          v-if="!chatActive"
+          @click="$emit('startChat')"
+          :disabled="connecting"
+          class="flex-1 px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
         >
-          Stop
+          {{ connecting ? "Connecting..." : "Connect" }}
         </button>
+        <div v-else class="flex gap-2 flex-1">
+          <button
+            @click="$emit('stopChat')"
+            class="flex-1 px-4 py-2 bg-red-600 text-white rounded"
+          >
+            Stop
+          </button>
+          <button
+            @click="$emit('setMute', !isMuted)"
+            class="px-3 py-2 rounded border flex items-center justify-center"
+            :class="
+              isMuted
+                ? 'bg-red-100 text-red-600 border-red-300'
+                : 'bg-gray-100 text-gray-600 border-gray-300'
+            "
+            :title="isMuted ? 'Unmute microphone' : 'Mute microphone'"
+          >
+            <span class="material-icons text-lg">{{
+              isMuted ? "mic_off" : "mic"
+            }}</span>
+          </button>
+        </div>
         <button
-          @click="$emit('setMute', !isMuted)"
-          class="px-3 py-2 rounded border flex items-center justify-center"
-          :class="
-            isMuted
-              ? 'bg-red-100 text-red-600 border-red-300'
-              : 'bg-gray-100 text-gray-600 border-gray-300'
-          "
-          :title="isMuted ? 'Unmute microphone' : 'Mute microphone'"
+          @click="showConfigPopup = true"
+          class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 flex items-center justify-center"
+          title="Configuration"
         >
-          <span class="material-icons text-lg">{{
-            isMuted ? "mic_off" : "mic"
-          }}</span>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+              clip-rule="evenodd"
+            />
+          </svg>
         </button>
       </div>
       <audio ref="audioEl" autoplay></audio>
@@ -113,6 +128,48 @@
         Send Message
       </button>
     </div>
+
+    <!-- Config Popup -->
+    <div
+      v-if="showConfigPopup"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click.self="showConfigPopup = false"
+    >
+      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">Configuration</h2>
+          <button
+            @click="showConfigPopup = false"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              System Prompt
+            </label>
+            <textarea
+              :value="systemPrompt"
+              @input="$emit('update:systemPrompt', ($event.target as HTMLTextAreaElement).value)"
+              placeholder="You are a helpful assistant."
+              class="w-full border rounded px-3 py-2 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              @click="showConfigPopup = false"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -130,6 +187,7 @@ defineProps<{
   selectedResult: ToolResult | null;
   userInput: string;
   isMuted: boolean;
+  systemPrompt: string;
 }>();
 
 const emit = defineEmits<{
@@ -139,12 +197,14 @@ const emit = defineEmits<{
   selectResult: [result: ToolResult];
   sendTextMessage: [];
   "update:userInput": [value: string];
+  "update:systemPrompt": [value: string];
   uploadImages: [imageData: string[], fileNames: string[]];
 }>();
 
 const audioEl = ref<HTMLAudioElement | null>(null);
 const imageContainer = ref<HTMLDivElement | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
+const showConfigPopup = ref(false);
 
 function scrollToBottom(): void {
   nextTick(() => {
