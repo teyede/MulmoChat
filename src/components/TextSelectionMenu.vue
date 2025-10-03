@@ -1,38 +1,35 @@
 <template>
-  <div @mousedown="handleMouseDown">
-    <slot :on-mouse-up="handleTextSelection" />
+  <slot :on-mouse-up="handleTextSelection" />
 
-    <!-- Selection popup menu -->
-    <div
-      v-if="showMenu"
-      :style="{
-        position: 'fixed',
-        left: menuPosition.x + 'px',
-        top: menuPosition.y + 'px',
-        zIndex: 1000,
-      }"
-      class="bg-white shadow-2xl rounded-lg border-2 border-blue-500 selection-menu"
-      @click.stop
-      @mousedown.stop
+  <!-- Selection popup menu -->
+  <div
+    v-if="showMenu"
+    :style="{
+      position: 'fixed',
+      left: menuPosition.x + 'px',
+      top: menuPosition.y + 'px',
+      zIndex: 1000,
+    }"
+    class="bg-white shadow-2xl rounded-lg border-2 border-blue-500 selection-menu"
+    @mousedown.stop
+  >
+    <button
+      @click="handleReadAloud"
+      class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap font-medium text-gray-700 hover:text-blue-600 transition-colors"
     >
-      <button
-        @click="handleReadAloud"
-        class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap font-medium text-gray-700 hover:text-blue-600 transition-colors"
-      >
-        Read aloud
-      </button>
-      <button
-        @click="handleTranslate"
-        class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap border-t border-gray-200 font-medium text-gray-700 hover:text-blue-600 transition-colors"
-      >
-        Translate
-      </button>
-    </div>
+      Read aloud
+    </button>
+    <button
+      @click="handleTranslate"
+      class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap border-t border-gray-200 font-medium text-gray-700 hover:text-blue-600 transition-colors"
+    >
+      Translate
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 const props = defineProps<{
   sendTextMessage: (text?: string) => void;
@@ -57,16 +54,28 @@ function handleTextSelection(event: MouseEvent): void {
         y: rect.bottom + 5,
       };
       showMenu.value = true;
+    } else {
+      // Hide menu if no text is selected
+      showMenu.value = false;
     }
   }, 10);
 }
 
-function handleMouseDown(): void {
-  // Only hide menu if clicking outside the menu itself
-  if (showMenu.value) {
+function handleGlobalClick(event: MouseEvent): void {
+  // Hide menu if clicking outside the menu itself
+  const target = event.target as HTMLElement;
+  if (showMenu.value && !target.closest(".selection-menu")) {
     showMenu.value = false;
   }
 }
+
+onMounted(() => {
+  document.addEventListener("click", handleGlobalClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleGlobalClick);
+});
 
 function handleReadAloud(): void {
   if (selectedText.value) {
