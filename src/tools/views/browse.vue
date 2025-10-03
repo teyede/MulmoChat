@@ -35,97 +35,73 @@
     </div>
 
     <!-- Generic URL extracted content -->
-    <div
+    <TextSelectionMenu
       v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
-      class="w-full h-full overflow-auto p-6 bg-white"
-      @mouseup="handleTextSelection"
-      @mousedown="handleMouseDown"
+      :send-text-message="sendTextMessage"
     >
-      <div class="max-w-4xl mx-auto">
-        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
-          <div class="text-sm text-blue-800">
-            <a
-              :href="selectedResult.url"
-              target="_blank"
-              class="text-blue-600 hover:underline"
-            >
-              Open original page →
-            </a>
+      <template #default="{ onMouseUp, onMouseDown }">
+        <div
+          class="w-full h-full overflow-auto p-6 bg-white"
+          @mouseup="onMouseUp"
+          @mousedown="onMouseDown"
+        >
+          <div class="max-w-4xl mx-auto">
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+              <div class="text-sm text-blue-800">
+                <a
+                  :href="selectedResult.url"
+                  target="_blank"
+                  class="text-blue-600 hover:underline"
+                >
+                  Open original page →
+                </a>
+              </div>
+            </div>
+
+            <!-- Article header -->
+            <article>
+              <h1 class="text-3xl font-bold mb-3 text-gray-900">
+                {{ extractedTitle }}
+              </h1>
+
+              <div v-if="extractedByline" class="text-sm text-gray-600 mb-2">
+                By {{ extractedByline }}
+              </div>
+
+              <div
+                v-if="extractedExcerpt"
+                class="text-lg text-gray-700 mb-4 italic border-l-4 border-blue-500 pl-4"
+              >
+                {{ extractedExcerpt }}
+              </div>
+
+              <!-- Main content -->
+              <div class="text-gray-800 leading-relaxed">
+                <div
+                  v-for="(paragraph, index) in formattedContent"
+                  :key="index"
+                  class="mb-4"
+                >
+                  {{ paragraph }}
+                </div>
+              </div>
+            </article>
           </div>
         </div>
-
-        <!-- Article header -->
-        <article>
-          <h1 class="text-3xl font-bold mb-3 text-gray-900">
-            {{ extractedTitle }}
-          </h1>
-
-          <div v-if="extractedByline" class="text-sm text-gray-600 mb-2">
-            By {{ extractedByline }}
-          </div>
-
-          <div
-            v-if="extractedExcerpt"
-            class="text-lg text-gray-700 mb-4 italic border-l-4 border-blue-500 pl-4"
-          >
-            {{ extractedExcerpt }}
-          </div>
-
-          <!-- Main content -->
-          <div class="text-gray-800 leading-relaxed">
-            <div
-              v-for="(paragraph, index) in formattedContent"
-              :key="index"
-              class="mb-4"
-            >
-              {{ paragraph }}
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <!-- Selection popup menu -->
-      <div
-        v-if="showMenu"
-        :style="{
-          position: 'fixed',
-          left: menuPosition.x + 'px',
-          top: menuPosition.y + 'px',
-          zIndex: 1000,
-        }"
-        class="bg-white shadow-2xl rounded-lg border-2 border-blue-500 selection-menu"
-        @click.stop
-        @mousedown.stop
-      >
-        <button
-          @click="handleReadAloud"
-          class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap font-medium text-gray-700 hover:text-blue-600 transition-colors"
-        >
-          Read aloud
-        </button>
-        <button
-          @click="handleTranslate"
-          class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap border-t border-gray-200 font-medium text-gray-700 hover:text-blue-600 transition-colors"
-        >
-          Translate
-        </button>
-      </div>
-    </div>
+      </template>
+    </TextSelectionMenu>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import type { ToolResult } from "../type";
+import TextSelectionMenu from "../../components/TextSelectionMenu.vue";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
   sendTextMessage: (text?: string) => void;
 }>();
-
-const showMenu = ref(false);
-const menuPosition = ref({ x: 0, y: 0 });
-const selectedText = ref("");
 
 const extractedTitle = computed(() => {
   const jsonData = props.selectedResult?.jsonData;
@@ -178,48 +154,5 @@ function isTwitterUrl(url: string): boolean {
   } catch {
     return false;
   }
-}
-
-function handleTextSelection(event: MouseEvent): void {
-  // Use setTimeout to let the selection finish before checking
-  setTimeout(() => {
-    const selection = window.getSelection();
-    const text = selection?.toString().trim();
-
-    if (text && selection && selection.rangeCount > 0) {
-      selectedText.value = text;
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      menuPosition.value = {
-        x: rect.left + rect.width / 2,
-        y: rect.bottom + 5,
-      };
-      showMenu.value = true;
-    }
-  }, 10);
-}
-
-function handleMouseDown(event: MouseEvent): void {
-  // Only hide menu if clicking outside the menu itself
-  const target = event.target as HTMLElement;
-  if (showMenu.value && !target.closest(".selection-menu")) {
-    showMenu.value = false;
-  }
-}
-
-function handleReadAloud(): void {
-  if (selectedText.value) {
-    props.sendTextMessage(`Read aloud: "${selectedText.value}"`);
-  }
-  showMenu.value = false;
-}
-
-function handleTranslate(): void {
-  if (selectedText.value) {
-    props.sendTextMessage(
-      `Translate into my native language: "${selectedText.value}"`,
-    );
-  }
-  showMenu.value = false;
 }
 </script>
