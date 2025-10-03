@@ -175,22 +175,6 @@
             </select>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              System Prompt
-            </label>
-            <textarea
-              :value="systemPrompt"
-              @input="
-                $emit(
-                  'update:systemPrompt',
-                  ($event.target as HTMLTextAreaElement).value,
-                )
-              "
-              placeholder="You are a helpful assistant."
-              class="w-full border rounded px-3 py-2 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            ></textarea>
-          </div>
 
           <div class="flex justify-end">
             <button
@@ -220,7 +204,6 @@ defineProps<{
   selectedResult: ToolResult | null;
   userInput: string;
   isMuted: boolean;
-  systemPrompt: string;
   userLanguage: string;
 }>();
 
@@ -231,7 +214,6 @@ const emit = defineEmits<{
   selectResult: [result: ToolResult];
   sendTextMessage: [];
   "update:userInput": [value: string];
-  "update:systemPrompt": [value: string];
   "update:userLanguage": [value: string];
   uploadImages: [imageData: string[], fileNames: string[]];
 }>();
