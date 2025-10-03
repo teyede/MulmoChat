@@ -150,11 +150,43 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
+              Native Language
+            </label>
+            <select
+              :value="userLanguage"
+              @change="
+                $emit(
+                  'update:userLanguage',
+                  ($event.target as HTMLSelectElement).value,
+                )
+              "
+              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="en">English</option>
+              <option value="zh">Chinese (Mandarin)</option>
+              <option value="hi">Hindi</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="ar">Arabic</option>
+              <option value="bn">Bengali</option>
+              <option value="ru">Russian</option>
+              <option value="pt">Portuguese</option>
+              <option value="ja">Japanese</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               System Prompt
             </label>
             <textarea
               :value="systemPrompt"
-              @input="$emit('update:systemPrompt', ($event.target as HTMLTextAreaElement).value)"
+              @input="
+                $emit(
+                  'update:systemPrompt',
+                  ($event.target as HTMLTextAreaElement).value,
+                )
+              "
               placeholder="You are a helpful assistant."
               class="w-full border rounded px-3 py-2 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             ></textarea>
@@ -189,6 +221,7 @@ defineProps<{
   userInput: string;
   isMuted: boolean;
   systemPrompt: string;
+  userLanguage: string;
 }>();
 
 const emit = defineEmits<{
@@ -199,6 +232,7 @@ const emit = defineEmits<{
   sendTextMessage: [];
   "update:userInput": [value: string];
   "update:systemPrompt": [value: string];
+  "update:userLanguage": [value: string];
   uploadImages: [imageData: string[], fileNames: string[]];
 }>();
 

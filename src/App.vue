@@ -22,6 +22,7 @@
         :user-input="userInput"
         :is-muted="isMuted"
         :system-prompt="systemPrompt"
+        :user-language="userLanguage"
         @start-chat="startChat"
         @stop-chat="stopChat"
         @set-mute="setMute"
@@ -29,6 +30,7 @@
         @send-text-message="sendTextMessage"
         @update:user-input="userInput = $event"
         @update:system-prompt="systemPrompt = $event"
+        @update:user-language="userLanguage = $event"
         @upload-images="handleUploadImages"
       />
 
@@ -73,12 +75,17 @@ import type { StartApiResponse } from "../server/types";
 import Sidebar from "./components/Sidebar.vue";
 
 const SYSTEM_PROMPT_KEY = "system_prompt_v2";
+const USER_LANGUAGE_KEY = "user_language_v1";
 const DEFAULT_SYSTEM_PROMPT =
   "You are a teacher who explains various things in a way that even middle school students can easily understand. When words alone are not enough, you MUST use the generateImage API to draw pictures and use them to help explain. When you are talking about places, objects, people, movies, books and other things, you MUST use the generateImage API to draw pictures to make the conversation more engaging. Call the pushMarkdown API to display documents when the user is asking for a document. Call the pushMulmoScript API to display presentations when the user is asking for a presentation.";
+const DEFAULT_USER_LANGUAGE = "en";
 const sidebarRef = ref<InstanceType<typeof Sidebar> | null>(null);
 const connecting = ref(false);
 const systemPrompt = ref(
   localStorage.getItem(SYSTEM_PROMPT_KEY) || DEFAULT_SYSTEM_PROMPT,
+);
+const userLanguage = ref(
+  localStorage.getItem(USER_LANGUAGE_KEY) || DEFAULT_USER_LANGUAGE,
 );
 const messages = ref<string[]>([]);
 const currentText = ref("");
@@ -93,6 +100,10 @@ const startResponse = ref<StartApiResponse | null>(null);
 
 watch(systemPrompt, (val) => {
   localStorage.setItem(SYSTEM_PROMPT_KEY, val);
+});
+
+watch(userLanguage, (val) => {
+  localStorage.setItem(USER_LANGUAGE_KEY, val);
 });
 
 const chatActive = ref(false);
