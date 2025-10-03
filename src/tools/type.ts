@@ -7,6 +7,7 @@ import * as ExaPlugin from "./exa";
 import * as OthelloPlugin from "./othello";
 import * as CanvasPlugin from "./canvas";
 import * as MarkdownPlugin from "./markdown";
+import * as QuizPlugin from "./quiz";
 import type { StartApiResponse } from "../../server/types";
 import type { MulmoScript } from "mulmocast";
 import { v4 as uuidv4 } from "uuid";
@@ -75,6 +76,7 @@ const pluginList = [
   OthelloPlugin,
   CanvasPlugin,
   MarkdownPlugin,
+  QuizPlugin,
 ];
 
 export const pluginTools = (startResponse?: StartApiResponse) => {
