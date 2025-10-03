@@ -34,82 +34,97 @@
       </div>
     </div>
 
-    <!-- Generic URL iframe or extracted content -->
+    <!-- Generic URL extracted content -->
     <div
       v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
-      class="w-full h-full"
+      class="w-full h-full overflow-auto p-6 bg-white"
+      @mouseup="handleTextSelection"
+      @mousedown="handleMouseDown"
     >
-      <!-- Extracted content fallback -->
-      <div v-if="iframeError" class="w-full h-full overflow-auto p-6 bg-white">
-        <div class="max-w-4xl mx-auto">
-          <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-            <div class="text-sm text-yellow-800">
-              This page cannot be displayed in an iframe.
-              <a
-                :href="selectedResult.url"
-                target="_blank"
-                class="text-blue-600 hover:underline ml-1"
-              >
-                Open original page →
-              </a>
-            </div>
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+          <div class="text-sm text-blue-800">
+            <a
+              :href="selectedResult.url"
+              target="_blank"
+              class="text-blue-600 hover:underline"
+            >
+              Open original page →
+            </a>
+          </div>
+        </div>
+
+        <!-- Article header -->
+        <article>
+          <h1 class="text-3xl font-bold mb-3 text-gray-900">
+            {{ extractedTitle }}
+          </h1>
+
+          <div v-if="extractedByline" class="text-sm text-gray-600 mb-2">
+            By {{ extractedByline }}
           </div>
 
-          <!-- Article header -->
-          <article>
-            <h1 class="text-3xl font-bold mb-3 text-gray-900">
-              {{ extractedTitle }}
-            </h1>
+          <div
+            v-if="extractedExcerpt"
+            class="text-lg text-gray-700 mb-4 italic border-l-4 border-blue-500 pl-4"
+          >
+            {{ extractedExcerpt }}
+          </div>
 
-            <div v-if="extractedByline" class="text-sm text-gray-600 mb-2">
-              By {{ extractedByline }}
-            </div>
-
+          <!-- Main content -->
+          <div class="text-gray-800 leading-relaxed">
             <div
-              v-if="extractedExcerpt"
-              class="text-lg text-gray-700 mb-4 italic border-l-4 border-blue-500 pl-4"
+              v-for="(paragraph, index) in formattedContent"
+              :key="index"
+              class="mb-4"
             >
-              {{ extractedExcerpt }}
+              {{ paragraph }}
             </div>
-
-            <!-- Main content -->
-            <div class="text-gray-800 leading-relaxed">
-              <div
-                v-for="(paragraph, index) in formattedContent"
-                :key="index"
-                class="mb-4"
-              >
-                {{ paragraph }}
-              </div>
-            </div>
-          </article>
-        </div>
+          </div>
+        </article>
       </div>
 
-      <!-- Iframe (hidden when error occurs) -->
-      <iframe
-        v-show="!iframeError"
-        ref="iframeRef"
-        :src="selectedResult.url"
-        class="w-full h-full rounded"
-        frameborder="0"
-        @error="handleIframeError"
-      />
+      <!-- Selection popup menu -->
+      <div
+        v-if="showMenu"
+        :style="{
+          position: 'fixed',
+          left: menuPosition.x + 'px',
+          top: menuPosition.y + 'px',
+          zIndex: 1000,
+        }"
+        class="bg-white shadow-2xl rounded-lg border-2 border-blue-500 selection-menu"
+        @click.stop
+        @mousedown.stop
+      >
+        <button
+          @click="handleReadAloud"
+          class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap font-medium text-gray-700 hover:text-blue-600 transition-colors"
+        >
+          Read aloud
+        </button>
+        <button
+          @click="handleTranslate"
+          class="block w-full text-left px-4 py-2 hover:bg-blue-50 text-sm whitespace-nowrap border-t border-gray-200 font-medium text-gray-700 hover:text-blue-600 transition-colors"
+        >
+          Translate
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed } from "vue";
 import type { ToolResult } from "../type";
 
 const props = defineProps<{
   selectedResult: ToolResult | null;
 }>();
 
-const iframeRef = ref<HTMLIFrameElement | null>(null);
-const iframeError = ref(false);
-const iframeLoadTimeout = ref<number | null>(null);
+const showMenu = ref(false);
+const menuPosition = ref({ x: 0, y: 0 });
+const selectedText = ref("");
 
 const extractedTitle = computed(() => {
   const jsonData = props.selectedResult?.jsonData;
@@ -124,11 +139,6 @@ const extractedByline = computed(() => {
 const extractedExcerpt = computed(() => {
   const jsonData = props.selectedResult?.jsonData;
   return jsonData?.data?.excerpt || "";
-});
-
-const extractedLength = computed(() => {
-  const jsonData = props.selectedResult?.jsonData;
-  return jsonData?.data?.length || null;
 });
 
 const extractedContent = computed(() => {
@@ -169,56 +179,40 @@ function isTwitterUrl(url: string): boolean {
   }
 }
 
-function handleIframeError(): void {
-  console.log("Iframe error detected, showing extracted content");
-  iframeError.value = true;
-  if (iframeLoadTimeout.value) {
-    clearTimeout(iframeLoadTimeout.value);
+function handleTextSelection(event: MouseEvent): void {
+  // Use setTimeout to let the selection finish before checking
+  setTimeout(() => {
+    const selection = window.getSelection();
+    const text = selection?.toString().trim();
+
+    if (text && selection && selection.rangeCount > 0) {
+      selectedText.value = text;
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      menuPosition.value = {
+        x: rect.left + rect.width / 2,
+        y: rect.bottom + 5,
+      };
+      showMenu.value = true;
+    }
+  }, 10);
+}
+
+function handleMouseDown(event: MouseEvent): void {
+  // Only hide menu if clicking outside the menu itself
+  const target = event.target as HTMLElement;
+  if (showMenu.value && !target.closest(".selection-menu")) {
+    showMenu.value = false;
   }
 }
 
-function setupIframeMonitoring(): void {
-  iframeError.value = false;
-
-  if (iframeLoadTimeout.value) {
-    clearTimeout(iframeLoadTimeout.value);
-  }
-
-  // Set a timeout to detect X-Frame-Options blocking
-  // Many sites that block iframes won't trigger @error, so we detect load timeout
-  iframeLoadTimeout.value = window.setTimeout(() => {
-    if (iframeRef.value) {
-      try {
-        // Try to access iframe content - will throw if blocked by CSP/X-Frame-Options
-        const iframeDoc = iframeRef.value.contentDocument;
-        if (!iframeDoc || iframeDoc.body?.innerHTML === "") {
-          console.log(
-            "Iframe blocked by X-Frame-Options or CSP, showing extracted content",
-          );
-          iframeError.value = true;
-        }
-      } catch (e) {
-        console.log("Iframe access denied, showing extracted content");
-        iframeError.value = true;
-      }
-    }
-  }, 3000);
+function handleReadAloud(): void {
+  // TODO: Implement read aloud functionality
+  showMenu.value = false;
 }
 
-// Monitor iframe when selectedResult changes
-watch(
-  () => props.selectedResult?.url,
-  (newUrl) => {
-    if (newUrl && !isTwitterUrl(newUrl)) {
-      setupIframeMonitoring();
-    }
-  },
-  { immediate: true },
-);
-
-onMounted(() => {
-  if (props.selectedResult?.url && !isTwitterUrl(props.selectedResult.url)) {
-    setupIframeMonitoring();
-  }
-});
+function handleTranslate(): void {
+  // TODO: Implement translate functionality
+  showMenu.value = false;
+}
 </script>
