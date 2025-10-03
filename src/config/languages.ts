@@ -14,6 +14,8 @@ export const LANGUAGES: Language[] = [
   { code: "ru", name: "Russian" },
   { code: "pt", name: "Portuguese" },
   { code: "ja", name: "Japanese" },
+  { code: "it", name: "Italian" },
+  { code: "de", name: "German" },
 ];
 
 export const DEFAULT_LANGUAGE_CODE = "en";
