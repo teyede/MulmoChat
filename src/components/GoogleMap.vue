@@ -91,7 +91,11 @@ const updateLocation = async (newLocation) => {
 
 const loadGoogleMapsAPI = () => {
   return new Promise((resolve, reject) => {
-    if (window.google && window.google.maps && window.google.maps.importLibrary) {
+    if (
+      window.google &&
+      window.google.maps &&
+      window.google.maps.importLibrary
+    ) {
       resolve();
       return;
     }
@@ -102,10 +106,16 @@ const loadGoogleMapsAPI = () => {
     script.onload = () => {
       // Wait a bit for the API to fully initialize
       setTimeout(() => {
-        if (window.google && window.google.maps && window.google.maps.importLibrary) {
+        if (
+          window.google &&
+          window.google.maps &&
+          window.google.maps.importLibrary
+        ) {
           resolve();
         } else {
-          reject(new Error("Google Maps API loaded but importLibrary not available"));
+          reject(
+            new Error("Google Maps API loaded but importLibrary not available"),
+          );
         }
       }, 100);
     };

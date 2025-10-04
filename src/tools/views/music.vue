@@ -10,10 +10,13 @@
         <button
           @click="isPlaying ? handleStop() : handlePlay()"
           :disabled="!isLoaded"
-          class="px-4 py-2 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+          class="px-4 py-2 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-1"
           :class="isPlaying ? 'bg-red-500' : 'bg-blue-500'"
         >
-          {{ isPlaying ? "⏹ Stop" : "▶︎ Play" }}
+          <span class="material-icons">{{
+            isPlaying ? "stop" : "play_arrow"
+          }}</span>
+          {{ isPlaying ? "Stop" : "Play" }}
         </button>
         <label class="flex items-center gap-2">
           Tempo
@@ -87,9 +90,19 @@ const renderMusic = async () => {
     // Load score into audio player
     await player.loadScore(osmd);
 
+    // Extract tempo from the score if available
+    const scoreTempos = osmd.Sheet?.SourceMeasures?.[0]?.TempoExpressions;
+    if (scoreTempos && scoreTempos.length > 0) {
+      const firstTempo = scoreTempos[0];
+      // @ts-ignore - OSMD tempo property access
+      const tempoValue = firstTempo.TempoInBpm || firstTempo.tempoInBpm;
+      if (tempoValue) {
+        tempo.value = tempoValue;
+      }
+    }
+
     // Listen for iteration events (fires when playback completes)
-    player.on('iteration', (data: any) => {
-      console.log('Iteration event:', data);
+    player.on("iteration", (data: any) => {
       // Check if we've reached the end and not looping
       if (!loop.value && data && data.length === 0) {
         player.stop();

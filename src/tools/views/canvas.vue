@@ -191,7 +191,10 @@ const saveDrawingState = async () => {
 
       const updatedResult = {
         ...props.selectedResult,
-        imageData: imageData,
+        data: {
+          ...props.selectedResult.data,
+          imageData: imageData,
+        },
         jsonData: {
           ...props.selectedResult.jsonData,
           drawingState,
