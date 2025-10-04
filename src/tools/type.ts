@@ -32,7 +32,6 @@ export interface ToolResult {
 
   prompt?: string;
 
-  htmlData?: string;
   markdown?: string;
   location?: string | { lat: number; lng: number };
   mulmoScript?: MulmoScript;

@@ -60,7 +60,7 @@ const loop = ref(false);
 const metronome = ref(false);
 
 const renderMusic = async () => {
-  if (!musicContainer.value || !props.selectedResult.htmlData) {
+  if (!musicContainer.value || !props.selectedResult.data?.musicXML) {
     return;
   }
 
@@ -79,7 +79,7 @@ const renderMusic = async () => {
     });
 
     // Load and render the MusicXML
-    await osmd.load(props.selectedResult.htmlData);
+    await osmd.load(props.selectedResult.data.musicXML);
     await osmd.render();
 
     // Initialize audio player
@@ -144,7 +144,7 @@ onMounted(() => {
 });
 
 watch(
-  () => props.selectedResult.htmlData,
+  () => props.selectedResult.data?.musicXML,
   () => {
     renderMusic();
   },

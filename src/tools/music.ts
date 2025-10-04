@@ -38,7 +38,7 @@ const pushMusic = async (
     return {
       message: `Sheet music ${title ? `"${title}" ` : ""}displayed`,
       title: title || "Sheet Music",
-      htmlData: musicXML,
+      data: { musicXML },
       instructions:
         "Acknowledge that the sheet music has been displayed to the user.",
     };
