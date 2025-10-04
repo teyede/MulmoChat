@@ -3,9 +3,9 @@
     <div class="text-blue-600 font-medium">🗺️ Map Location</div>
     <div class="text-xs text-gray-600 mt-1 truncate">
       {{
-        typeof result.location === "string"
-          ? result.location
-          : `${result.location.lat}, ${result.location.lng}`
+        typeof result.data?.location === "string"
+          ? result.data.location
+          : `${result.data?.location?.lat}, ${result.data?.location?.lng}`
       }}
     </div>
   </div>

@@ -34,7 +34,7 @@ export const plugin: ToolPlugin = {
 
     return {
       message: `Showing ${location} on the map`,
-      location,
+      data: { location },
     };
   },
   generatingMessage: "Loading map...",

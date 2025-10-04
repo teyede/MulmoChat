@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full p-4">
     <GoogleMap
-      :location="selectedResult.location"
+      :location="selectedResult.data?.location"
       :api-key="googleMapKey"
       :zoom="15"
     />
