@@ -36,7 +36,7 @@ const pushMusic = async (
     }
 
     return {
-      message: `Sheet music ${title ? `"${title}" ` : ""}displayed`,
+      message: "Sheet music displayed",
       title: title || "Sheet Music",
       data: { musicXML },
       instructions:

@@ -10,7 +10,6 @@ import * as MarkdownPlugin from "./markdown";
 import * as QuizPlugin from "./quiz";
 import * as MusicPlugin from "./music";
 import type { StartApiResponse } from "../../server/types";
-import type { MulmoScript } from "mulmocast";
 import { v4 as uuidv4 } from "uuid";
 
 export interface ToolContext {
