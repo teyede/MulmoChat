@@ -24,11 +24,10 @@ export interface ToolResult {
   title?: string;
   jsonData?: any; // data to be passed to the LLM
   instructions?: string; // follow-up instructions for the LLM
-
-  viewState?: Record<string, any>;
-  updating?: boolean;
+  updating?: boolean; // if true, updates existing result instead of creating new one
 
   data?: Record<string, any>; // tool specific data
+  viewState?: Record<string, any>; // tool specific view state
 }
 
 export interface ToolResultComplete extends ToolResult {
