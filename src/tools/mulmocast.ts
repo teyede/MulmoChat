@@ -209,9 +209,11 @@ const mulmocast = async (
     title,
     instructions:
       "Acknowledge that all the images were successfully generated and that the movie is being generated.",
-    mulmoScript,
-    images: imagesMap,
-    moviePath: dryRun ? "__dryrun__.mp4" : undefined, // __dryrun__.mp4 is a placeholder for the dry run
+    data: {
+      mulmoScript,
+      images: imagesMap,
+      moviePath: dryRun ? "__dryrun__.mp4" : undefined, // __dryrun__.mp4 is a placeholder for the dry run
+    },
   };
 };
 

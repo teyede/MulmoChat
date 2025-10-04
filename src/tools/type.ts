@@ -33,8 +33,6 @@ export interface ToolResult {
   prompt?: string;
 
   markdown?: string;
-  mulmoScript?: MulmoScript;
-  images?: Record<string, string>;
 
   moviePath?: string;
   pdfPath?: string;

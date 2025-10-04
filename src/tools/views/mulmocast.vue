@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full overflow-auto p-4 bg-white">
     <div
-      v-if="selectedResult?.mulmoScript?.title"
+      v-if="selectedResult?.data?.mulmoScript?.title"
       style="
         display: flex;
         align-items: center;
@@ -10,7 +10,7 @@
       "
     >
       <h1 style="font-size: 2em; margin: 0">
-        {{ selectedResult.mulmoScript.title }}
+        {{ selectedResult.data.mulmoScript.title }}
       </h1>
       <div style="display: flex; gap: 0.5em">
         <button
@@ -60,9 +60,9 @@
         </button>
       </div>
     </div>
-    <template v-if="selectedResult?.mulmoScript?.beats">
+    <template v-if="selectedResult?.data?.mulmoScript?.beats">
       <div
-        v-for="(beat, index) in selectedResult.mulmoScript.beats"
+        v-for="(beat, index) in selectedResult.data.mulmoScript.beats"
         :key="beat.id"
         style="margin-bottom: 1em"
       >
@@ -89,8 +89,8 @@
           @ended="handleEnded"
         />
         <img
-          v-else-if="beat.id && selectedResult.images?.[beat.id]"
-          :src="`data:image/png;base64,${selectedResult.images[beat.id]}`"
+          v-else-if="beat.id && selectedResult.data?.images?.[beat.id]"
+          :src="`data:image/png;base64,${selectedResult.data.images[beat.id]}`"
           :alt="beat.text"
           style="max-width: 100%; margin: 1em 0"
         />
@@ -120,7 +120,7 @@ const isGeneratingMovie = ref(false);
 const movieError = ref<string | null>(null);
 
 // moviePath comes from selectedResult now
-const moviePath = computed(() => props.selectedResult?.moviePath || null);
+const moviePath = computed(() => props.selectedResult?.data?.moviePath || null);
 
 onUnmounted(() => {
   if (movieUrl.value) {
@@ -130,11 +130,11 @@ onUnmounted(() => {
 
 // Generate movie when component mounts with mulmoScript
 watch(
-  () => props.selectedResult?.mulmoScript,
+  () => props.selectedResult?.data?.mulmoScript,
   async (mulmoScript) => {
     if (
       !mulmoScript ||
-      props.selectedResult?.moviePath ||
+      props.selectedResult?.data?.moviePath ||
       isGeneratingMovie.value ||
       !props.selectedResult
     )
@@ -153,7 +153,7 @@ watch(
         body: JSON.stringify({
           mulmoScript,
           uuid,
-          images: props.selectedResult?.images || {},
+          images: props.selectedResult?.data?.images || {},
         }),
       });
 
@@ -163,7 +163,10 @@ watch(
         // Update the result with moviePath and notify parent
         const updatedResult: ToolResult = {
           ...props.selectedResult,
-          moviePath: movieResult.outputPath,
+          data: {
+            ...props.selectedResult.data,
+            moviePath: movieResult.outputPath,
+          },
         };
         emit("updateResult", updatedResult);
       } else {
@@ -217,9 +220,9 @@ watch(
 );
 
 const downloadMulmoScript = () => {
-  if (!props.selectedResult?.mulmoScript) return;
+  if (!props.selectedResult?.data?.mulmoScript) return;
 
-  const jsonString = JSON.stringify(props.selectedResult.mulmoScript, null, 2);
+  const jsonString = JSON.stringify(props.selectedResult.data.mulmoScript, null, 2);
   const blob = new Blob([jsonString], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

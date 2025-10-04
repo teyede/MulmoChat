@@ -7,13 +7,13 @@
     >
       <img
         :src="`data:image/png;base64,${firstBeatImage}`"
-        :alt="result.mulmoScript?.title || 'Presentation'"
+        :alt="result.data?.mulmoScript?.title || 'Presentation'"
         class="w-full h-full object-cover"
       />
     </div>
     <div class="p-2">
       <div class="text-green-600 font-medium text-sm truncate">
-        {{ result.mulmoScript?.title || result.title || "Presentation" }}
+        {{ result.data?.mulmoScript?.title || result.title || "Presentation" }}
       </div>
     </div>
   </div>
@@ -28,9 +28,9 @@ const props = defineProps<{
 }>();
 
 const firstBeatImage = computed(() => {
-  const firstBeat = props.result.mulmoScript?.beats?.[0];
-  if (firstBeat?.id && props.result.images?.[firstBeat.id]) {
-    return props.result.images[firstBeat.id];
+  const firstBeat = props.result.data?.mulmoScript?.beats?.[0];
+  if (firstBeat?.id && props.result.data?.images?.[firstBeat.id]) {
+    return props.result.data.images[firstBeat.id];
   }
   return null;
 });
