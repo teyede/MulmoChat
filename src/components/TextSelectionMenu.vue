@@ -83,7 +83,9 @@ onUnmounted(() => {
 
 function handleReadAloud(): void {
   if (selectedText.value) {
-    props.sendTextMessage(`Read aloud: "${selectedText.value}"`);
+    props.sendTextMessage(
+      `Read aloud as-is (no translation): "${selectedText.value}"`,
+    );
   }
   showMenu.value = false;
 }
