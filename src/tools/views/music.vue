@@ -11,25 +11,12 @@
       </div>
       <div class="mb-4 flex gap-2 items-center justify-center">
         <button
-          @click="handlePlay"
-          :disabled="!isLoaded || isPlaying"
-          class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          ▶︎ Play
-        </button>
-        <button
-          @click="handlePause"
-          :disabled="!isLoaded || !isPlaying"
-          class="px-4 py-2 bg-yellow-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          ⏸ Pause
-        </button>
-        <button
-          @click="handleStop"
+          @click="isPlaying ? handleStop() : handlePlay()"
           :disabled="!isLoaded"
-          class="px-4 py-2 bg-red-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+          class="px-4 py-2 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+          :class="isPlaying ? 'bg-red-500' : 'bg-blue-500'"
         >
-          ⏹ Stop
+          {{ isPlaying ? '⏹ Stop' : '▶︎ Play' }}
         </button>
         <label class="flex items-center gap-2">
           Tempo
@@ -41,14 +28,6 @@
             class="w-20 px-2 py-1 border rounded"
           />
           bpm
-        </label>
-        <label class="flex items-center gap-2">
-          <input v-model="loop" type="checkbox" />
-          Loop
-        </label>
-        <label class="flex items-center gap-2">
-          <input v-model="metronome" type="checkbox" />
-          Metronome
         </label>
       </div>
       <div
