@@ -26,6 +26,7 @@
     "express": "^5.1.0",
     "material-icons": "^1.13.14",
     "mulmocast": "^1.2.40",
+    "opensheetmusicdisplay": "^1.9.2",
     "uuid": "^13.0.0",
     "vue": "^3.5.22",
     "vue-drawing-canvas": "^1.0.14"
