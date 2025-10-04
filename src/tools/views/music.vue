@@ -55,7 +55,7 @@ let player: any = null;
 
 const isLoaded = ref(false);
 const isPlaying = ref(false);
-const tempo = ref(100);
+const tempo = ref(200);
 const loop = ref(false);
 const metronome = ref(false);
 
@@ -101,7 +101,7 @@ const renderMusic = async () => {
 const handlePlay = async () => {
   if (!player || !isLoaded.value) return;
 
-  player.tempo = Math.max(30, Math.min(300, tempo.value));
+  player.setBpm(Math.max(30, Math.min(300, tempo.value)));
   player.metronomeVolume = metronome.value ? 0.7 : 0.0;
   player.isLooping = loop.value;
 
@@ -123,7 +123,7 @@ const handleStop = () => {
 
 watch(tempo, () => {
   if (player) {
-    player.tempo = Math.max(30, Math.min(300, tempo.value));
+    player.setBpm(Math.max(30, Math.min(300, tempo.value)));
   }
 });
 
