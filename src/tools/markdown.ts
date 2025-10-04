@@ -110,7 +110,7 @@ const pushMarkdown = async (
   return {
     message: `Created markdown document: ${title}`,
     title,
-    markdown,
+    data: { markdown },
     uuid: docUuid,
     instructions:
       "Acknowledge that the document has been created and is displayed to the user.",

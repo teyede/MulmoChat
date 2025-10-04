@@ -26,8 +26,8 @@ const displayTitle = computed(() => {
   }
 
   // Otherwise extract first # heading from markdown
-  if (props.result.markdown) {
-    const match = props.result.markdown.match(/^#\s+(.+)$/m);
+  if (props.result.data?.markdown) {
+    const match = props.result.data.markdown.match(/^#\s+(.+)$/m);
     if (match) {
       return match[1];
     }

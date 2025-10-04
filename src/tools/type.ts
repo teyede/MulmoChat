@@ -31,8 +31,6 @@ export interface ToolResult {
 
   prompt?: string;
 
-  markdown?: string;
-
   moviePath?: string;
   pdfPath?: string;
 

@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full overflow-y-auto bg-white">
     <div
-      v-if="!selectedResult.markdown"
+      v-if="!selectedResult.data?.markdown"
       class="min-h-full p-8 flex items-center justify-center"
     >
       <div class="text-gray-500">No markdown content available</div>
@@ -107,17 +107,17 @@ const pdfError = ref<string | null>(null);
 const pdfPath = computed(() => props.selectedResult?.pdfPath || null);
 
 const renderedHtml = computed(() => {
-  if (!props.selectedResult.markdown) {
+  if (!props.selectedResult.data?.markdown) {
     console.error("No markdown data in result:", props.selectedResult);
     return "";
   }
-  console.log("Rendering markdown:", props.selectedResult.markdown);
-  return marked(props.selectedResult.markdown);
+  console.log("Rendering markdown:", props.selectedResult.data.markdown);
+  return marked(props.selectedResult.data.markdown);
 });
 
 // Generate PDF when component mounts with markdown
 watch(
-  () => props.selectedResult?.markdown,
+  () => props.selectedResult?.data?.markdown,
   async (markdown) => {
     if (
       !markdown ||
@@ -169,9 +169,9 @@ watch(
 );
 
 const downloadMarkdown = () => {
-  if (!props.selectedResult?.markdown) return;
+  if (!props.selectedResult?.data?.markdown) return;
 
-  const blob = new Blob([props.selectedResult.markdown], {
+  const blob = new Blob([props.selectedResult.data.markdown], {
     type: "text/markdown",
   });
   const url = URL.createObjectURL(blob);
