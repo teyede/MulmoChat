@@ -34,9 +34,9 @@ export async function generateImageCommon(
       body: JSON.stringify({
         prompt,
         images:
-          editImage && context.currentResult?.imageData
+          editImage && context.currentResult?.data?.imageData
             ? [
-                context.currentResult.imageData.replace(
+                context.currentResult.data.imageData.replace(
                   /^data:image\/[^;]+;base64,/,
                   "",
                 ),
@@ -53,7 +53,7 @@ export async function generateImageCommon(
 
     if (data.success && data.imageData) {
       return {
-        imageData: `data:image/png;base64,${data.imageData}`,
+        data: { imageData: `data:image/png;base64,${data.imageData}` },
         message: "image generation succeeded",
         instructions:
           "Acknowledge that the image was generated and has been already presented to the user.",
@@ -90,7 +90,7 @@ export function createUploadedImageResult(
 ): ToolResult {
   return {
     toolName,
-    imageData,
+    data: { imageData },
     message: "",
     prompt,
     title: fileName,

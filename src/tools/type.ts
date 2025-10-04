@@ -22,7 +22,6 @@ export interface ToolResult {
   uuid?: string;
   message: string;
   title?: string;
-  imageData?: string;
   url?: string;
   jsonData?: any;
   instructions?: string;

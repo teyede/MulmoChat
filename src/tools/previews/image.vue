@@ -1,7 +1,7 @@
 <template>
   <img
-    v-if="result.imageData"
-    :src="result.imageData"
+    v-if="result.data?.imageData"
+    :src="result.data.imageData"
     class="max-w-full h-auto rounded"
     alt="Generated image"
   />

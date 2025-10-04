@@ -3,7 +3,7 @@
     <div class="min-h-full flex flex-col items-center justify-center p-4">
       <div class="flex-1 flex items-center justify-center min-h-0">
         <img
-          :src="selectedResult.imageData"
+          :src="selectedResult.data?.imageData"
           class="max-w-full max-h-full object-contain rounded"
           alt="Current generated image"
         />
