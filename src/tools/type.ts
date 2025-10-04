@@ -26,16 +26,22 @@ export interface ToolResult {
   url?: string;
   jsonData?: any;
   instructions?: string;
+
+  viewState?: Record<string, any>;
+  updating?: boolean;
+
+  prompt?: string;
+
   htmlData?: string;
   markdown?: string;
   location?: string | { lat: number; lng: number };
-  updating?: boolean;
-  prompt?: string;
   mulmoScript?: MulmoScript;
   images?: Record<string, string>;
+
   moviePath?: string;
   pdfPath?: string;
-  viewState?: Record<string, any>;
+
+  data?: Record<string, any>;
 }
 
 export interface ToolResultComplete extends ToolResult {
