@@ -2,21 +2,21 @@
   <div class="w-full h-full">
     <!-- Twitter embed -->
     <div
-      v-if="selectedResult?.url && isTwitterUrl(selectedResult.url)"
+      v-if="selectedResult?.data?.url && isTwitterUrl(selectedResult.data.url)"
       class="overflow-auto p-4 bg-white h-full"
     >
       <div
-        v-if="selectedResult.twitterEmbedHtml"
-        v-html="selectedResult.twitterEmbedHtml"
+        v-if="selectedResult.data.twitterEmbedHtml"
+        v-html="selectedResult.data.twitterEmbedHtml"
       />
       <div
-        v-else-if="selectedResult.twitterEmbedHtml === null"
+        v-else-if="selectedResult.data.twitterEmbedHtml === null"
         class="h-full flex items-center justify-center"
       >
         <div class="text-center">
           <div class="text-gray-600 mb-4">Unable to load Twitter embed</div>
           <a
-            :href="selectedResult.url"
+            :href="selectedResult.data.url"
             target="_blank"
             class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
@@ -36,7 +36,7 @@
 
     <!-- Generic URL extracted content -->
     <TextSelectionMenu
-      v-if="selectedResult?.url && !isTwitterUrl(selectedResult.url)"
+      v-if="selectedResult?.data?.url && !isTwitterUrl(selectedResult.data.url)"
       :send-text-message="sendTextMessage"
     >
       <template #default="{ onMouseUp }">
@@ -45,7 +45,7 @@
             <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
               <div class="text-sm text-blue-800">
                 <a
-                  :href="selectedResult.url"
+                  :href="selectedResult.data.url"
                   target="_blank"
                   class="text-blue-600 hover:underline"
                 >

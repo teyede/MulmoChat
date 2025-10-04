@@ -18,13 +18,12 @@ export interface ToolContext {
 }
 
 export interface ToolResult {
-  toolName?: string;
-  uuid?: string;
-  message: string;
+  toolName?: string; // name of the tool that generated this result
+  uuid?: string; // unique identifier for this result
+  message: string; // status message sent back to the LLM about the tool execution result
   title?: string;
-  url?: string;
   jsonData?: any; // data to be passed to the LLM
-  instructions?: string;
+  instructions?: string; // follow-up instructions for the LLM
 
   viewState?: Record<string, any>;
   updating?: boolean;

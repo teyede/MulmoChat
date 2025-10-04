@@ -100,15 +100,17 @@ const browse = async (
       const result: any = {
         message: "Successfully browsed the webpage",
         title: data.data.data.title || "Untitled",
-        url,
         jsonData: data.data,
         instructions:
           "Acknowledge that the webpage was successfully browsed and the content has been retrieved. Just read the title, but don't read the contents unlil the user asks for it.",
+        data: {
+          url,
+        },
       };
 
       // Add Twitter embed data if it's a Twitter URL
       if (isTwitterUrl(url)) {
-        result.twitterEmbedHtml = twitterEmbedData[url] || null;
+        result.data.twitterEmbedHtml = twitterEmbedData[url] || null;
       }
 
       return result;
