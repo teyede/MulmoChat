@@ -1,10 +1,7 @@
 <template>
   <div class="w-full h-full overflow-y-auto">
     <div class="min-h-full flex flex-col p-4">
-      <div
-        v-if="selectedResult.title"
-        class="mb-4 text-center"
-      >
+      <div v-if="selectedResult.title" class="mb-4 text-center">
         <h2 class="text-2xl font-bold text-gray-900">
           {{ selectedResult.title }}
         </h2>
@@ -16,7 +13,7 @@
           class="px-4 py-2 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
           :class="isPlaying ? 'bg-red-500' : 'bg-blue-500'"
         >
-          {{ isPlaying ? '⏹ Stop' : '▶︎ Play' }}
+          {{ isPlaying ? "⏹ Stop" : "▶︎ Play" }}
         </button>
         <label class="flex items-center gap-2">
           Tempo

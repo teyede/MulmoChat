@@ -104,7 +104,7 @@ const emit = defineEmits<{
 const isGeneratingPdf = ref(false);
 const pdfError = ref<string | null>(null);
 
-const pdfPath = computed(() => props.selectedResult?.pdfPath || null);
+const pdfPath = computed(() => props.selectedResult?.data?.pdfPath || null);
 
 const renderedHtml = computed(() => {
   if (!props.selectedResult.data?.markdown) {
@@ -121,7 +121,7 @@ watch(
   async (markdown) => {
     if (
       !markdown ||
-      props.selectedResult?.pdfPath ||
+      props.selectedResult?.data?.pdfPath ||
       isGeneratingPdf.value ||
       !props.selectedResult
     )
@@ -149,7 +149,10 @@ watch(
         // Update the result with pdfPath and notify parent
         const updatedResult: ToolResult = {
           ...props.selectedResult,
-          pdfPath: pdfResult.pdfPath,
+          data: {
+            ...props.selectedResult.data,
+            pdfPath: pdfResult.pdfPath,
+          },
         };
         emit("updateResult", updatedResult);
       } else {

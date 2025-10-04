@@ -222,7 +222,11 @@ watch(
 const downloadMulmoScript = () => {
   if (!props.selectedResult?.data?.mulmoScript) return;
 
-  const jsonString = JSON.stringify(props.selectedResult.data.mulmoScript, null, 2);
+  const jsonString = JSON.stringify(
+    props.selectedResult.data.mulmoScript,
+    null,
+    2,
+  );
   const blob = new Blob([jsonString], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

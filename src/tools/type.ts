@@ -23,7 +23,7 @@ export interface ToolResult {
   message: string;
   title?: string;
   url?: string;
-  jsonData?: any;
+  jsonData?: any; // data to be passed to the LLM
   instructions?: string;
 
   viewState?: Record<string, any>;
@@ -31,10 +31,7 @@ export interface ToolResult {
 
   prompt?: string;
 
-  moviePath?: string;
-  pdfPath?: string;
-
-  data?: Record<string, any>;
+  data?: Record<string, any>; // tool specific data
 }
 
 export interface ToolResultComplete extends ToolResult {
