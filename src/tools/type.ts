@@ -29,8 +29,6 @@ export interface ToolResult {
   viewState?: Record<string, any>;
   updating?: boolean;
 
-  prompt?: string;
-
   data?: Record<string, any>; // tool specific data
 }
 

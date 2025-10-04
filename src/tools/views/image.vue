@@ -9,11 +9,12 @@
         />
       </div>
       <div
-        v-if="selectedResult.prompt"
+        v-if="selectedResult.data?.prompt"
         class="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg max-w-full flex-shrink-0"
       >
         <p class="text-sm text-gray-700 dark:text-gray-300">
-          <span class="font-medium">Prompt:</span> {{ selectedResult.prompt }}
+          <span class="font-medium">Prompt:</span>
+          {{ selectedResult.data.prompt }}
         </p>
       </div>
     </div>

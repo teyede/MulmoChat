@@ -53,11 +53,13 @@ export async function generateImageCommon(
 
     if (data.success && data.imageData) {
       return {
-        data: { imageData: `data:image/png;base64,${data.imageData}` },
+        data: {
+          imageData: `data:image/png;base64,${data.imageData}`,
+          prompt,
+        },
         message: "image generation succeeded",
         instructions:
           "Acknowledge that the image was generated and has been already presented to the user.",
-        prompt,
       };
     } else {
       console.error("ERR:1\n no image data", data);
@@ -90,9 +92,8 @@ export function createUploadedImageResult(
 ): ToolResult {
   return {
     toolName,
-    data: { imageData },
+    data: { imageData, prompt },
     message: "",
-    prompt,
     title: fileName,
   };
 }
