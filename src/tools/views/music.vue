@@ -86,6 +86,17 @@ const renderMusic = async () => {
 
     // Load score into audio player
     await player.loadScore(osmd);
+
+    // Listen for iteration events (fires when playback completes)
+    player.on('iteration', (data: any) => {
+      console.log('Iteration event:', data);
+      // Check if we've reached the end and not looping
+      if (!loop.value && data && data.length === 0) {
+        player.stop();
+        isPlaying.value = false;
+      }
+    });
+
     isLoaded.value = true;
   } catch (error) {
     console.error("Error rendering music:", error);
