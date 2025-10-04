@@ -31,6 +31,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 
+defineOptions({
+  inheritAttrs: false,
+});
+
 const props = defineProps<{
   sendTextMessage: (text?: string) => void;
 }>();

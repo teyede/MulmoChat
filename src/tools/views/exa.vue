@@ -77,6 +77,11 @@
 import type { ToolResult } from "../type";
 import TextSelectionMenu from "../../components/TextSelectionMenu.vue";
 
+defineOptions({
+  inheritAttrs: false,
+  emits: ["updateResult"],
+});
+
 defineProps<{
   selectedResult: ToolResult | null;
   sendTextMessage: (text?: string) => void;
