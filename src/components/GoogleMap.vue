@@ -52,9 +52,11 @@ const getCoordinates = async (location) => {
 };
 
 const initMap = async () => {
-  geocoder = new google.maps.Geocoder();
-
   try {
+    // Import the geocoding library
+    const { Geocoder } = await google.maps.importLibrary("geocoding");
+    geocoder = new Geocoder();
+
     // Import the marker library
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
@@ -89,17 +91,24 @@ const updateLocation = async (newLocation) => {
 
 const loadGoogleMapsAPI = () => {
   return new Promise((resolve, reject) => {
-    if (window.google && window.google.maps) {
+    if (window.google && window.google.maps && window.google.maps.importLibrary) {
       resolve();
       return;
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${props.apiKey}&libraries=geometry`;
-    script.async = true;
-    script.defer = true;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${props.apiKey}&v=weekly&loading=async`;
 
-    script.onload = () => resolve();
+    script.onload = () => {
+      // Wait a bit for the API to fully initialize
+      setTimeout(() => {
+        if (window.google && window.google.maps && window.google.maps.importLibrary) {
+          resolve();
+        } else {
+          reject(new Error("Google Maps API loaded but importLibrary not available"));
+        }
+      }, 100);
+    };
     script.onerror = () => reject(new Error("Failed to load Google Maps API"));
 
     document.head.appendChild(script);
