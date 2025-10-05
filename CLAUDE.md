@@ -50,7 +50,11 @@ The application implements a comprehensive plugin architecture located in `src/t
 4. **exa** (src/tools/exa.ts): AI-powered search using Exa API
 5. **map** (src/tools/map.ts): Google Maps location and directions
 6. **mulmocast** (src/tools/mulmocast.ts): Podcast/audio content integration
-7. **othello** (src/tools/othello.ts): Interactive Othello game with AI
+7. **music** (src/tools/music.ts): Music playback and control
+8. **othello** (src/tools/othello.ts): Interactive Othello game with AI
+9. **quiz** (src/tools/quiz.ts): Interactive quiz functionality
+10. **markdown** (src/tools/markdown.ts): Markdown processing and rendering
+11. **canvas** (src/tools/canvas.ts): Canvas drawing and manipulation
 
 #### Plugin Components and Previews
 Each plugin has associated Vue components:
