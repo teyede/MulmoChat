@@ -27,7 +27,9 @@ This model worked well in the era of limited computational resources and simpler
 
 ### The WIMP Paradigm's Limitations
 
-The **Windows, Icons, Menus, Pointer (WIMP)** interface has dominated computing since the 1980s. While revolutionary for its time, it has fundamental constraints:
+The **Windows, Icons, Menus, Pointer (WIMP)** interface has dominated computing since the 1980s. While the graphical user interface originated with Xerox's Star in 1981, it was Apple's Macintosh in 1984 that brought GUI to the mass market, making computers accessible to non-technical users for the first time. Microsoft's Windows 95, released in 1995, cemented the WIMP paradigm as the dominant interaction model, bringing it to hundreds of millions of users worldwide.
+
+For nearly four decades, this paradigm has served us well. But while revolutionary for its time, it has fundamental constraints:
 
 - **Spatial Navigation Required**: Users must visually locate and click on interface elements
 - **Fixed Interface Layouts**: Developers decide what options are visible and where
@@ -43,22 +45,29 @@ What if, instead of navigating through applications, you could simply **say what
 
 Traditional OS:
 ```
-1. Open weather app
-2. Type city name
-3. Read forecast
-4. Open maps app
-5. Search for restaurants
-6. Filter by rating
-7. Open messaging app
-8. Share restaurant link
+1. Open web browser
+2. Search for "play board games online"
+3. Click through search results
+4. Create account on gaming website
+5. Navigate menus to find available games
+6. Select game type
+7. Configure settings (difficulty, who goes first)
+8. Start game
 ```
 
 AI-Native OS:
 ```
-User: "It's going to rain tomorrow. Find me a good indoor restaurant
-       near downtown and send the address to Sarah."
+User: "I want to play some game with you"
 
-System: [Checks weather, finds restaurant, sends message - all in one flow]
+System: "How about Othello?"
+
+User: "Yes"
+
+System: "Do you want to play first?"
+
+User: "Yes"
+
+System: [Displays interactive Othello board, user's turn]
 ```
 
 The fundamental shift is from **interface navigation** to **intent expression**.
@@ -242,27 +251,34 @@ The system improves over time:
 
 ### Basic Invocation
 
-**User**: "Show me news about space exploration"
+**User**: "I want to learn about quantum theory"
 
-**System**:
-1. Understands intent: fetch and display news
-2. Invokes search capability
-3. Filters for relevant articles
-4. Presents results in readable format
-5. Can answer follow-up questions about the content
+**System**: "Great. I want to know how much you already know. Please answer these questions."
+[Presents interactive quiz]
+
+**User**: [Answers questions]
+
+**System**: "Thank you. You already have basic knowledge, but are missing a few key concepts. Do you prefer a presentation, document, or video?"
+
+**User**: "I prefer a video, but a comic style"
+
+**System**: "Of course"
+[Generates comic-style video explaining quantum theory]
+
+The system understood the learning intent, assessed current knowledge through quizzing, and created personalized educational content - all through natural conversation.
 
 ### Capability Chaining
 
-**User**: "Find the highest-rated Italian restaurant within 2 miles and get me directions"
+**User**: "Tell me about Tokyo"
 
 **System**:
-1. Location capability → determines user's current position
-2. Search capability → finds restaurants meeting criteria
-3. Rating capability → ranks by reviews
-4. Map capability → calculates route
-5. Presents: restaurant info + map + navigation
+1. Search capability → gathers information about Tokyo
+2. Image generation → creates visuals of Tokyo landmarks
+3. Map capability → shows Tokyo's location and key districts
+4. Speaks: "Tokyo is the capital of Japan, located on the eastern coast..."
+5. Presents: generated images + interactive map + information
 
-All from a single natural language request.
+All from a single natural language request - the LLM automatically composed multiple capabilities.
 
 ### Context Continuation
 
