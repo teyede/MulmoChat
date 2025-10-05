@@ -73,7 +73,6 @@ const browse = async (
   args: Record<string, any>,
 ): Promise<ToolResult> => {
   const url = args.url as string;
-  console.log("******** Browse URL", url);
 
   // Handle Twitter embeds
   if (isTwitterUrl(url)) {
@@ -96,13 +95,12 @@ const browse = async (
     const data = await response.json();
 
     if (data.success && data.data) {
-      console.log("*** Browse succeeded", data.data);
       const result: any = {
         message: "Successfully browsed the webpage",
         title: data.data.data.title || "Untitled",
         jsonData: data.data,
         instructions:
-          "Acknowledge that the webpage was successfully browsed and the content has been retrieved. Just read the title, but don't read the contents unlil the user asks for it.",
+          "Acknowledge that the webpage was successfully browsed and give a ONE-SENTENCE summary of the content if it is available.",
         data: {
           url,
         },
